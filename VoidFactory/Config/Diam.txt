@@ -1,0 +1,19 @@
+﻿
+
+
+Diamond Stuff
+{
+	interp : "thing",
+	name : "Diamond(Tetrahedron)",
+	id : "diamond_raw",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Diamond/Diamond_Raw.txt",
+}
+{
+	interp : "thing",
+	name : "Diamond(Processed)",
+	id : "diamond_prc",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Diamond/Diamond_Processed.txt",
+}
+

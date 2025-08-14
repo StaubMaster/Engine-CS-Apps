@@ -1,0 +1,23 @@
+﻿
+{
+	interp : "surfNoise",
+
+	color : "0xBFBCA4" : "0xBBB8A0",
+	thing : "clay",
+
+	const : -100,
+	perlin : "0x12345678" : 4 : 2,
+}
+
+{
+	interp : "surfNoise",
+
+	color : "0x765D33" : "0x6B5428",
+	thing : "dirt",
+
+	perlin : "0x87654321" : 5 : 4,
+	perlin : "0x9ABCDEF0" : 3 : 2,
+
+	minmax : 0 : 0 : 0 : -2 : 0 : -90 : -20,
+	minmax : -40 : 0 : -40 : -4 : +120 : 0 : 110,
+}

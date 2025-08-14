@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33529.622
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine3D_Apps", "VoidFactory\Engine3D_Apps.csproj", "{8CE94EC7-11E2-42D4-82DB-220D15A97127}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Engine3D", "..\Engine3D\Engine3D\Engine3D.csproj", "{3C869ADE-5BD9-4B63-88B5-013906472FE1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CE94EC7-11E2-42D4-82DB-220D15A97127}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CE94EC7-11E2-42D4-82DB-220D15A97127}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CE94EC7-11E2-42D4-82DB-220D15A97127}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CE94EC7-11E2-42D4-82DB-220D15A97127}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C869ADE-5BD9-4B63-88B5-013906472FE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C869ADE-5BD9-4B63-88B5-013906472FE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C869ADE-5BD9-4B63-88B5-013906472FE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C869ADE-5BD9-4B63-88B5-013906472FE1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EA6A5B7A-F61A-46FD-8C92-87B0F1718591}
+	EndGlobalSection
+EndGlobal

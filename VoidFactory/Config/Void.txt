@@ -1,0 +1,26 @@
+﻿
+Infinite Inn / Out
+{
+	interp : "building",
+	type : "conv",
+	cat : "void",
+
+	name : "Creator",
+
+	proc : "",
+	out : 0 : 8 : 0 ,
+
+	file : "E:/Zeug/YMT/Maschine/Void_Out.txt",
+}
+{
+	interp : "building",
+	type : "conv",
+	cat : "void",
+
+	name : "Deleter",
+
+	proc : "",
+	inn : 0 : 8 : 0 ,
+
+	file : "E:/Zeug/YMT/Maschine/Void_Inn.txt",
+}

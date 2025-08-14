@@ -1,0 +1,103 @@
+﻿
+{
+	interp : "thing",
+	name : "Copper Ore",
+	id : "copr_ore",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Copr/Copr_Ore.txt",
+}
+{
+	interp : "thing",
+	name : "Copper Pile",
+	id : "copr_ple",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Copr/Copr_Pile.txt",
+}
+
+{
+	interp : "thing",
+	name : "Copper Nugget",
+	id : "copr_nug",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Copr/Copr_Nugget.txt",
+}
+{
+	interp : "thing",
+	name : "Copper Bar",
+	id : "copr_bar",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Copr/Copr_Bar.txt",
+}
+
+{
+	interp : "thing",
+	name : "Copper Coil",
+	id : "copr_coi",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Copr/Copr_Coil.txt",
+}
+{
+	interp : "thing",
+	name : "Copper Stack",
+	id : "copr_stk",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Copr/Copr_Bar_Stack.txt",
+}
+
+
+
+
+
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "void",
+	out : "copr_ore" : 1,
+
+	tick : 15,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "void",
+	inn : "copr_coi" : 1,
+
+	tick : 15,
+}
+
+
+
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "crusher",
+	inn : "copr_ore" : 2,
+	out : "copr_ple" : 1,
+	out : "stone" : 2,
+
+	tick : 31,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "forge",
+	inn : "copr_ple" : 2,
+	out : "copr_bar" : 1,
+
+	tick : 255,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "assambler",
+	inn : "copr_bar" : 1,
+	out : "copr_coi" : 2,
+
+	tick : 255,
+}
+

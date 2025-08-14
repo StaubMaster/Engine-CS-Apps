@@ -1,0 +1,35 @@
+﻿
+Browse
+    handle No-File
+    Dir/File Browsing
+    Dir/File List
+
+    ListBox: Files
+    ListBox: Dirs
+    Button: Change File
+    Button: Change Dir
+    Button: Parent Dir
+
+
+
+Content
+    Cursor Position
+    Content Changed
+    General Info
+    Debug Info
+    Load-Errors
+
+    TextBox: Main
+    CheckBox: Update
+    Button: Update
+    Button: (re)Load
+    Button: (re)Save
+
+
+
+Display
+    Position
+    Rotation
+    Zoomtion
+
+    Button: reset

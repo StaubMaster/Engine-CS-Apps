@@ -1,0 +1,87 @@
+﻿
+
+Thing
+{
+	interp : "thing",
+	name : "Clay",
+	id : "clay",
+	cat : "construction",
+	file : "E:/Zeug/YMT/Stuff/Building/Clay.txt",
+}
+{
+	interp : "thing",
+	name : "Brick",
+	id : "brick",
+	cat : "construction",
+	file : "E:/Zeug/YMT/Stuff/Building/Brick.txt",
+}
+
+
+
+Recipy
+{
+	interp : "recipy",
+	cat : "construction",
+
+	type : "void",
+	out : "clay" : 1,
+	tick : 1,
+}
+{
+	interp : "recipy",
+	cat : "construction",
+
+	type : "void",
+	inn : "clay" : 1,
+	tick : 1,
+}
+
+{
+	interp : "recipy",
+	cat : "construction",
+
+	type : "forge",
+	inn : "clay" : 1,
+	out : "brick" : 1,
+	tick : 31,
+}
+{
+	interp : "recipy",
+	cat : "construction",
+
+	type : "void",
+	inn : "brick" : 1,
+	tick : 1,
+}
+
+
+
+Platforms
+{
+	interp : "building",
+	name : "Platform (1x1)",
+	cat : "building",
+
+	type : "conv",
+	ablt : "",
+
+	cost : "brick" : 2,
+	cost : "clay" : 1,
+
+	file : "E:/Zeug/YMT/Maschine/Platform_1.txt",
+}
+{
+	interp : "building",
+	name : "Platform (3x3)",
+	cat : "building",
+
+	type : "conv",
+	ablt : "",
+
+	cost : "brick" : 8,
+	cost : "clay" : 4,
+
+	file : "E:/Zeug/YMT/Maschine/Platform_2.txt",
+}
+
+

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Abstracts\**" />
+    <Compile Remove="AstronomicalOld\**" />
+    <Compile Remove="Surface\**" />
+    <EmbeddedResource Remove="Abstracts\**" />
+    <EmbeddedResource Remove="AstronomicalOld\**" />
+    <EmbeddedResource Remove="Surface\**" />
+    <None Remove="Abstracts\**" />
+    <None Remove="AstronomicalOld\**" />
+    <None Remove="Surface\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="DrawWindow.cs" />
+    <Compile Remove="Form_Generation.cs" />
+    <Compile Remove="Form_Generation.Designer.cs" />
+    <Compile Remove="Form_Log.cs" />
+    <Compile Remove="Form_Log.Designer.cs" />
+    <Compile Remove="Form_View.cs" />
+    <Compile Remove="Form_View.Designer.cs" />
+    <Compile Remove="GameSelect\GameBodyEditor.cs" />
+    <Compile Remove="GameSelect\GamePlaneAction.cs" />
+    <Compile Remove="GameSelect\GameSceneEditor.cs" />
+    <Compile Remove="GameSelect\GameSpace.cs" />
+    <Compile Remove="View.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="Form_Generation.resx" />
+    <EmbeddedResource Remove="Form_Log.resx" />
+    <EmbeddedResource Remove="Form_View.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="OpenTK" Version="4.9.4" />
+    <PackageReference Include="OpenTK.GLControl" Version="4.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Engine3D">
+      <HintPath>..\..\Engine3D\Engine3D\bin\Debug\net5.0\Engine3D.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Miscellaneous\Astronomical\Satellite\" />
+  </ItemGroup>
+
+</Project>

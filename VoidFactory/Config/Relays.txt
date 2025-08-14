@@ -1,0 +1,55 @@
+﻿
+{
+	interp : "building",
+	type : "relay",
+	cat : "trans",
+
+	name : "Relay",
+	cost : "brick" : 2,
+	cost : "copr_coi" : 1,
+
+	proc : "",
+	inn : 0 : 14 : 0 ,
+	out : 0 : 14 : 0 ,
+
+	file : "E:/Zeug/YMT/Relay/Relay.txt",
+}
+
+{
+	interp : "building",
+	type : "relay",
+	cat : "trans",
+
+	name : "Relay 1 4",
+	cost : "brick" : 4,
+	cost : "copr_coi" : 5,
+
+	proc : "",
+	inn : 0 : 16 : 0 ,
+	out : -4 : 12 : -4 ,
+	out : -4 : 12 : +4 ,
+	out : +4 : 12 : +4 ,
+	out : +4 : 12 : -4 ,
+
+	file : "E:/Zeug/YMT/Relay/Relay_1_4.txt",
+}
+
+{
+	interp : "building",
+	type : "relay",
+	cat : "trans",
+
+	name : "Relay 4 1",
+	cost : "brick" : 4,
+	cost : "copr_coi" : 5,
+
+	proc : "",
+	inn : -4 : 12 : -4 ,
+	inn : -4 : 12 : +4 ,
+	inn : +4 : 12 : +4 ,
+	inn : +4 : 12 : -4 ,
+	out : 0 : 16 : 0 ,
+
+	file : "E:/Zeug/YMT/Relay/Relay_4_1.txt",
+}
+

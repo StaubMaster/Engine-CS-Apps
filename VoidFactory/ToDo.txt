@@ -1,0 +1,19 @@
+﻿
+
+
+PolyHedra:
+	split into multiple files
+
+
+
+File Parser:
+	Math:
+		make number parser
+		have default values ?
+		instead of (1:0:2) use (1::2) or (1:_:2)
+			for implicit default : leave segment empty
+			for explicit default : use _
+	SectionCheck:
+		only check for Command headers
+		each Command check other stuff itself
+

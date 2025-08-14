@@ -1,0 +1,103 @@
+﻿
+Things
+{
+	interp : "thing",
+	name : "Quartz",
+	id : "quartz",
+	cat : "electronic",
+	file : "E:/Zeug/YMT/Stuff/Electronic/Quartz_Crystal.txt",
+}
+{
+	interp : "thing",
+	name : "Circuit",
+	id : "circuits",
+	cat : "electronic",
+	file : "E:/Zeug/YMT/Stuff/Electronic/Circuit.txt",
+}
+{
+	interp : "thing",
+	name : "Processor",
+	id : "processor",
+	cat : "electronic",
+	file : "E:/Zeug/YMT/Stuff/Electronic/Processor.txt",
+}
+{
+	interp : "thing",
+	name : "Chip",
+	id : "chip",
+	cat : "electronic",
+	file : "E:/Zeug/YMT/Stuff/Electronic/Chip.txt",
+}
+{
+	interp : "thing",
+	name : "RAM",
+	id : "ram",
+	cat : "electronic",
+	file : "E:/Zeug/YMT/Stuff/Electronic/RAM.txt",
+}
+
+
+
+
+
+{
+	interp : "recipy",
+	cat : "electronic",
+
+	proc : "void",
+	inn : "ram" : 1,
+
+	tick : 1,
+}
+
+QUARTZ
+{
+	interp : "recipy",
+	cat : "electronic",
+
+	proc : "crusher",
+	inn : "stone" : 1,
+	out : "quartz" : 2,
+
+	tick : 255,
+}
+
+CHIP
+{
+	interp : "recipy",
+	cat : "electronic",
+
+	proc : "assambler",
+	inn : "quartz" : 2,
+	inn : "iron_bar" : 1,
+	out : "chip" : 1,
+
+	tick : 63,
+}
+
+RAM
+{
+	interp : "recipy",
+	cat : "electronic",
+
+	proc : "assambler",
+	inn : "quartz" : 4,
+	inn : "copr_coi" : 2,
+	inn : "chip" : 2,
+	out : "ram" : 1,
+
+	tick : 63,
+}
+
+PROCESSOR
+{
+	interp : "recipy",
+	cat : "electronic",
+
+	proc : "assambler",
+	inn : "quartz" : 4,
+	inn : "gold_bar" : 2,
+	out : "processor" : 1,
+
+	tick : 63,
+}

@@ -1,0 +1,84 @@
+﻿
+{
+	interp : "building",
+	name : "Converter [1 1]",
+	cat : "construction",
+	type : "conv",
+
+	proc,
+	inn : -7 : 12 : 0 ,
+	out : +7 : 12 : 0 ,
+
+	file : "E:/Zeug/YMT/Maschine/Placeholder/Converter_1_1.txt",
+}
+{
+	interp : "building",
+	name : "Converter [2 1]",
+	cat : "construction",
+	type : "conv",
+
+	proc,
+	inn : -7 : 12 : -7 ,
+	inn : -7 : 12 : +7 ,
+	out : +7 : 12 : 0 ,
+
+	file : "E:/Zeug/YMT/Maschine/Placeholder/Converter_2_1.txt",
+}
+{
+	interp : "building",
+	name : "Converter [3 1]",
+	cat : "construction",
+	type : "conv",
+
+	proc,
+	inn : -7 : 12 : -7 ,
+	inn : -7 : 12 :  0 ,
+	inn : -7 : 12 : +7 ,
+	out : +7 : 12 : 0 ,
+
+	file : "E:/Zeug/YMT/Maschine/Placeholder/Converter_3_1.txt",
+}
+
+{
+	interp : "building",
+	name : "Converter [1 2]",
+	cat : "construction",
+	type : "conv",
+
+	proc,
+	inn : -7 : 12 : 0 ,
+	out : +7 : 12 : -7 ,
+	out : +7 : 12 : +7 ,
+
+	file : "E:/Zeug/YMT/Maschine/Placeholder/Converter_1_2.txt",
+}
+
+
+
+{
+	interp : "building",
+	name : "Forge",
+	cat : "construction",
+	type : "conv",
+
+	cost : "brick" : 8,
+
+	proc : "smelting",
+	inn : 0 : 15 : -10 ,
+	out : 0 : 15 : +10 ,
+
+	file : "E:/Zeug/YMT/Maschine/Forge.txt",
+}
+
+{
+	interp : "building",
+	type : "coll",
+	cat : "construction",
+
+	name : "Drill",
+
+	proc : "collect",
+	out : 0 : 30 : 0 ,
+
+	file : "E:/Zeug/YMT/Maschine/Drill.txt",
+}

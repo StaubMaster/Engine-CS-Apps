@@ -1,0 +1,27 @@
+﻿
+
+
+Raw Material
+{
+	interp : "thing",
+	name : "Dirt",
+	id : "dirt",
+	cat : "construction",
+	file : "E:/Zeug/YMT/Stuff/Dirt_Ball.txt",
+}
+{
+	interp : "thing",
+	name : "Stone",
+	id : "stone",
+	cat : "construction",
+	file : "E:/Zeug/YMT/Stuff/Stone_Ball.txt",
+}
+
+{
+	interp : "recipy",
+	cat : "general",
+
+	type : "void",
+	inn : "stone" : 1,
+	tick : 15,
+}

@@ -1,0 +1,34 @@
+﻿
+{
+	interp : "surfObj",
+
+	thing1 : "iron_ore",
+	thing2 : "iron_ore",
+
+	range_val1 : 2 : 4,
+	range_val2 : 1024 : 1024,
+	range_dist : 2 : 8,
+
+	static : 0x12344321 : 0xFFF,
+	color : 0xCCCCCC,
+
+	file1 : "E:/Zeug/YMT/Stuff/Iron/Iron_Ore.txt",
+	file2 : "E:/Zeug/YMT/Stuff/Iron/Iron_Vein.txt",
+}
+
+{
+	interp : "surfObj",
+
+	thing1 : "copr_ore",
+	thing2 : "copr_ore",
+
+	range_val1 : 2 : 4,
+	range_val2 : 1024 : 1024,
+	range_dist : 2 : 8,
+
+	static : 0x87654321 : 0xFFF,
+	color : 0xFF7700,
+
+	file1 : "E:/Zeug/YMT/Stuff/Copr/Copr_Ore.txt",
+	file2 : "E:/Zeug/YMT/Stuff/Copr/Copr_Vein.txt",
+}

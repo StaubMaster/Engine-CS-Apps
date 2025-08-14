@@ -1,0 +1,86 @@
+﻿
+{
+	interp : "thing",
+	name : "Iron Ore",
+	id : "iron_ore",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Iron/Iron_Ore.txt",
+}
+{
+	interp : "thing",
+	name : "Iron Pile",
+	id : "iron_ple",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Iron/Iron_Pile.txt",
+}
+
+{
+	interp : "thing",
+	name : "Iron Nugget",
+	id : "iron_nug",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Iron/Iron_Nugget.txt",
+}
+{
+	interp : "thing",
+	name : "Iron Bar",
+	id : "iron_bar",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Iron/Iron_Bar.txt",
+}
+
+{
+	interp : "thing",
+	name : "Iron Stack",
+	id : "iron_stk",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Iron/Iron_Bar_Stack.txt",
+}
+
+
+
+
+
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "void",
+	out : "iron_ore" : 1
+
+	tick : 15,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "void",
+	inn : "iron_bar" : 1
+
+	tick : 15,
+}
+
+
+
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "crusher",
+	inn : "iron_ore" : 2,
+	out : "iron_ple" : 1,
+	out : "stone" : 2,
+
+	tick : 31,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	proc : "forge",
+	inn : "iron_ple" : 2,
+	out : "iron_bar" : 1,
+
+	tick : 255,
+}
+

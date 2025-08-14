@@ -1,0 +1,52 @@
+﻿
+
+{
+	interp : "thing",
+	name : "Gold Nugget",
+	id : "gold_nug",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Gold/Gold_Nugget.txt",
+}
+{
+	interp : "thing",
+	name : "Gold Bar",
+	id : "gold_bar",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Gold/Gold_Bar.txt",
+}
+{
+	interp : "thing",
+	name : "Gold Stack",
+	id : "gold_stk",
+	cat : "general",
+	file : "E:/Zeug/YMT/Stuff/Gold/Gold_Bar_Stack.txt",
+}
+
+
+
+{
+	interp : "recipy",
+	cat : "general",
+
+	type : "void",
+	out : "gold_nug" : 1,
+	tick : 255,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	type : "forge",
+	inn : "gold_nug" : 2,
+	out : "gold_bar" : 1,
+	tick : 31,
+}
+{
+	interp : "recipy",
+	cat : "general",
+
+	type : "assambler",
+	inn : "gold_bar" : 8,
+	out : "gold_stk" : 1,
+	tick : 127,
+}
