@@ -186,8 +186,8 @@ namespace VoidFactory.Surface2D
             {
                 Valid = false;
                 Dist = double.NaN;
-                Cross = null;
-                Center = null;
+                //Cross = null;
+                //Center = null;
             }
 
             public bool IsValid()

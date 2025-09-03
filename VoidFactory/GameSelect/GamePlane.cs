@@ -15,6 +15,7 @@ using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Telematry;
+using Engine3D.Graphics.Manager;
 
 using VoidFactory.Surface2D;
 using VoidFactory.Surface2D.Graphics;
@@ -136,6 +137,12 @@ namespace VoidFactory.GameSelect
         private AxisBoxShader Box_Shader;
         private AxisBoxBuffer Box_Buffer;
 
+        /*
+         *
+         */
+
+        private PolyHedraTestManager PolyHedraMan;
+        private BodyElemInstBuffer InstBuffer;
 
 
         private DisplayPolyHedra TestTower;
@@ -243,6 +250,69 @@ namespace VoidFactory.GameSelect
                 BodyUni_Shader.Trans.Value(trans);
                 BLD_Base.Bodys[i].BufferDraw();
             }
+        }
+        private void DrawManTest()
+        {
+            PolyHedraMan.SoloShader.Use();
+            PolyHedraMan.ScreenRatio.ChangeData(win.Size_Float2());
+            PolyHedraMan.View.ChangeData(view.Trans);
+
+            List<BodyElemInstBuffer.STrans3D> instTrans = new List<BodyElemInstBuffer.STrans3D>();
+
+            Transformation3D trans = new Transformation3D();
+            trans.Rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
+            trans.Pos.X = 10;
+
+            DisplayPolyHedra[] bodys;
+
+            trans.Pos.C = 120;
+            bodys = new DisplayPolyHedra[]
+            {
+                IO_Port.BodyError,
+                IO_Port.BodyTransPorter,
+                IO_Port.BodyAxis,
+
+                IO_Port.BodyHex,
+                IO_Port.BodyOct,
+
+                IO_Port.BodyInn,
+                IO_Port.BodyInnHex,
+                IO_Port.BodyInnOct,
+
+                IO_Port.BodyOut,
+                IO_Port.BodyOutHex,
+                IO_Port.BodyOutOct,
+            };
+
+            for (int i = 0; i < bodys.Length; i++)
+            {
+                trans.Pos.Y = i * 10;
+                PolyHedraMan.Trans.ChangeData(trans);
+                bodys[i].Draw();
+                instTrans.Add(new BodyElemInstBuffer.STrans3D(trans));
+            }
+
+            trans.Pos.C = 140;
+            for (int i = 0; i < DATA_Thing.Bodys.Length; i++)
+            {
+                trans.Pos.Y = i * 10;
+                PolyHedraMan.Trans.ChangeData(trans);
+                DATA_Thing.Bodys[i].BufferDraw();
+                instTrans.Add(new BodyElemInstBuffer.STrans3D(trans));
+            }
+
+            trans.Pos.C = 170;
+            for (int i = 0; i < BLD_Base.Bodys.Length; i++)
+            {
+                trans.Pos.Y = i * 30;
+                PolyHedraMan.Trans.ChangeData(trans);
+                BLD_Base.Bodys[i].BufferDraw();
+                instTrans.Add(new BodyElemInstBuffer.STrans3D(trans));
+            }
+
+            InstBuffer.Bind_InstTrans(instTrans.ToArray());
+            PolyHedraMan.InstShader.Use();
+            InstBuffer.Draw();
         }
 
         private void Frame_Solar()
@@ -365,11 +435,13 @@ namespace VoidFactory.GameSelect
         private void Frame_Text()
         {
             Text_Shader.Use();
+            Text_Shader.ScreenRatio.Value(win.Size_Float2());
 
-            //Text_Buff.Fill_Strings();
-            //Text_Buff.Test_Characters();
-            //Text_Buff.Test_ASCII();
-            //Text_Buff.Test_Direction();
+            //Text_Buffer.Bind_Strings();
+            //Text_Buffer.Test_Characters();
+            //Text_Buffer.Test_ASCII();
+            //Text_Buffer.Test_Direction();
+            //Text_Buffer.Test_Char();
 
             Text_Buffer.Bind_Strings();
 
@@ -407,6 +479,9 @@ namespace VoidFactory.GameSelect
             Frame_Draw();
             Frame_Chunk();
             Frame_Box();
+
+            DrawManTest();
+
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             Frame_Inv();
@@ -619,16 +694,8 @@ namespace VoidFactory.GameSelect
             TransPorter = null;
         }
 
-        private void Inv_Create()
+        private void Ref_Graphics()
         {
-            Inventory_Interface.Create();
-            Inventory_Interface.Sort(Things, Templates, Recipys, Chunk2D.SurfThingTemplates);
-
-            //InventoryNextKey = new KeyPress(Keys.PageUp);
-            //InventoryPrevKey = new KeyPress(Keys.PageDown);
-            //win.KeyChecks.Add(InventoryNextKey);
-            //win.KeyChecks.Add(InventoryPrevKey);
-
             Interaction.Graphic = Graphic;
             Interaction.BodyUni_Shader = BodyUni_Shader;
             Interaction.Text_Buffer = Text_Buffer;
@@ -643,8 +710,19 @@ namespace VoidFactory.GameSelect
             BLD_Surf_Collector.Chunks = Chunks;
 
             Inventory_Storage.Graphic = Graphic;
-            //Inventory_Storage.MainContext = MainContext;
             Inventory_Storage.Text_Buffer = Text_Buffer;
+        }
+
+        private void Inv_Create()
+        {
+            Inventory_Interface.Create();
+            Inventory_Interface.Sort(Things, Templates, Recipys, Chunk2D.SurfThingTemplates);
+
+            //InventoryNextKey = new KeyPress(Keys.PageUp);
+            //InventoryPrevKey = new KeyPress(Keys.PageDown);
+            //win.KeyChecks.Add(InventoryNextKey);
+            //win.KeyChecks.Add(InventoryPrevKey);
+
             Inventory_Storage.Create(Things);
         }
         private void Inv_Delete()
@@ -699,6 +777,14 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.TilesSize.Set(new int[] { Chunk2D.Tile_Size });
             Chunk_Shader.TilesPreSide.Set(new int[] { Chunk2D.Tiles_Per_Side });
             Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
+
+            PolyHedraMan = new PolyHedraTestManager(shaderDir);
+            PolyHedraMan.Depth.ChangeData(view.Depth.Near, view.Depth.Far);
+
+            InstBuffer = new BodyElemInstBuffer();
+            IO_Port.BodyHex.PHedra.ToBufferElem(InstBuffer);
+
+            Ref_Graphics();
         }
 
         public override void Create()
@@ -720,8 +806,6 @@ namespace VoidFactory.GameSelect
             //Graphic.UpdateView(new RenderDepthFactors(view.DepthN, view.DepthF), view.Fov);
             Graphic.UpdateView(view);
 
-            Init_Shaders();
-
             //DebugReloadShaders = new KeyPress(Keys.F5);
             //win.KeyChecks.Add(DebugReloadShaders);
 
@@ -732,6 +816,10 @@ namespace VoidFactory.GameSelect
             Chunk_Create();
 
             Inv_Create();
+
+
+
+            Init_Shaders();
 
             ConsoleLog.TabDec();
             ConsoleLog.Log("");

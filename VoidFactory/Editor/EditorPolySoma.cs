@@ -316,7 +316,7 @@ namespace VoidFactory.Editor
             }
             if (MainWindow.CheckKey(MouseButton.Left).IsReleased())
             {
-                if (Edit_Change_Mouse.Trans_Changed != null)
+                /*if (Edit_Change_Mouse.Trans_Changed != null)
                 {
                     //Edit_Change_Mouse.Trans_Calc(Edit_Change_Mouse.Trans_Changed);
 
@@ -326,7 +326,7 @@ namespace VoidFactory.Editor
 
                     Edit_Change_Mouse.Trans_Calc(Scene.AllBodys[Edit_Index_Selected].Trans);
                     Edit_Change_Mouse.Change_Reset();
-                }
+                }*/
             }
 
             if (Edit_Index_Selected != -1)
@@ -382,12 +382,12 @@ namespace VoidFactory.Editor
         }
         private void Draw_Mouse_Change()
         {
-            if (Edit_Change_Mouse.Trans_Changed != null && Edit_Index_Selected != -1)
+            /*if (Edit_Change_Mouse.Trans_Changed != null && Edit_Index_Selected != -1)
             {
                 BodyUniWire_Shader.Use();
                 BodyUniWire_Shader.Trans.Value(Edit_Change_Mouse.Trans_Changed);
                 Scene.AllBodys[Edit_Index_Selected].Draw(BodyUniWire_Shader);
-            }
+            }*/
 
             MainWindow.ClearBufferDepth();
             BodyUniFull_Shader.Use();

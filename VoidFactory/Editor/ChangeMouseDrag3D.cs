@@ -50,7 +50,7 @@ namespace VoidFactory.Editor
 
         public ChangeMouseDrag3D(PolyHedra[] indicator_bodys)
         {
-            ViewRay = null;
+            ViewRay = new Ray3D();
 
             Move_RotType = RotType.Non;
             Spin_RotType = RotType.Abs;
@@ -100,12 +100,12 @@ namespace VoidFactory.Editor
             }
             else
             {
-                Pos = null;
+                Pos =  null;
                 DirY = null;
                 DirX = null;
                 DirC = null;
 
-                Rot = null;
+                Rot =  null;
                 WnkA = null;
                 WnkS = null;
                 WnkD = null;
@@ -123,7 +123,7 @@ namespace VoidFactory.Editor
 
             Hovering = -1;
             Selected = -1;
-            Trans_Changed = null;
+            //Trans_Changed = null;
 
             if (Indicator_Trans == null) { return; }
 
@@ -145,7 +145,7 @@ namespace VoidFactory.Editor
         public void Indicator_Trans_Calc()
         {
             Indicator_Trans = null;
-            if (Trans_Changed == null) { return; }
+            //if (Trans_Changed == null) { return; }
             Indicator_Trans = new Transformation3D[6];
 
             if (Move_RotType == RotType.Non)
@@ -283,7 +283,7 @@ namespace VoidFactory.Editor
 
         private Transformation3D MoveY()
         {
-            Ray3D ray = null;
+            Ray3D ray = new Ray3D();
             if (Move_RotType == RotType.Non) { ray = new Ray3D(Pos, DirY); }
             if (Move_RotType == RotType.Abs) { ray = new Ray3D(Pos, DirY - WnkS); }
             if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirY - Rot); }
@@ -295,7 +295,7 @@ namespace VoidFactory.Editor
         }
         private Transformation3D MoveX()
         {
-            Ray3D ray = null;
+            Ray3D ray = new Ray3D();
             if (Move_RotType == RotType.Non) { ray = new Ray3D(Pos, DirX); }
             if (Move_RotType == RotType.Abs) { ray = new Ray3D(Pos, DirX - WnkA); }
             if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirX - Rot); }
@@ -307,7 +307,7 @@ namespace VoidFactory.Editor
         }
         private Transformation3D MoveC()
         {
-            Ray3D ray = null;
+            Ray3D ray = new Ray3D();
             if (Move_RotType == RotType.Non) { ray = new Ray3D(Pos, DirC); }
             if (Move_RotType == RotType.Abs) { ray = new Ray3D(Pos, DirC - WnkD); }
             if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirC - Rot); }
@@ -318,10 +318,10 @@ namespace VoidFactory.Editor
             return new Transformation3D(t.Pos, Rot);
         }
 
-        private Transformation3D SpinY()
+        private Transformation3D? SpinY()
         {
-            Point3D dirX = null;
-            Point3D dirC = null;
+            Point3D dirX = new Point3D();
+            Point3D dirC = new Point3D();
             if (Spin_RotType == RotType.Abs) { dirX = DirX - WnkS; dirC = DirC - WnkS; }
             if (Spin_RotType == RotType.Rel) { dirX = DirX - Rot; dirC = DirC - Rot; }
 
@@ -344,10 +344,10 @@ namespace VoidFactory.Editor
             if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
             return new Transformation3D(Pos, rot);
         }
-        private Transformation3D SpinX()
+        private Transformation3D? SpinX()
         {
-            Point3D dirC = null;
-            Point3D dirY = null;
+            Point3D dirC = new Point3D();
+            Point3D dirY = new Point3D();
             if (Spin_RotType == RotType.Abs) { dirC = DirC - WnkA; dirY = DirY - WnkA; }
             if (Spin_RotType == RotType.Rel) { dirC = DirC - Rot; dirY = DirY - Rot; }
 
@@ -370,10 +370,10 @@ namespace VoidFactory.Editor
             if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
             return new Transformation3D(Pos, rot);
         }
-        private Transformation3D SpinC()
+        private Transformation3D? SpinC()
         {
-            Point3D dirY = null;
-            Point3D dirX = null;
+            Point3D dirY = new Point3D();
+            Point3D dirX = new Point3D();
             if (Spin_RotType == RotType.Abs) { dirY = DirY - WnkD; dirX = DirX - WnkD; }
             if (Spin_RotType == RotType.Rel) { dirY = DirY - Rot; dirX = DirX - Rot; }
 
@@ -428,19 +428,19 @@ namespace VoidFactory.Editor
             Hovering = -1;
             Selected = -1;
             Indicator_Trans = null;
-            Trans_Changed = null;
+            //Trans_Changed = null;
         }
         public void Changed_Trans_Calc()
         {
             switch (Selected)
             {
-                case 0: Trans_Changed = Snap(MoveY()); return;
-                case 1: Trans_Changed = Snap(MoveX()); return;
-                case 2: Trans_Changed = Snap(MoveC()); return;
-
-                case 3: Trans_Changed = Snap(SpinY()); return;
-                case 4: Trans_Changed = Snap(SpinX()); return;
-                case 5: Trans_Changed = Snap(SpinC()); return;
+                //case 0: Trans_Changed = Snap(MoveY()); return;
+                //case 1: Trans_Changed = Snap(MoveX()); return;
+                //case 2: Trans_Changed = Snap(MoveC()); return;
+                //
+                //case 3: Trans_Changed = Snap(SpinY()); return;
+                //case 4: Trans_Changed = Snap(SpinX()); return;
+                //case 5: Trans_Changed = Snap(SpinC()); return;
             }
 
             if (!IsNull)
@@ -449,7 +449,7 @@ namespace VoidFactory.Editor
             }
             else
             {
-                Trans_Changed = null;
+                //Trans_Changed = null;
             }
         }
 

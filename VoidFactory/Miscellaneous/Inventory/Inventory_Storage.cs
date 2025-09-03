@@ -57,13 +57,23 @@ namespace VoidFactory.Inventory
                     //MainContext.Text_Buff.Insert(x + 0.050f, y + 0.050f, 0xFFFFFF, true, recipy.RInn[i].Num.ToString());
                     //MainContext.Text_Buff.Insert(x + 0.050f, y - 0.050f, 0xFFFFFF, true, found.Num.ToString());
 
+                    Point2D normPos = new Point2D(x, y);
+                    Point2D offsetU = new Point2D(+0.050f, +0.050f);
+                    Point2D offsetD = new Point2D(-0.050f, -0.050f);
+
                     Text_Buffer.Insert(
-                        new TextOrientation(new Normal1Point(x + 0.050f, y + 0.050f), TextDirection.DiagRD, (+0.5f, -0.5f)),
-                        Text_Buffer.Default_TextSize, 0xFFFFFF,
+                        new UIGridPosition(normPos, new Point2D(0, 0), UICorner.TL()),
+                        Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0x0000FF,
+                        "X");
+
+                    Text_Buffer.Insert(
+                        new UIGridPosition(normPos + offsetU, new Point2D(0, 0), UICorner.TL()),
+                        Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0x0000FF,
                         recipy.RInn[i].Num.ToString());
+
                     Text_Buffer.Insert(
-                        new TextOrientation(new Normal1Point(x + 0.050f, y - 0.050f), TextDirection.DiagRD, (+0.5f, -0.5f)),
-                        Text_Buffer.Default_TextSize, 0xFFFFFF,
+                        new UIGridPosition(normPos + offsetD, new Point2D(0, 0), UICorner.TL()),
+                        Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0x0000FF,
                         found.Num.ToString());
 
                     found.Thing.Draw(Graphic.Icon_Prog, x, y, 0.5f);
@@ -84,13 +94,23 @@ namespace VoidFactory.Inventory
                     //MainContext.Text_Buff.Insert(x + 0.050f, y + 0.050f, 0xFFFFFF, true, recipy.ROut[o].Num.ToString());
                     //MainContext.Text_Buff.Insert(x + 0.050f, y - 0.050f, 0xFFFFFF, true, found.Num.ToString());
 
+                    Point2D normPos = new Point2D(x, y);
+                    Point2D offsetU = new Point2D(+0.050f, +0.050f);
+                    Point2D offsetD = new Point2D(-0.050f, -0.050f);
+
                     Text_Buffer.Insert(
-                        new TextOrientation(new Normal1Point(x + 0.050f, y + 0.050f), TextDirection.DiagRD, (+0.5f, -0.5f)),
-                        Text_Buffer.Default_TextSize, 0xFFFFFF,
+                        new UIGridPosition(normPos, new Point2D(0, 0), UICorner.TL()),
+                        Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0xFF0000,
+                        "X");
+
+                    Text_Buffer.Insert(
+                        new UIGridPosition(normPos + offsetU, new Point2D(0, 0), UICorner.TL()),
+                        Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0xFF0000,
                         recipy.ROut[o].Num.ToString());
+
                     Text_Buffer.Insert(
-                        new TextOrientation(new Normal1Point(x + 0.050f, y - 0.050f), TextDirection.DiagRD, (+0.5f, -0.5f)),
-                        Text_Buffer.Default_TextSize, 0xFFFFFF,
+                        new UIGridPosition(normPos + offsetD, new Point2D(0, 0), UICorner.TL()),
+                        Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0xFF0000,
                         found.Num.ToString());
 
                     found.Thing.Draw(Graphic.Icon_Prog, x, y, 0.5f);
@@ -104,8 +124,8 @@ namespace VoidFactory.Inventory
 
             //MainContext.Text_Buff.Insert(0.95f, 0.65f - off * 0.2f, 0xFFFFFF, true, found.Num.ToString());
             Text_Buffer.Insert(
-                new TextOrientation(new Normal1Point(0.95f, 0.65f - off * 0.2f), TextDirection.DiagRD, (+0.5f, -0.5f)),
-                Text_Buffer.Default_TextSize, 0xFFFFFF,
+                new UIGridPosition(new Point2D(0.95f, 0.65f - off * 0.2f), new Point2D(0, 0), new Point2D(+0.5f, -0.5f)),
+                Text_Buffer.Default_TextSize, UIGridDirection.DiagDR, 0xFFFFFF,
                 found.Num.ToString());
 
             Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);
@@ -119,10 +139,10 @@ namespace VoidFactory.Inventory
             //MainContext.Text_Buff.Insert(0.95f, 0.75f - off * 0.2f, 0xFFFFFF, true, buffer.Num.ToString());
             //MainContext.Text_Buff.Insert(0.95f, 0.65f - off * 0.2f, 0xFFFFFF, true, found.Num.ToString());
 
-            Text_Buffer.Insert(new Normal1Point(0.95f, 0.75f - off * 0.2f), TextDirection.DiagLD,
+            Text_Buffer.Insert(new Point2D(0.95f, 0.75f - off * 0.2f), new Point2D(0, 0), UIGridDirection.DiagDL,
                 (+0.5f, -0.5f), 0xFFFFFF, Text_Buffer.Default_TextSize,
                 buffer.Num.ToString());
-            Text_Buffer.Insert(new Normal1Point(0.95f, 0.65f - off * 0.2f), TextDirection.DiagLD,
+            Text_Buffer.Insert(new Point2D(0.95f, 0.65f - off * 0.2f), new Point2D(0, 0), UIGridDirection.DiagDL,
                 (+0.5f, -0.5f), 0xFFFFFF, Text_Buffer.Default_TextSize,
                 found.Num.ToString());
 
@@ -150,10 +170,10 @@ namespace VoidFactory.Inventory
                     //MainContext.Text_Buff.Insert(x + 0.050f, y + 0.050f, 0xFFFFFF, true, cost.Sum[c].Num.ToString());
                     //MainContext.Text_Buff.Insert(x + 0.050f, y - 0.050f, 0xFFFFFF, true, found.Num.ToString());
 
-                    Text_Buffer.Insert(new Normal1Point(x + 0.050f, y + 0.050f), TextDirection.DiagLD,
+                    Text_Buffer.Insert(new Point2D(x + 0.050f, y + 0.050f), new Point2D(0, 0), UIGridDirection.DiagDL,
                         (+0.5f, -0.5f), 0xFFFFFF, Text_Buffer.Default_TextSize,
                         cost.Sum[c].Num.ToString());
-                    Text_Buffer.Insert(new Normal1Point(x + 0.050f, y - 0.050f), TextDirection.DiagLD,
+                    Text_Buffer.Insert(new Point2D(x + 0.050f, y - 0.050f), new Point2D(0, 0), UIGridDirection.DiagDL,
                         (+0.5f, -0.5f), 0xFFFFFF, Text_Buffer.Default_TextSize,
                         found.Num.ToString());
 
@@ -182,10 +202,10 @@ namespace VoidFactory.Inventory
                     //MainContext.Text_Buff.Insert(x + 0.050f, y + 0.050f, 0xFFFFFF, true, cost.Sum[c].Num.ToString());
                     //MainContext.Text_Buff.Insert(x + 0.050f, y - 0.050f, 0xFFFFFF, true, found.Num.ToString());
 
-                    Text_Buffer.Insert(new Normal1Point(x + 0.050f, y + 0.050f), TextDirection.DiagLD,
+                    Text_Buffer.Insert(new Point2D(x + 0.050f, y + 0.050f), new Point2D(0, 0), UIGridDirection.DiagDL,
                         (+0.5f, -0.5f), 0xFFFFFF, Text_Buffer.Default_TextSize,
                         cost.Sum[c].Num.ToString());
-                    Text_Buffer.Insert(new Normal1Point(x + 0.050f, y - 0.050f), TextDirection.DiagLD,
+                    Text_Buffer.Insert(new Point2D(x + 0.050f, y - 0.050f), new Point2D(0, 0), UIGridDirection.DiagDL,
                         (+0.5f, -0.5f), 0xFFFFFF, Text_Buffer.Default_TextSize,
                         found.Num.ToString());
 

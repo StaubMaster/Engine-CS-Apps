@@ -626,7 +626,7 @@ namespace VoidFactory.Surface2D
             for (int l = 0; l < Layers.Length; l++)
                 h[l] = Cross_TileLayer(ray, tileIdx, Layers[l].Tiles[tileIdx.idx]);
 
-            Point3D cross = ray.Scale(Ray3D.FindMin(h, out int layer));
+            Point3D? cross = ray.Scale(Ray3D.FindMin(h, out int layer));
             if (cross != null)
             {
                 hit.Tile_Hit.Valid = true;

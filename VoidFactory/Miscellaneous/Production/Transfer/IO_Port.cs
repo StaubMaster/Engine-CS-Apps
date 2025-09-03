@@ -156,7 +156,7 @@ namespace VoidFactory.Production.Transfer
                 Ray_Dist = double.NaN;
                 InnOut = false;
 
-                Pos = null;
+                //Pos = null;
             }
 
             public bool IsSame(Select_Port other)

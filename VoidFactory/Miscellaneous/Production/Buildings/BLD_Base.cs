@@ -273,7 +273,7 @@ namespace VoidFactory.Production.Buildings
                 Building_Idx = -1;
                 Ray_Dist = double.NaN;
 
-                Pos = null;
+                //Pos = null;
             }
 
             public bool IsCloser(Select_Building other)

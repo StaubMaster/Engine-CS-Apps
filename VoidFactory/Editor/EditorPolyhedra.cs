@@ -176,7 +176,8 @@ namespace VoidFactory.Editor
 
                 Is = false;
                 InitialPoint = new Point();
-                InitialAngle = null;
+                //InitialAngle = null;
+                InitialAngle = new Angle3D();
             }
 
             public void Start()
@@ -192,7 +193,7 @@ namespace VoidFactory.Editor
             public void End()
             {
                 Is = false;
-                InitialAngle = null;
+                //InitialAngle = null;
             }
             public bool Update()
             {

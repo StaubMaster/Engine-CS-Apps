@@ -9,6 +9,8 @@ using Engine3D.BodyParse;
 using Engine3D.BitManip;
 using Engine3D.Graphics.Display;
 
+using Engine3D.Miscellaneous;
+
 using VoidFactory.GameSelect;
 using VoidFactory.Editor;
 
@@ -166,6 +168,42 @@ namespace VoidFactory
             //ConsoleLog.Log("pixel: " + pixel.ToString());
 
             //ConsoleLog.Log("test: " + (+0f) + " : " + (-0f) + " : " + (+0f == -0f));
+
+            //Engine3D.Graphics.TextPalletTest.Test('3');
+
+            EntryContainer<int> Test = new EntryContainer<int>();
+
+            EntryContainer<int>.Entry ent0 = Test.Alloc(2);
+            EntryContainer<int>.Entry ent1 = Test.Alloc(1);
+            EntryContainer<int>.Entry ent2 = Test.Alloc(3);
+            EntryContainer<int>.Entry ent3 = Test.Alloc(1);
+            EntryContainer<int>.Entry ent4 = Test.Alloc(3);
+
+            ConsoleLog.Log("Data: " + Test.Length);
+            for (int i = 0; i < Test.Length; i++)
+            {
+                ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]);
+            }
+
+            for (int i = 0; i < ent0.Length; i++) { ent0[i] = 00 + i; }
+            for (int i = 0; i < ent1.Length; i++) { ent1[i] = 10 + i; }
+            for (int i = 0; i < ent2.Length; i++) { ent2[i] = 20 + i; }
+            for (int i = 0; i < ent3.Length; i++) { ent3[i] = 30 + i; }
+            for (int i = 0; i < ent4.Length; i++) { ent4[i] = 40 + i; }
+
+            ConsoleLog.Log("Data: " + Test.Length);
+            for (int i = 0; i < Test.Length; i++)
+            {
+                ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]);
+            }
+
+            ent1.Free();
+
+            ConsoleLog.Log("Data: " + Test.Length);
+            for (int i = 0; i < Test.Length; i++)
+            {
+                ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]);
+            }
         }
 
         private void b_Plane_Click(object sender, EventArgs e)

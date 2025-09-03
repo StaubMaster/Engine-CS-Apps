@@ -50,7 +50,7 @@ namespace VoidFactory.Inventory
             if (Hit.IsValid())
                 Trans = new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Center, new Angle3D());
             else
-                Trans = null;
+                Trans = new Transformation3D();
         }
         public override void Draw()
         {
@@ -233,7 +233,7 @@ namespace VoidFactory.Inventory
             if (Hit.IsValid())
                 Trans = new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Center, new Angle3D((angle / 4.0) * Angle3D.Full, 0, 0));
             else
-                Trans = null;
+                Trans = new Transformation3D();
         }
         public override void Draw()
         {

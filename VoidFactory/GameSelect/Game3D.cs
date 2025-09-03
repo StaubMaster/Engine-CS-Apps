@@ -40,7 +40,8 @@ namespace VoidFactory.GameSelect
         {
             //win.Create(2000, 1000, ExternDelete, CommandFunction);
             //win.External_Frame = Frame;
-            win = new DisplayArea(2000, 1000, ExternDelete, Frame);
+            //win = new DisplayArea(2000, 1000, ExternDelete, Frame);
+            win = new DisplayArea(640, 480, ExternDelete, Frame);
             view = new DisplayCamera();
         }
         public virtual void Delete()
@@ -82,8 +83,8 @@ namespace VoidFactory.GameSelect
             public void Delete()
             {
                 Icon_Prog.Delete();
-                Icon_Spin = null;
-                Icon_Spin_flt = null;
+                //Icon_Spin = null;
+                //Icon_Spin_flt = null;
             }
 
             public void UpdateView(DisplayCamera view)

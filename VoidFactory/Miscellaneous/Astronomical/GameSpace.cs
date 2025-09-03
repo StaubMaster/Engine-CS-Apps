@@ -21,7 +21,7 @@ namespace VoidFactory.Astronomical
         private DisplayCamera MainCamera;
 
         private CSatelliteNatural ViewHoverCenter;
-        private Transformation3D ViewHover;
+        private Transformation3D? ViewHover;
 
 
         private PolyHedra TestPoly;
