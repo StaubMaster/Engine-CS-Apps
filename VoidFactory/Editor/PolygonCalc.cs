@@ -48,7 +48,7 @@ namespace VoidFactory
             Point_Format = "+0.00;-0.00; 0.00";
             Index_Format = "0";
 
-            Offset = new Point3D();
+            Offset = Point3D.Default();
         }
 
         uint Poly_Num;
@@ -96,7 +96,7 @@ namespace VoidFactory
         }
         private void Layer_Size_ValueChanged(object sender, EventArgs e)
         {
-            Layer_Size = (double)num_Layer_Size.Value;
+            Layer_Size = (float)num_Layer_Size.Value;
             Calculate();
         }
 
@@ -104,17 +104,17 @@ namespace VoidFactory
 
         private void Offset_Y_ValueChanged(object sender, EventArgs e)
         {
-            Offset.Y = (double)Offset_Y.Value;
+            Offset.Y = (float)Offset_Y.Value;
             Calculate();
         }
         private void Offset_X_ValueChanged(object sender, EventArgs e)
         {
-            Offset.X = (double)Offset_X.Value;
+            Offset.X = (float)Offset_X.Value;
             Calculate();
         }
         private void Offset_C_ValueChanged(object sender, EventArgs e)
         {
-            Offset.C = (double)Offset_C.Value;
+            Offset.C = (float)Offset_C.Value;
             Calculate();
         }
         private void Offset_reset_Click(object sender, EventArgs e)
@@ -132,7 +132,7 @@ namespace VoidFactory
             Point3D[] Ring = new Point3D[Poly_Num];
 
             double wnk;
-            Angle3D winkel = new Angle3D();
+            Angle3D winkel = Angle3D.Default();
             Point3D rotated;
 
             Points_Flat.Text = "";

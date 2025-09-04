@@ -20,7 +20,7 @@ namespace VoidFactory.Astronomical
         {
             Center = center;
             Spin = spin;
-            Trans = new Transformation3D();
+            Trans = Transformation3D.Default();
         }
 
         public abstract void Update();

@@ -6,7 +6,10 @@ using Engine3D.GraphicsOld;
 using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
+using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Display;
+
+using Engine3D.Miscellaneous;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Buildings;
@@ -33,10 +36,17 @@ namespace VoidFactory.Production.Transfer
 
 
 
+        public static PHEIBuffer InstMainInn;
+        public static PHEIBuffer InstMainOut;
+
+        public static EntryContainer<PHEIData> InstDataInn;
+        public static EntryContainer<PHEIData> InstDataOut;
+
 
 
         public readonly Point3D Pos;
         public readonly bool InnOut;
+        public readonly EntryContainer<PHEIData>.Entry InstEntry;
 
         public DATA_Buffer Buffer;
         public uint Limit;
@@ -47,9 +57,41 @@ namespace VoidFactory.Production.Transfer
             Pos = pos;
             InnOut = io;
 
+            if (!InnOut)
+            {
+                InstEntry = InstDataInn.Alloc(1);
+            }
+            else
+            {
+                InstEntry = InstDataOut.Alloc(1);
+            }
+
+            InstEntry[0] = new PHEIData(new Transformation3D(pos));
+
+            if (!InnOut)
+            {
+                InstMainInn.Bind_InstTrans(InstDataInn.Data);
+            }
+            else
+            {
+                InstMainOut.Bind_InstTrans(InstDataOut.Data);
+            }
+
             Buffer = new DATA_Buffer();
             Limit = 0;
             TransPorter = null;
+        }
+        ~IO_Port()
+        {
+            InstEntry.Free();
+            if (!InnOut)
+            {
+                InstMainInn.Bind_InstTrans(InstDataInn.Data);
+            }
+            else
+            {
+                InstMainOut.Bind_InstTrans(InstDataOut.Data);
+            }
         }
         public void Remove()
         {
@@ -57,7 +99,9 @@ namespace VoidFactory.Production.Transfer
             Inventory_Storage.CostRefund(cost);
 
             if (TransPorter != null)
+            {
                 TransPorter.Remove();
+            }
         }
 
         public bool canInn()
@@ -105,9 +149,13 @@ namespace VoidFactory.Production.Transfer
 
             program.Trans.Value(new Transformation3D(Pos));
             if (!InnOut)
+            {
                 BodyInn.Draw();
+            }
             else
+            {
                 BodyOut.Draw();
+            }
         }
         public void Draw(BodyElemUniShader program)
         {

@@ -1,0 +1,36 @@
+﻿What should this be?
+
+                factory game similar to factorio
+                non-flat plane
+                Tools?
+                Minecraft-y feel
+                nice looking terrain
+
+            Surface:
+                different layers made of different materials stacked on top of each other
+            Stuff on Terrain:
+                Ore / Veins
+                [Trees / Grass]
+            Automation:
+                Collection:
+                    Miner: (from Stuff on Surface)
+                        get Ore
+                        [get Wood]
+                    Miner: (from Surface)
+                        get Dirt
+                        get Clay
+                        get Stone
+                Processing:
+                    Crusher:
+                        Ore to Powder and Stone
+                        [Stone to Sand]
+                    Smelter:
+                        Powder to Bar
+                        [Powder to Simple Components]
+                        Clay to Brick
+                    Assambler:
+                        Bar to Simple Components
+                        Simple Components to Complex Components
+                    Crystalizer:
+                        [Sand to Quartz]
+                        [Powder to more Bars]

@@ -1,0 +1,38 @@
+﻿Purpose of Material:
+
+                Clay / Brick  :  Building
+                    Building Base
+                    Wall
+
+                Iron
+                    RealLife: building Material
+                    Used for:
+                        Mashines / Construction
+                        Steel
+                    Variants:
+                        Iron Ore
+                        Iron Pile
+                        Iron Nugget
+                        Iron Bar
+                        Iron Stack  (not sure if needed)
+                        Iron Wire   (not sure if needed) (Paperclips?)
+                        Iron Coil   (not sure if needed) (Spring)
+                        Iron Gear
+                        Iron Pipe   fluids
+
+                Copper
+                    RealLife: Conducts
+                    Used for:
+                        Electronics
+                        Coil
+                            for Floating (Relays)
+                    Variants:
+                        Copper Ore
+                        Copper Pile
+                        Copper Nugget
+                        Copper Bar      (not sure if needed)
+                        Copper Stack    (not sure if needed)
+                        Copper Wire
+                        Copper Coil
+                        Copper Gear
+                        Copper Pipe     fluids

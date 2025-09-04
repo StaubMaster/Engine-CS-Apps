@@ -210,6 +210,7 @@ namespace VoidFactory
         {
             //win = new Window();
             game = new GamePlane(Delete);
+            game.Run();
             Init("Plane");
         }
         private void b_Space_Click(object sender, EventArgs e)

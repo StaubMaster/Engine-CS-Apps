@@ -13,9 +13,13 @@ using Engine3D.OutPut.Uniform;
 using Engine3D.OutPut.Uniform.Generic.Float;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
+using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Telematry;
 using Engine3D.Graphics.Manager;
+using Engine3D.Graphics.Basic.Data;
+
+using Engine3D.Miscellaneous;
 
 using VoidFactory.Surface2D;
 using VoidFactory.Surface2D.Graphics;
@@ -29,107 +33,13 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace VoidFactory.GameSelect
 {
+    /*
+     *  Ignore Single out for now
+     *      all Gray except one
+     *      one without Light
+     */
     partial class GamePlane : Game3D
     {
-        /*  What should this be?
-                factory game similar to factorio
-                non-flat plane
-                Tools?
-                Minecraft-y feel
-                nice looking terrain
-
-            Surface:
-                different layers made of different materials stacked on top of each other
-            Stuff on Terrain:
-                Ore / Veins
-                [Trees / Grass]
-            Automation:
-                Collection:
-                    Miner: (from Stuff on Surface)
-                        get Ore
-                        [get Wood]
-                    Miner: (from Surface)
-                        get Dirt
-                        get Clay
-                        get Stone
-                Processing:
-                    Crusher:
-                        Ore to Powder and Stone
-                        [Stone to Sand]
-                    Smelter:
-                        Powder to Bar
-                        [Powder to Simple Components]
-                        Clay to Brick
-                    Assambler:
-                        Bar to Simple Components
-                        Simple Components to Complex Components
-                    Crystalizer:
-                        [Sand to Quartz]
-                        [Powder to more Bars]
-         */
-
-        /*  TO ADD:
-                GUI ?
-                Save/Load
-
-                Layers:
-                    Sand:
-                        Glass ?
-                        Bottles ?
-
-                Plants:
-                    Kork:
-                        Leather:
-                            Belts ?
-                    Apple:
-                        Alcohol ?
-                    Wheat:
-                        Bread ?
-
-                    Piler
-                        throws Layer Material on a Pile
-         */
-
-        /*  Purpose of Material:
-
-                Clay / Brick  :  Building
-                    Building Base
-                    Wall
-
-                Iron
-                    RealLife: building Material
-                    Used for:
-                        Mashines / Construction
-                        Steel
-                    Variants:
-                        Iron Ore
-                        Iron Pile
-                        Iron Nugget
-                        Iron Bar
-                        Iron Stack  (not sure if needed)
-                        Iron Wire   (not sure if needed) (Paperclips?)
-                        Iron Coil   (not sure if needed) (Spring)
-                        Iron Gear
-                        Iron Pipe   fluids
-
-                Copper
-                    RealLife: Conducts
-                    Used for:
-                        Electronics
-                        Coil
-                            for Floating (Relays)
-                    Variants:
-                        Copper Ore
-                        Copper Pile
-                        Copper Nugget
-                        Copper Bar      (not sure if needed)
-                        Copper Stack    (not sure if needed)
-                        Copper Wire
-                        Copper Coil
-                        Copper Gear
-                        Copper Pipe     fluids
-        */
-
         private GraphicsData Graphic;
         private BodyElemUniShader BodyUni_Shader;
         private TextShader Text_Shader;
@@ -137,12 +47,9 @@ namespace VoidFactory.GameSelect
         private AxisBoxShader Box_Shader;
         private AxisBoxBuffer Box_Buffer;
 
-        /*
-         *
-         */
-
         private PolyHedraTestManager PolyHedraMan;
-        private BodyElemInstBuffer InstBuffer;
+        private PHEIBuffer InstBuffer;
+
 
 
         private DisplayPolyHedra TestTower;
@@ -171,7 +78,14 @@ namespace VoidFactory.GameSelect
                 "Icon/Icon.vert",
                 "Geom_Norm_Color.geom",
                 "Frag/Light.frag");
+
+            Create();
         }
+        ~GamePlane()
+        {
+            Delete();
+        }
+
 
 
         private void EntitiesUpdate()
@@ -201,7 +115,7 @@ namespace VoidFactory.GameSelect
 
         private void BodysDraw()
         {
-            Transformation3D trans = new Transformation3D();
+            Transformation3D trans = Transformation3D.Default();
             trans.Rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
             trans.Pos.X = 0;
 
@@ -251,15 +165,10 @@ namespace VoidFactory.GameSelect
                 BLD_Base.Bodys[i].BufferDraw();
             }
         }
-        private void DrawManTest()
+        private void InstDrawTest()
         {
-            PolyHedraMan.SoloShader.Use();
-            PolyHedraMan.ScreenRatio.ChangeData(win.Size_Float2());
-            PolyHedraMan.View.ChangeData(view.Trans);
-
-            List<BodyElemInstBuffer.STrans3D> instTrans = new List<BodyElemInstBuffer.STrans3D>();
-
-            Transformation3D trans = new Transformation3D();
+            EntryContainer<PHEIData> instData = new EntryContainer<PHEIData>();
+            Transformation3D trans = Transformation3D.Default();
             trans.Rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
             trans.Pos.X = 10;
 
@@ -284,35 +193,61 @@ namespace VoidFactory.GameSelect
                 IO_Port.BodyOutOct,
             };
 
+            EntryContainer<PHEIData>.Entry ent0 = instData.Alloc(bodys.Length);
             for (int i = 0; i < bodys.Length; i++)
             {
                 trans.Pos.Y = i * 10;
-                PolyHedraMan.Trans.ChangeData(trans);
-                bodys[i].Draw();
-                instTrans.Add(new BodyElemInstBuffer.STrans3D(trans));
+                //PolyHedraMan.Trans.ChangeData(trans);
+                //bodys[i].Draw();
+                ent0[i] = new PHEIData(trans);
             }
 
+            EntryContainer<PHEIData>.Entry ent1 = instData.Alloc(DATA_Thing.Bodys.Length);
             trans.Pos.C = 140;
             for (int i = 0; i < DATA_Thing.Bodys.Length; i++)
             {
                 trans.Pos.Y = i * 10;
-                PolyHedraMan.Trans.ChangeData(trans);
-                DATA_Thing.Bodys[i].BufferDraw();
-                instTrans.Add(new BodyElemInstBuffer.STrans3D(trans));
+                //PolyHedraMan.Trans.ChangeData(trans);
+                //DATA_Thing.Bodys[i].BufferDraw();
+                ent1[i] = new PHEIData(trans);
             }
 
+            EntryContainer<PHEIData>.Entry ent2 = instData.Alloc(BLD_Base.Bodys.Length);
             trans.Pos.C = 170;
             for (int i = 0; i < BLD_Base.Bodys.Length; i++)
             {
                 trans.Pos.Y = i * 30;
-                PolyHedraMan.Trans.ChangeData(trans);
-                BLD_Base.Bodys[i].BufferDraw();
-                instTrans.Add(new BodyElemInstBuffer.STrans3D(trans));
+                //PolyHedraMan.Trans.ChangeData(trans);
+                //BLD_Base.Bodys[i].BufferDraw();
+                ent2[i] = new PHEIData(trans);
             }
 
-            InstBuffer.Bind_InstTrans(instTrans.ToArray());
+            EntryContainer<PHEIData>.Entry ent3 = instData.Alloc(4);
+            ent3[0] = new PHEIData(new Transformation3D(new Point3D(-320, 20, -320)));
+            ent3[1] = new PHEIData(new Transformation3D(new Point3D(+320, -100, -320)), 0xFF0000, LInterData.LIT1());
+            ent3[2] = new PHEIData(new Transformation3D(new Point3D(+320, -100, +320)), 0x00FF00, LInterData.LIT1());
+            ent3[3] = new PHEIData(new Transformation3D(new Point3D(-320, -100, +320)), 0x0000FF, LInterData.LIT1());
+
+            InstBuffer.Bind_InstTrans(instData.Data);
             PolyHedraMan.InstShader.Use();
             InstBuffer.Draw();
+        }
+        private void InstDraw()
+        {
+            PolyHedraMan.InstShader.Use();
+
+            if (Graphic.Draw_Ports)
+            {
+                PolyHedraMan.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
+                IO_Port.InstMainInn.Draw();
+                IO_Port.InstMainOut.Draw();
+                PolyHedraMan.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
+            }
+
+            for (int i = 0; i < BLD_Base.InstMain.Length; i++)
+            {
+                BLD_Base.InstMain[i].Draw();
+            }
         }
 
         private void Frame_Solar()
@@ -480,7 +415,10 @@ namespace VoidFactory.GameSelect
             Frame_Chunk();
             Frame_Box();
 
-            DrawManTest();
+            PolyHedraMan.ScreenRatio.ChangeData(win.Size_Float2());
+            PolyHedraMan.View.ChangeData(view.Trans);
+            InstDrawTest();
+            InstDraw();
 
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
@@ -662,6 +600,17 @@ namespace VoidFactory.GameSelect
 
 
 
+            IO_Port.InstMainInn = new PHEIBuffer();
+            IO_Port.InstMainOut = new PHEIBuffer();
+
+            IO_Port.BodyInn.PHedra.ToBufferElem(IO_Port.InstMainInn);
+            IO_Port.BodyOut.PHedra.ToBufferElem(IO_Port.InstMainOut);
+
+            IO_Port.InstDataInn = new EntryContainer<PHEIData>();
+            IO_Port.InstDataOut = new EntryContainer<PHEIData>();
+
+
+
             Buildings = new BLD_Base.Collection();
             Buildings.Create();
 
@@ -781,12 +730,18 @@ namespace VoidFactory.GameSelect
             PolyHedraMan = new PolyHedraTestManager(shaderDir);
             PolyHedraMan.Depth.ChangeData(view.Depth.Near, view.Depth.Far);
 
-            InstBuffer = new BodyElemInstBuffer();
-            IO_Port.BodyHex.PHedra.ToBufferElem(InstBuffer);
+            PolyHedra tower = Engine3D.BodyParse.TBodyFile.LoadTextFile("E:/Zeug/YMT/Tower/YMT/Tower_Segmented_60m.ymt");
+            InstBuffer = new PHEIBuffer();
+            tower.ToBufferElem(InstBuffer);
 
             Ref_Graphics();
         }
 
+
+
+        /* get rid of these
+         * make multiThreaded ?
+         */
         public override void Create()
         {
             if (Running) { return; }

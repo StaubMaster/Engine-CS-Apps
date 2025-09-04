@@ -21,7 +21,7 @@ namespace VoidFactory.Astronomical
         private DisplayCamera MainCamera;
 
         private CSatelliteNatural ViewHoverCenter;
-        private Transformation3D? ViewHover;
+        private Transformation3D ViewHover;
 
 
         private PolyHedra TestPoly;
@@ -59,7 +59,7 @@ namespace VoidFactory.Astronomical
             MainCamera.Depth.Far = 1600.0f;
 
             ViewHoverCenter = null;
-            ViewHover = null;
+            ViewHover = Transformation3D.Null();
         }
         private void InitShaders()
         {
@@ -78,7 +78,7 @@ namespace VoidFactory.Astronomical
 
             Astro = new List<CSatelliteNatural>();
 
-            Astro.Add(new CSatelliteNatural(sphere1, new COrbitHover(null, new SAngledRotation(0.0009, 0, 0), new Point3D()), 200));
+            Astro.Add(new CSatelliteNatural(sphere1, new COrbitHover(null, new SAngledRotation(0.0009, 0, 0), Point3D.Default()), 200));
             Astro.Add(new CSatelliteNatural(sphere2, new COrbitNormal(Astro[0].Orbit, new SAngledRotation(0.001, 0.0, 0.0), 1000, new SAngledRotation(0.0001, 0.2, 0)), 16));
             Astro.Add(new CSatelliteNatural(sphere3, new COrbitNormal(Astro[1].Orbit, new SAngledRotation(0.008, 0.0, 0.0), 100, new SAngledRotation(0.008, 0, 0)), 4));
 
@@ -104,10 +104,10 @@ namespace VoidFactory.Astronomical
 
         private void Update_View()
         {
-            if (ViewHover != null)
+            if (ViewHover.Is())
             {
                 Transformation3D center = ViewHoverCenter.Orbit.Trans;
-                Transformation3D temp = new Transformation3D();
+                Transformation3D temp = Transformation3D.Default();
                 Angle3D perpRot;
 
                 // Relative
@@ -186,7 +186,7 @@ namespace VoidFactory.Astronomical
 
             if (MainWindow.CheckKey(Keys.T).IsPressed())
             {
-                if (ViewHover == null)
+                if (ViewHover.Is())
                 {
                     if (interAstro.Is)
                     {
@@ -195,7 +195,7 @@ namespace VoidFactory.Astronomical
                 }
                 else
                 {
-                    ViewHover = null;
+                    ViewHover = Transformation3D.Null();
                 }
             }
 
@@ -216,7 +216,7 @@ namespace VoidFactory.Astronomical
                 Miner[i].Buffer.Draw();
             }
 
-            Shader_Default.Trans.Value(new Transformation3D());
+            Shader_Default.Trans.Value(Transformation3D.Default());
             TestBuffer.Draw();
         }
 

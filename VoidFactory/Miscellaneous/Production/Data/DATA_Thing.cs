@@ -8,6 +8,7 @@ namespace VoidFactory.Production.Data
     {
         public static BodyStatic[] Bodys;
         public static float[] Icon_Scales;
+
         public static void BodysCreate()
         {
             Icon_Scales = new float[Bodys.Length];

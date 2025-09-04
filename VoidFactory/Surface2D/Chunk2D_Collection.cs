@@ -350,8 +350,8 @@ namespace VoidFactory.Surface2D
                         {
                             tileIdx = new TileIndex(t);
 
-                            abs.Y = chunk_y + (tileIdx.y * Tile_Size);
-                            abs.C = chunk_c + (tileIdx.c * Tile_Size);
+                            abs.Y = (float)(chunk_y + (tileIdx.y * Tile_Size));
+                            abs.C = (float)(chunk_c + (tileIdx.c * Tile_Size));
 
                             dist = (mid - abs).Len;
                             if (dist <= rad)

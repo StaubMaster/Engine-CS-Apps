@@ -148,13 +148,13 @@ namespace VoidFactory.Editor
             }
             public Point3D ToMove(double speed = 1.0, double fast = 100.0)
             {
-                Point3D move = new Point3D();
-                if (C_Mns) { move.C -= speed; }
-                if (C_Pls) { move.C += speed; }
-                if (Y_Mns) { move.Y -= speed; }
-                if (Y_Pls) { move.Y += speed; }
-                if (X_Mns) { move.X -= speed; }
-                if (X_Pls) { move.X += speed; }
+                Point3D move = Point3D.Default();
+                if (C_Mns) { move.C -= (float)speed; }
+                if (C_Pls) { move.C += (float)speed; }
+                if (Y_Mns) { move.Y -= (float)speed; }
+                if (Y_Pls) { move.Y += (float)speed; }
+                if (X_Mns) { move.X -= (float)speed; }
+                if (X_Pls) { move.X += (float)speed; }
                 if (Speed) { move *= fast; }
                 return move;
             }
@@ -177,7 +177,7 @@ namespace VoidFactory.Editor
                 Is = false;
                 InitialPoint = new Point();
                 //InitialAngle = null;
-                InitialAngle = new Angle3D();
+                InitialAngle = Angle3D.Null();
             }
 
             public void Start()
@@ -194,6 +194,7 @@ namespace VoidFactory.Editor
             {
                 Is = false;
                 //InitialAngle = null;
+                InitialAngle = Angle3D.Null();
             }
             public bool Update()
             {
@@ -614,7 +615,7 @@ namespace VoidFactory.Editor
                     (viewLock.Y - Cursor.Position.Y) * 0.001,
                     0);
                 Cursor.Position = viewLock;
-                Engine3D.TMovement.FlatX(ref MainCamera.Trans, null, spin);
+                Engine3D.TMovement.FlatX(ref MainCamera.Trans, Point3D.Null(), spin);
                 Display_Draw();
             }
         }
@@ -622,7 +623,7 @@ namespace VoidFactory.Editor
         {
             Point3D move = ViewControl.ToMove();
             //Engine3D.ConsoleLog.Log("move: " + move.ToString_Line());
-            Engine3D.TMovement.FlatX(ref MainCamera.Trans, move, null);
+            Engine3D.TMovement.FlatX(ref MainCamera.Trans, move, Angle3D.Null());
             //Engine3D.TMovement.FlatX(ref MainCamera.Trans, ViewControl.ToMove(), null);
             Display_Draw();
         }
@@ -655,12 +656,12 @@ namespace VoidFactory.Editor
         private void glC_Display_MouseWheel(object sender, MouseEventArgs e)
         {
             Point3D move = new Point3D(0, 0, e.Delta * 0.01);
-            Engine3D.TMovement.Unrestricted(ref MainCamera.Trans, move, null);
+            Engine3D.TMovement.Unrestricted(ref MainCamera.Trans, move, Angle3D.Null());
             Display_Draw();
         }
         private void b_view_reset_Click(object sender, EventArgs e)
         {
-            MainCamera.Trans = new Transformation3D();
+            MainCamera.Trans = Transformation3D.Default();
             Display_Draw();
         }
 

@@ -1,0 +1,20 @@
+﻿TO ADD:
+                GUI ?
+                Save/Load
+
+                Layers:
+                    Sand:
+                        Glass ?
+                        Bottles ?
+
+                Plants:
+                    Kork:
+                        Leather:
+                            Belts ?
+                    Apple:
+                        Alcohol ?
+                    Wheat:
+                        Bread ?
+
+                    Piler
+                        throws Layer Material on a Pile

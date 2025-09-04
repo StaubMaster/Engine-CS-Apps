@@ -121,7 +121,7 @@ namespace VoidFactory.Production.Data
                     wnk.FloatsSinCos(flt);
 
                     pos = (new Point3D(0.5 * scale, 0, 0) + wnk);
-                    pos.Y /= 2.0;
+                    pos.Y /= 2.0f;
                     pos += middle;
 
                     program.UniRot(flt);
@@ -147,7 +147,7 @@ namespace VoidFactory.Production.Data
                     wnk.FloatsSinCos(flt);
 
                     pos = (new Point3D(1.0 * scale, 0, 0) + wnk);
-                    pos.Y /= 2.0;
+                    pos.Y /= 2.0f;
                     pos += middle;
 
                     program.UniRot(flt);

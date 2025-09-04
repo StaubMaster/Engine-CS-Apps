@@ -167,7 +167,7 @@ namespace VoidFactory.Editor
             else if (animationType == EAnimationType.Diag) { Wnk = new Angle3D(-Math.Tau * (3.5 / 8), -Math.Tau * (0.5 / 8), 0); }
             else { Wnk = new Angle3D(0, 0, 0); }
             TransUni = new CUniformTransformation();
-            Trans = new Transformation3D();
+            Trans = Transformation3D.Default();
         }
 
         public void UpdateSize(float w, float h)

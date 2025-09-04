@@ -119,7 +119,7 @@ namespace VoidFactory.Production.Transfer
         public void Draw(TransUniProgram program)
         {
             Ray3D ray = new Ray3D(Inn.Pos, Out.Pos - Inn.Pos);
-            Transformation3D trans = new Transformation3D();
+            Transformation3D trans = Transformation3D.Default();
 
             for (int i = 0; i < Count; i++)
             {
@@ -132,7 +132,7 @@ namespace VoidFactory.Production.Transfer
         public void Draw(CShaderTransformation program)
         {
             Ray3D ray = new Ray3D(Inn.Pos, Out.Pos - Inn.Pos);
-            Transformation3D trans = new Transformation3D();
+            Transformation3D trans = Transformation3D.Default();
         
             for (int i = 0; i < Count; i++)
             {
@@ -145,7 +145,7 @@ namespace VoidFactory.Production.Transfer
         public void Draw(BodyElemUniShader program)
         {
             Ray3D ray = new Ray3D(Inn.Pos, Out.Pos - Inn.Pos);
-            Transformation3D trans = new Transformation3D();
+            Transformation3D trans = Transformation3D.Default();
 
             for (int i = 0; i < Count; i++)
             {

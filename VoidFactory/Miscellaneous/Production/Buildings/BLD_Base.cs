@@ -6,6 +6,9 @@ using Engine3D.GraphicsOld;
 using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
+using Engine3D.Graphics.Display3D;
+
+using Engine3D.Miscellaneous;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -16,12 +19,23 @@ namespace VoidFactory.Production.Buildings
     abstract partial class BLD_Base
     {
         public static BodyStatic[] Bodys;
+        public static PHEIBuffer[] InstMain;
+        public static EntryContainer<PHEIData>[] InstData;
         public static void BodysCreate()
         {
             for (int i = 0; i < Bodys.Length; i++)
             {
                 Bodys[i].BufferCreate();
                 Bodys[i].BufferFill();
+            }
+
+            InstMain = new PHEIBuffer[Bodys.Length];
+            InstData = new EntryContainer<PHEIData>[Bodys.Length];
+            for (int i = 0; i < Bodys.Length; i++)
+            {
+                InstMain[i] = new PHEIBuffer();
+                Bodys[i].ToBuffer(InstMain[i]);
+                InstData[i] = new EntryContainer<PHEIData>();
             }
         }
         public static void BodysDelete()
@@ -31,6 +45,9 @@ namespace VoidFactory.Production.Buildings
                 Bodys[i].BufferDelete();
             }
             Bodys = null;
+
+            InstMain = null;
+            InstData = null;
         }
 
 
@@ -43,6 +60,7 @@ namespace VoidFactory.Production.Buildings
         private string Cat;
 
         private Transformation3D Trans;
+        private EntryContainer<PHEIData>.Entry InstEntry;
 
         protected IO_Port[] Inn;
         protected IO_Port[] Out;
@@ -60,16 +78,29 @@ namespace VoidFactory.Production.Buildings
 
             Trans = trans;
 
+            InstEntry = InstData[Idx].Alloc(1);
+            InstEntry[0] = new PHEIData(new Transformation3D(Trans.Pos, Trans.Rot));
+            InstMain[Idx].Bind_InstTrans(InstData[Idx].Data);
+
             Inn = new IO_Port[temp.Inn.Length];
             for (int i = 0; i < Inn.Length; i++)
+            {
                 Inn[i] = new IO_Port(trans.TFore(temp.Inn[i]), false);
+            }
 
             Out = new IO_Port[temp.Out.Length];
             for (int o = 0; o < Out.Length; o++)
+            {
                 Out[o] = new IO_Port(trans.TFore(temp.Out[o]), true);
+            }
 
             MaterialCost = temp.Cost;
             Inventory_Storage.CostDeduct(MaterialCost);
+        }
+        ~BLD_Base()
+        {
+            InstEntry.Free();
+            InstMain[Idx].Bind_InstTrans(InstData[Idx].Data);
         }
         public void Remove()
         {
@@ -107,25 +138,25 @@ namespace VoidFactory.Production.Buildings
             Bodys[Idx].BufferDraw();
 
             {
-                for (int i = 0; i < Inn.Length; i++)
-                    Inn[i].Draw(program);
-                for (int o = 0; o < Out.Length; o++)
-                    Out[o].Draw(program);
+                for (int i = 0; i < Inn.Length; i++) { Inn[i].Draw(program); }
+                for (int o = 0; o < Out.Length; o++) { Out[o].Draw(program); }
             }
         }
         public void Draw(BodyElemUniShader program)
         {
-            program.Use();
-            program.Trans.Value(Trans);
-            Bodys[Idx].BufferDraw();
+            //program.Use();
+            //program.Trans.Value(Trans);
+            //Bodys[Idx].BufferDraw();
 
             {
-                for (int i = 0; i < Inn.Length; i++)
-                    Inn[i].Draw(program);
-                for (int o = 0; o < Out.Length; o++)
-                    Out[o].Draw(program);
+                //for (int i = 0; i < Inn.Length; i++)
+                //    Inn[i].Draw(program);
+                //for (int o = 0; o < Out.Length; o++)
+                //    Out[o].Draw(program);
             }
         }
+
+
 
         public override string ToString()
         {

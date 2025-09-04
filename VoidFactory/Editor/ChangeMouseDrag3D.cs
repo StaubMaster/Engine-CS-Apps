@@ -57,15 +57,15 @@ namespace VoidFactory.Editor
             Move_Snap = false;
             Spin_Snap = false;
 
-            Pos = null;
-            DirY = null;
-            DirX = null;
-            DirC = null;
+            Pos = Point3D.Null();
+            DirY = Point3D.Null();
+            DirX = Point3D.Null();
+            DirC = Point3D.Null();
 
-            Rot = null;
-            WnkA = null;
-            WnkS = null;
-            WnkD = null;
+            Rot = Angle3D.Null();
+            WnkA = Angle3D.Null();
+            WnkS = Angle3D.Null();
+            WnkD = Angle3D.Null();
 
             IsNull = true;
 
@@ -79,12 +79,12 @@ namespace VoidFactory.Editor
 
             Hovering = -1;
             Selected = -1;
-            Trans_Changed = null;
+            Trans_Changed = Transformation3D.Null();
         }
 
         public void Trans_Calc(Transformation3D trans)
         {
-            if (trans != null)
+            if (trans.Is())
             {
                 Pos = trans.Pos;
                 DirY = new Point3D(1, 0, 0);
@@ -100,15 +100,15 @@ namespace VoidFactory.Editor
             }
             else
             {
-                Pos =  null;
-                DirY = null;
-                DirX = null;
-                DirC = null;
+                Pos = Point3D.Null();
+                DirY = Point3D.Null();
+                DirX = Point3D.Null();
+                DirC = Point3D.Null();
 
-                Rot =  null;
-                WnkA = null;
-                WnkS = null;
-                WnkD = null;
+                Rot = Angle3D.Null();
+                WnkA = Angle3D.Null();
+                WnkS = Angle3D.Null();
+                WnkD = Angle3D.Null();
 
                 IsNull = true;
             }
@@ -260,22 +260,22 @@ namespace VoidFactory.Editor
 
         private Transformation3D Snap(Transformation3D trans)
         {
-            if (trans == null) { return null; }
+            if (trans.Is()) { return Transformation3D.Null(); }
 
             if (Move_Snap)
             {
                 double move_snap_num = 0.1;
-                trans.Pos.Y = Math.Round(trans.Pos.Y / move_snap_num) * move_snap_num;
-                trans.Pos.X = Math.Round(trans.Pos.X / move_snap_num) * move_snap_num;
-                trans.Pos.C = Math.Round(trans.Pos.C / move_snap_num) * move_snap_num;
+                trans.Pos.Y = (float)(Math.Round(trans.Pos.Y / move_snap_num) * move_snap_num);
+                trans.Pos.X = (float)(Math.Round(trans.Pos.X / move_snap_num) * move_snap_num);
+                trans.Pos.C = (float)(Math.Round(trans.Pos.C / move_snap_num) * move_snap_num);
             }
 
             if (Spin_Snap)
             {
                 double spin_snap_num = 15 * (Math.Tau / 360);
-                trans.Rot.A = Math.Round(trans.Rot.A / spin_snap_num) * spin_snap_num;
-                trans.Rot.S = Math.Round(trans.Rot.S / spin_snap_num) * spin_snap_num;
-                trans.Rot.D = Math.Round(trans.Rot.D / spin_snap_num) * spin_snap_num;
+                trans.Rot.A = (float)(Math.Round(trans.Rot.A / spin_snap_num) * spin_snap_num);
+                trans.Rot.S = (float)(Math.Round(trans.Rot.S / spin_snap_num) * spin_snap_num);
+                trans.Rot.D = (float)(Math.Round(trans.Rot.D / spin_snap_num) * spin_snap_num);
             }
 
             return trans;
@@ -289,7 +289,7 @@ namespace VoidFactory.Editor
             if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirY - Rot); }
 
             Intersekt.Ray_Ray(ViewRay, out Intersekt.RayInterval tv, ray, out Intersekt.RayInterval t);
-            if (tv.Interval < 0) { return null; }
+            if (tv.Interval < 0) { return Transformation3D.Null(); }
 
             return new Transformation3D(t.Pos, Rot);
         }
@@ -301,7 +301,7 @@ namespace VoidFactory.Editor
             if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirX - Rot); }
 
             Intersekt.Ray_Ray(ViewRay, out Intersekt.RayInterval tv, ray, out Intersekt.RayInterval t);
-            if (tv.Interval < 0) { return null; }
+            if (tv.Interval < 0) { return Transformation3D.Null(); }
 
             return new Transformation3D(t.Pos, Rot);
         }
@@ -313,20 +313,20 @@ namespace VoidFactory.Editor
             if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirC - Rot); }
 
             Intersekt.Ray_Ray(ViewRay, out Intersekt.RayInterval tv, ray, out Intersekt.RayInterval t);
-            if (tv.Interval < 0) { return null; }
+            if (tv.Interval < 0) { return Transformation3D.Null(); }
 
             return new Transformation3D(t.Pos, Rot);
         }
 
-        private Transformation3D? SpinY()
+        private Transformation3D SpinY()
         {
-            Point3D dirX = new Point3D();
-            Point3D dirC = new Point3D();
+            Point3D dirX = Point3D.Default();
+            Point3D dirC = Point3D.Default();
             if (Spin_RotType == RotType.Abs) { dirX = DirX - WnkS; dirC = DirC - WnkS; }
             if (Spin_RotType == RotType.Rel) { dirX = DirX - Rot; dirC = DirC - Rot; }
 
             Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, Pos, dirX, dirC);
-            if (t.Interval < 0) { return null; }
+            if (t.Interval < 0) { return Transformation3D.Null(); }
 
             Point3D rel = !(t.Pos - Pos);
             Point3D norm = !(dirX ^ dirC);
@@ -344,15 +344,15 @@ namespace VoidFactory.Editor
             if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
             return new Transformation3D(Pos, rot);
         }
-        private Transformation3D? SpinX()
+        private Transformation3D SpinX()
         {
-            Point3D dirC = new Point3D();
-            Point3D dirY = new Point3D();
+            Point3D dirC = Point3D.Default();
+            Point3D dirY = Point3D.Default();
             if (Spin_RotType == RotType.Abs) { dirC = DirC - WnkA; dirY = DirY - WnkA; }
             if (Spin_RotType == RotType.Rel) { dirC = DirC - Rot; dirY = DirY - Rot; }
 
             Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, Pos, dirC, dirY);
-            if (t.Interval < 0) { return null; }
+            if (t.Interval < 0) { return Transformation3D.Null(); }
 
             Point3D rel = !(t.Pos - Pos);
             Point3D norm = !(dirC ^ dirY);
@@ -370,15 +370,15 @@ namespace VoidFactory.Editor
             if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
             return new Transformation3D(Pos, rot);
         }
-        private Transformation3D? SpinC()
+        private Transformation3D SpinC()
         {
-            Point3D dirY = new Point3D();
-            Point3D dirX = new Point3D();
+            Point3D dirY = Point3D.Default();
+            Point3D dirX = Point3D.Default();
             if (Spin_RotType == RotType.Abs) { dirY = DirY - WnkD; dirX = DirX - WnkD; }
             if (Spin_RotType == RotType.Rel) { dirY = DirY - Rot; dirX = DirX - Rot; }
 
             Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, Pos, dirY, dirX);
-            if (t.Interval < 0) { return null; }
+            if (t.Interval < 0) { return Transformation3D.Null(); }
 
             Point3D rel = !(t.Pos - Pos);
             Point3D norm = !(dirY ^ dirX);

@@ -601,11 +601,11 @@ namespace VoidFactory.Surface2D
                 tile.Height_PlsMns);
             Point3D m = PunktTileCenter(tileIdx, tile.Height_Mid);
 
-            corn[0].X = corn[0].X * Tile_Size_Inv;
-            corn[1].X = corn[1].X * Tile_Size_Inv;
-            corn[2].X = corn[2].X * Tile_Size_Inv;
-            corn[3].X = corn[3].X * Tile_Size_Inv;
-            m.X = m.X * Tile_Size_Inv;
+            corn[0].X = (float)(corn[0].X * Tile_Size_Inv);
+            corn[1].X = (float)(corn[1].X * Tile_Size_Inv);
+            corn[2].X = (float)(corn[2].X * Tile_Size_Inv);
+            corn[3].X = (float)(corn[3].X * Tile_Size_Inv);
+            m.X = (float)(m.X * Tile_Size_Inv);
 
             double[] h = new double[4]
             {
@@ -626,8 +626,8 @@ namespace VoidFactory.Surface2D
             for (int l = 0; l < Layers.Length; l++)
                 h[l] = Cross_TileLayer(ray, tileIdx, Layers[l].Tiles[tileIdx.idx]);
 
-            Point3D? cross = ray.Scale(Ray3D.FindMin(h, out int layer));
-            if (cross != null)
+            Point3D cross = ray.Scale(Ray3D.FindMin(h, out int layer));
+            if (cross.Is())
             {
                 hit.Tile_Hit.Valid = true;
                 hit.Tile_Hit.Cross = Intern_Extern_Scaled(cross);
