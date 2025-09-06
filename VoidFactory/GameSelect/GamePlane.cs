@@ -33,8 +33,9 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace VoidFactory.GameSelect
 {
-    /*
-     *  Ignore Single out for now
+    /*  Instances
+     *  Ignore the stuff where all are drawn one way except for one
+     *  possibly split into 2 Groups that are drawn differently
      *      all Gray except one
      *      one without Light
      */
@@ -78,12 +79,6 @@ namespace VoidFactory.GameSelect
                 "Icon/Icon.vert",
                 "Geom_Norm_Color.geom",
                 "Frag/Light.frag");
-
-            Create();
-        }
-        ~GamePlane()
-        {
-            Delete();
         }
 
 
@@ -96,6 +91,7 @@ namespace VoidFactory.GameSelect
             string str = "";
             str += Buildings.Count() +   ":  Converter\n";
             str += TransPorter.Count() + ":TransPorter\n";
+            str += Chunk2D.SURF_Object.InstCountInfo();
             //Text_Buff.Insert(TextBuffer.ScreenCorner.TR, 0, 0, 0xFFFFFF, str);
             Text_Buffer.InsertTR(
                 (0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF,
@@ -121,10 +117,10 @@ namespace VoidFactory.GameSelect
 
             BodyUni_Shader.Use();
 
-            DisplayPolyHedra[] bodys;
+            PHEI[] bodys;
 
             trans.Pos.C = 120;
-            bodys = new DisplayPolyHedra[]
+            bodys = new PHEI[]
             {
                 IO_Port.BodyError,
                 IO_Port.BodyTransPorter,
@@ -146,23 +142,23 @@ namespace VoidFactory.GameSelect
             {
                 trans.Pos.Y = i * 10;
                 BodyUni_Shader.Trans.Value(trans);
-                bodys[i].Draw();
+                bodys[i].Draw_Main();
             }
 
             trans.Pos.C = 140;
-            for (int i = 0; i < DATA_Thing.Bodys.Length; i++)
+            for (int i = 0; i < DATA_Thing.Mains.Length; i++)
             {
                 trans.Pos.Y = i * 10;
                 BodyUni_Shader.Trans.Value(trans);
-                DATA_Thing.Bodys[i].BufferDraw();
+                DATA_Thing.Mains[i].Draw_Main();
             }
 
             trans.Pos.C = 170;
-            for (int i = 0; i < BLD_Base.Bodys.Length; i++)
+            for (int i = 0; i < BLD_Base.Mains.Length; i++)
             {
                 trans.Pos.Y = i * 30;
                 BodyUni_Shader.Trans.Value(trans);
-                BLD_Base.Bodys[i].BufferDraw();
+                BLD_Base.Mains[i].Draw_Main();
             }
         }
         private void InstDrawTest()
@@ -172,10 +168,10 @@ namespace VoidFactory.GameSelect
             trans.Rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
             trans.Pos.X = 10;
 
-            DisplayPolyHedra[] bodys;
+            PHEI[] bodys;
 
             trans.Pos.C = 120;
-            bodys = new DisplayPolyHedra[]
+            bodys = new PHEI[]
             {
                 IO_Port.BodyError,
                 IO_Port.BodyTransPorter,
@@ -202,9 +198,9 @@ namespace VoidFactory.GameSelect
                 ent0[i] = new PHEIData(trans);
             }
 
-            EntryContainer<PHEIData>.Entry ent1 = instData.Alloc(DATA_Thing.Bodys.Length);
+            EntryContainer<PHEIData>.Entry ent1 = instData.Alloc(DATA_Thing.Mains.Length);
             trans.Pos.C = 140;
-            for (int i = 0; i < DATA_Thing.Bodys.Length; i++)
+            for (int i = 0; i < DATA_Thing.Mains.Length; i++)
             {
                 trans.Pos.Y = i * 10;
                 //PolyHedraMan.Trans.ChangeData(trans);
@@ -212,9 +208,9 @@ namespace VoidFactory.GameSelect
                 ent1[i] = new PHEIData(trans);
             }
 
-            EntryContainer<PHEIData>.Entry ent2 = instData.Alloc(BLD_Base.Bodys.Length);
+            EntryContainer<PHEIData>.Entry ent2 = instData.Alloc(BLD_Base.Mains.Length);
             trans.Pos.C = 170;
-            for (int i = 0; i < BLD_Base.Bodys.Length; i++)
+            for (int i = 0; i < BLD_Base.Mains.Length; i++)
             {
                 trans.Pos.Y = i * 30;
                 //PolyHedraMan.Trans.ChangeData(trans);
@@ -224,11 +220,11 @@ namespace VoidFactory.GameSelect
 
             EntryContainer<PHEIData>.Entry ent3 = instData.Alloc(4);
             ent3[0] = new PHEIData(new Transformation3D(new Point3D(-320, 20, -320)));
-            ent3[1] = new PHEIData(new Transformation3D(new Point3D(+320, -100, -320)), 0xFF0000, LInterData.LIT1());
-            ent3[2] = new PHEIData(new Transformation3D(new Point3D(+320, -100, +320)), 0x00FF00, LInterData.LIT1());
-            ent3[3] = new PHEIData(new Transformation3D(new Point3D(-320, -100, +320)), 0x0000FF, LInterData.LIT1());
+            ent3[1] = new PHEIData(new Transformation3D(new Point3D(+320, -100, -320)), new ColorUData(0xFF0000), LInterData.LIT1());
+            ent3[2] = new PHEIData(new Transformation3D(new Point3D(+320, -100, +320)), new ColorUData(0x00FF00), LInterData.LIT1());
+            ent3[3] = new PHEIData(new Transformation3D(new Point3D(-320, -100, +320)), new ColorUData(0x0000FF), LInterData.LIT1());
 
-            InstBuffer.Bind_InstTrans(instData.Data);
+            InstBuffer.Bind_Inst_Trans(instData.Data, instData.Data.Length);
             PolyHedraMan.InstShader.Use();
             InstBuffer.Draw();
         }
@@ -239,15 +235,17 @@ namespace VoidFactory.GameSelect
             if (Graphic.Draw_Ports)
             {
                 PolyHedraMan.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
-                IO_Port.InstMainInn.Draw();
-                IO_Port.InstMainOut.Draw();
+                IO_Port.BodyInn.Draw_Inst();
+                IO_Port.BodyOut.Draw_Inst();
                 PolyHedraMan.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
             }
 
-            for (int i = 0; i < BLD_Base.InstMain.Length; i++)
+            for (int i = 0; i < BLD_Base.Mains.Length; i++)
             {
-                BLD_Base.InstMain[i].Draw();
+                BLD_Base.Mains[i].Draw_Inst();
             }
+
+            Chunk2D.SURF_Object.InstDraw();
         }
 
         private void Frame_Solar()
@@ -395,10 +393,23 @@ namespace VoidFactory.GameSelect
             //TelematryDataBuffer telematry_data_text = Text_Buffer.Telematry.Report();
             //TelematryDataBuffer telematry_data_box = Box_Buffer.Telematry.Report();
 
+            if (win.CheckKey(Keys.Pause).IsPressed())
+            {
+                ConsoleLog.Log("Pause Break: Garbage Collect");
+                GC.Collect();
+            }
+
             if (win.CheckKey(Keys.F5).IsPressed())
             {
                 Init_Shaders();
             }
+
+            if (win.CheckKey(Keys.F6).IsPressed())
+            {
+                Chunk2D.SURF_Object.InstUpdate();
+            }
+
+            Chunk2D.SURF_Object.InstUpdate();
 
             (float, float) winSize = win.Size_Float2();
             Text_Buffer.DisplayConverter.X.PixelSize = winSize.Item1;
@@ -415,7 +426,7 @@ namespace VoidFactory.GameSelect
             Frame_Chunk();
             Frame_Box();
 
-            PolyHedraMan.ScreenRatio.ChangeData(win.Size_Float2());
+            PolyHedraMan.ScreenRatio.ChangeData(new ScreenRatio(winSize.Item1, winSize.Item2));
             PolyHedraMan.View.ChangeData(view.Trans);
             InstDrawTest();
             InstDraw();
@@ -527,9 +538,10 @@ namespace VoidFactory.GameSelect
             for (int i = 0; i < fileDatas.Length; i++)
                 DATA_Thing.Interpret.SetFile(fileDatas[i]);
             Things = DATA_Thing.Interpret.GetThings();
-            DATA_Thing.Bodys = DATA_Thing.Interpret.GetBodys();
+            //DATA_Thing.Bodys = DATA_Thing.Interpret.GetBodys();
+            DATA_Thing.CreateMains(DATA_Thing.Interpret.GetBodys());
             DATA_Thing.Interpret.Delete();
-            DATA_Thing.BodysCreate();
+            //DATA_Thing.BodysCreate();
 
 
             DATA_Recipy.Interpret.Create();
@@ -543,10 +555,10 @@ namespace VoidFactory.GameSelect
             for (int i = 0; i < fileDatas.Length; i++)
                 BLD_Base.Interpreter.SetFile(fileDatas[i], Things);
             Templates = BLD_Base.Interpreter.GetTemplates();
-            BLD_Base.Bodys = BLD_Base.Interpreter.GetBodys();
+            //BLD_Base.Bodys = BLD_Base.Interpreter.GetBodys();
+            BLD_Base.CreateMains(BLD_Base.Interpreter.GetBodys());
             BLD_Base.Interpreter.Delete();
-            BLD_Base.BodysCreate();
-
+            //BLD_Base.BodysCreate();
 
 
 
@@ -556,14 +568,19 @@ namespace VoidFactory.GameSelect
             Chunk2D.LayerGen = Chunk2D.Interpret.GetLayers();
             Chunk2D.Interpret.Delete();
 
-            Chunk2D.SURF_Object.Interpret.Create();
-            for (int i = 0; i < fileDatas.Length; i++)
-                Chunk2D.SURF_Object.Interpret.SetFile(fileDatas[i], Things);
-            Chunk2D.SURF_Object.Bodys = Chunk2D.SURF_Object.Interpret.GetBodys();
+            //Chunk2D.SURF_Object.Interpret.Create();
+            //for (int i = 0; i < fileDatas.Length; i++)
+            //{
+            //    Chunk2D.SURF_Object.Interpret.SetFile(fileDatas[i], Things);
+            //}
+            //Chunk2D.SURF_Object.Bodys = Chunk2D.SURF_Object.Interpret.GetBodys();
+            //Chunk2D.SURF_Object.CreateMains(Chunk2D.SURF_Object.Interpret.GetBodys());
 
-            Chunk2D.SurfThingTemplates = Chunk2D.SURF_Object.Interpret.GetTemplates();
-            Chunk2D.SURF_Object.Interpret.Delete();
-            Chunk2D.SURF_Object.BodysCreate();
+            //Chunk2D.SurfThingTemplates = Chunk2D.SURF_Object.Interpret.GetTemplates();
+            //Chunk2D.SURF_Object.Interpret.Delete();
+            //Chunk2D.SURF_Object.BodysCreate();
+
+            Chunk2D.SURF_Object.Interpret.Do(fileDatas, Things);
         }
 
         private void Chunk_Create()
@@ -573,41 +590,31 @@ namespace VoidFactory.GameSelect
         }
         private void Chunk_Delete()
         {
-            Chunk2D.SURF_Object.BodysDelete();
-
             Chunks.Delete();
             Chunks = null;
+
+            //Chunk2D.SURF_Object.BodysDelete();
+            Chunk2D.SURF_Object.InstDelete();
         }
 
         private void Entities_Create()
         {
             string ymtDir = "E:/Zeug/YMT/";
 
-            IO_Port.BodyInn = new DisplayPolyHedra(ymtDir + "Meta/Inn.txt");
-            IO_Port.BodyInnHex = new DisplayPolyHedra(ymtDir + "Meta/Inn_Box_Hex.txt");
-            IO_Port.BodyInnOct = new DisplayPolyHedra(ymtDir + "Meta/Inn_Box_Oct.txt");
+            IO_Port.BodyInn = new PHEI(ymtDir + "Meta/Inn.txt");
+            IO_Port.BodyInnHex = new PHEI(ymtDir + "Meta/Inn_Box_Hex.txt");
+            IO_Port.BodyInnOct = new PHEI(ymtDir + "Meta/Inn_Box_Oct.txt");
 
-            IO_Port.BodyOut = new DisplayPolyHedra(ymtDir + "Meta/Out.txt");
-            IO_Port.BodyOutHex = new DisplayPolyHedra(ymtDir + "Meta/Out_Box_Hex.txt");
-            IO_Port.BodyOutOct = new DisplayPolyHedra(ymtDir + "Meta/Out_Box_Oct.txt");
+            IO_Port.BodyOut = new PHEI(ymtDir + "Meta/Out.txt");
+            IO_Port.BodyOutHex = new PHEI(ymtDir + "Meta/Out_Box_Hex.txt");
+            IO_Port.BodyOutOct = new PHEI(ymtDir + "Meta/Out_Box_Oct.txt");
 
-            IO_Port.BodyHex = new DisplayPolyHedra(ymtDir + "Meta/Box_Hex.txt");
-            IO_Port.BodyOct = new DisplayPolyHedra(ymtDir + "Meta/Box_Oct.txt");
+            IO_Port.BodyHex = new PHEI(ymtDir + "Meta/Box_Hex.txt");
+            IO_Port.BodyOct = new PHEI(ymtDir + "Meta/Box_Oct.txt");
 
-            IO_Port.BodyTransPorter = new DisplayPolyHedra(ymtDir + "Meta/Transporter.txt");
-            IO_Port.BodyAxis = new DisplayPolyHedra(ymtDir + "Meta/AxisCross10.txt");
-            IO_Port.BodyError = new DisplayPolyHedra("");
-
-
-
-            IO_Port.InstMainInn = new PHEIBuffer();
-            IO_Port.InstMainOut = new PHEIBuffer();
-
-            IO_Port.BodyInn.PHedra.ToBufferElem(IO_Port.InstMainInn);
-            IO_Port.BodyOut.PHedra.ToBufferElem(IO_Port.InstMainOut);
-
-            IO_Port.InstDataInn = new EntryContainer<PHEIData>();
-            IO_Port.InstDataOut = new EntryContainer<PHEIData>();
+            IO_Port.BodyTransPorter = new PHEI(ymtDir + "Meta/Transporter.txt");
+            IO_Port.BodyAxis = new PHEI(ymtDir + "Meta/AxisCross10.txt");
+            IO_Port.BodyError = new PHEI("");
 
 
 
@@ -629,8 +636,8 @@ namespace VoidFactory.GameSelect
         {
             //IO_Port.Bodys = null;
 
-            DATA_Thing.BodysDelete();
-            BLD_Base.BodysDelete();
+            DATA_Thing.DeleteMains();
+            BLD_Base.DeleteMains();
 
             Recipys = null;
             Templates = null;
@@ -728,11 +735,11 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
 
             PolyHedraMan = new PolyHedraTestManager(shaderDir);
-            PolyHedraMan.Depth.ChangeData(view.Depth.Near, view.Depth.Far);
+            PolyHedraMan.Depth.ChangeData(new DepthData(view.Depth.Near, view.Depth.Far));
 
             PolyHedra tower = Engine3D.BodyParse.TBodyFile.LoadTextFile("E:/Zeug/YMT/Tower/YMT/Tower_Segmented_60m.ymt");
             InstBuffer = new PHEIBuffer();
-            tower.ToBufferElem(InstBuffer);
+            tower.ToBuffer(InstBuffer);
 
             Ref_Graphics();
         }

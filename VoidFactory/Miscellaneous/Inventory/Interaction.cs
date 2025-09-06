@@ -56,7 +56,7 @@ namespace VoidFactory.Inventory
             Graphic.Icon_Prog.UniScale(0.025f);
             Graphic.Icon_Prog.UniPos(x, y);
             Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);
-            IO_Port.BodyHex.Draw();
+            IO_Port.BodyHex.Draw_Main();
         }
     }
 }

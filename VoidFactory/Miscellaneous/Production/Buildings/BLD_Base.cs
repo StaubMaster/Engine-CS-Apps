@@ -18,24 +18,14 @@ namespace VoidFactory.Production.Buildings
 {
     abstract partial class BLD_Base
     {
+        /*
         public static BodyStatic[] Bodys;
-        public static PHEIBuffer[] InstMain;
-        public static EntryContainer<PHEIData>[] InstData;
         public static void BodysCreate()
         {
             for (int i = 0; i < Bodys.Length; i++)
             {
                 Bodys[i].BufferCreate();
                 Bodys[i].BufferFill();
-            }
-
-            InstMain = new PHEIBuffer[Bodys.Length];
-            InstData = new EntryContainer<PHEIData>[Bodys.Length];
-            for (int i = 0; i < Bodys.Length; i++)
-            {
-                InstMain[i] = new PHEIBuffer();
-                Bodys[i].ToBuffer(InstMain[i]);
-                InstData[i] = new EntryContainer<PHEIData>();
             }
         }
         public static void BodysDelete()
@@ -45,11 +35,23 @@ namespace VoidFactory.Production.Buildings
                 Bodys[i].BufferDelete();
             }
             Bodys = null;
-
-            InstMain = null;
-            InstData = null;
         }
+        */
 
+
+        public static PHEI[] Mains;
+        public static void CreateMains(BodyStatic[] bodys)
+        {
+            Mains = new PHEI[bodys.Length];
+            for (int i = 0; i < bodys.Length; i++)
+            {
+                Mains[i] = new PHEI(bodys[i].ToPolyHedra());
+            }
+        }
+        public static void DeleteMains()
+        {
+            Mains = null;
+        }
 
 
         public bool ToRemove;
@@ -78,9 +80,9 @@ namespace VoidFactory.Production.Buildings
 
             Trans = trans;
 
-            InstEntry = InstData[Idx].Alloc(1);
-            InstEntry[0] = new PHEIData(new Transformation3D(Trans.Pos, Trans.Rot));
-            InstMain[Idx].Bind_InstTrans(InstData[Idx].Data);
+            InstEntry = Mains[Idx].Alloc(1);
+            InstEntry[0] = new PHEIData(trans);
+            Mains[Idx].TransUpdate();
 
             Inn = new IO_Port[temp.Inn.Length];
             for (int i = 0; i < Inn.Length; i++)
@@ -100,7 +102,7 @@ namespace VoidFactory.Production.Buildings
         ~BLD_Base()
         {
             InstEntry.Free();
-            InstMain[Idx].Bind_InstTrans(InstData[Idx].Data);
+            Mains[Idx].TransUpdate();
         }
         public void Remove()
         {
@@ -121,7 +123,8 @@ namespace VoidFactory.Production.Buildings
         public void Draw(TransUniProgram programMain, TransUniProgram programPort)
         {
             programMain.UniTrans(new RenderTrans(Trans));
-            Bodys[Idx].BufferDraw();
+            //Bodys[Idx].BufferDraw();
+            Mains[Idx].Draw_Main();
 
             if (programPort != null)
             {
@@ -135,7 +138,8 @@ namespace VoidFactory.Production.Buildings
         {
             program.Use();
             program.Trans.Value(Trans);
-            Bodys[Idx].BufferDraw();
+            //Bodys[Idx].BufferDraw();
+            Mains[Idx].Draw_Main();
 
             {
                 for (int i = 0; i < Inn.Length; i++) { Inn[i].Draw(program); }

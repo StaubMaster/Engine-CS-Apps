@@ -25,6 +25,7 @@ namespace VoidFactory.Inventory
         {
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.HoriL, 0, -9, 0xFFFFFF,
             //    "Hit:\n" + Hit);
+
             Text_Buffer.InsertBR(
                 (0, -9), Text_Buffer.Default_TextSize, 0xFFFFFF,
                 "Hit:\n" + Hit);
@@ -40,7 +41,8 @@ namespace VoidFactory.Inventory
         {
             Template = template;
 
-            Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
+            //Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
+            Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Mains[Template.Idx2].BoxFit().MaxSideLen()));
         }
 
         public override void Update()
@@ -86,7 +88,7 @@ namespace VoidFactory.Inventory
 
         public override void Func1()
         {
-            Chunks.AddThing(Hit, Template.ToInstance2(Trans, 1.0));
+            Chunks.AddThing(Hit, Template.ToInstance2(Trans, 1.0, Hit.ToTileIndex()));
         }
     }
     class Inter_Surf2D_Tile : Inter_Surface2D_Hit
@@ -100,7 +102,7 @@ namespace VoidFactory.Inventory
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 BodyUni_Shader.Use();
                 BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
-                IO_Port.BodyAxis.Draw();
+                IO_Port.BodyAxis.Draw_Main();
 
                 if (Hit.ToLayerIndex().IsValid())
                     Inventory_Storage.Draw(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing);
@@ -117,10 +119,28 @@ namespace VoidFactory.Inventory
 
                 Chunk2D.SURF_Object thing = Chunks.FindThing(Hit);
                 if (thing != null)
+                {
                     Inventory_Storage.Draw(thing.Content, 1);
+                }
             }
 
-            Text_Info("Tile Hit: " + Hit.ToString());
+            string strInfo = "\n";
+            if (Hit.IsValid())
+            {
+                Chunk2D chunk = Chunks.FindChunk(Hit.Chunk_Idx.y, Hit.Chunk_Idx.c);
+                if (chunk != null)
+                {
+                    strInfo += chunk.ToChunkInfo() + "\n";
+                }
+
+                Chunk2D.SURF_Object thing = Chunks.FindThing(Hit);
+                if (thing != null)
+                {
+                    strInfo += thing.ToString();
+                }
+            }
+
+            Text_Info("Tile Hit: " + Hit.ToString() + strInfo);
             Text_Type("Tile Interact");
         }
 
@@ -147,7 +167,7 @@ namespace VoidFactory.Inventory
         }
         public override void Func2()
         {
-            Engine3D.ConsoleLog.Log("Try Tile Dec()");
+            //Engine3D.ConsoleLog.Log("Try Tile Dec()");
             DATA_Cost cost;
 
             cost = Chunks.SubThing(Hit);
@@ -156,16 +176,16 @@ namespace VoidFactory.Inventory
                 Inventory_Storage.CostRefund(cost);
                 return;
             }
-            Engine3D.ConsoleLog.Log("Valid Free");
+            //Engine3D.ConsoleLog.Log("Valid Free");
 
             if (!Hit.ToLayerIndex().IsValid())
                 return;
-            Engine3D.ConsoleLog.Log("Valid Layer");
+            //Engine3D.ConsoleLog.Log("Valid Layer");
 
             cost = new DATA_Cost(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing, 1);
             if (Inventory_Storage.CostCanRefund(cost))
             {
-                Engine3D.ConsoleLog.Log("Valid cost");
+                //Engine3D.ConsoleLog.Log("Valid cost");
                 Inventory_Storage.CostRefund(cost);
                 Chunks.Dec(Hit);
             }
@@ -182,7 +202,7 @@ namespace VoidFactory.Inventory
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 BodyUni_Shader.Use();
                 BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
-                IO_Port.BodyAxis.Draw();
+                IO_Port.BodyAxis.Draw_Main();
 
                 AxisBox3D box = Chunks.TileBox(Hit);
                 if (box != null)
@@ -223,7 +243,8 @@ namespace VoidFactory.Inventory
         {
             Template = template;
 
-            Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
+            //Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
+            Icon_Scale = (float)(0.2 / (BLD_Base.Mains[Template.Idx].BoxFit().MaxSideLen()));
         }
 
         public override void Update()

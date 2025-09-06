@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 
 using Engine3D;
 using Engine3D.GraphicsOld;
@@ -33,18 +34,27 @@ namespace VoidFactory
             ConsoleLog.ColorNoneFunc = ConsoleLogColorNone;
             ConsoleLog.ColorForeFunc = ConsoleLogColorFore;
             ConsoleLog.ColorBackFunc = ConsoleLogColorBack;
+
+            ConsoleLogPrograss = new Progress<string>(ConsoleLogFunc);
         }
 
+        private IProgress<string> ConsoleLogPrograss;
+        public void ConsoleLogFunc(string str)
+        {
+            ConsoleTextBox.AppendText(str);
+        }
         public void ConsoleLogString(string str)
         {
-            try
-            {
-                ConsoleTextBox.AppendText(str);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            ConsoleLogPrograss.Report(str);
+
+            //try
+            //{
+            //    ConsoleTextBox.AppendText(str);
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("ConsoleLog: " + e);
+            //}
         }
         public void ConsoleLogReset()
         {
@@ -173,45 +183,52 @@ namespace VoidFactory
 
             EntryContainer<int> Test = new EntryContainer<int>();
 
-            EntryContainer<int>.Entry ent0 = Test.Alloc(2);
-            EntryContainer<int>.Entry ent1 = Test.Alloc(1);
-            EntryContainer<int>.Entry ent2 = Test.Alloc(3);
-            EntryContainer<int>.Entry ent3 = Test.Alloc(1);
-            EntryContainer<int>.Entry ent4 = Test.Alloc(3);
+            EntryContainer<int>.Entry[] ent = new EntryContainer<int>.Entry[5];
+            ent[0] = Test.Alloc(2);
+            ent[1] = Test.Alloc(1);
+            ent[2] = Test.Alloc(3);
+            ent[3] = Test.Alloc(1);
+            ent[4] = Test.Alloc(3);
+
+            ConsoleLog.Log("Indexe: " + Test.Length);
+            for (int i = 0; i < ent.Length; i++) { ConsoleLog.Log("[" + i.ToString("0") + "] " + ent[i].EntryIndex); }
 
             ConsoleLog.Log("Data: " + Test.Length);
-            for (int i = 0; i < Test.Length; i++)
-            {
-                ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]);
-            }
+            for (int i = 0; i < Test.Length; i++) { ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]); }
 
-            for (int i = 0; i < ent0.Length; i++) { ent0[i] = 00 + i; }
-            for (int i = 0; i < ent1.Length; i++) { ent1[i] = 10 + i; }
-            for (int i = 0; i < ent2.Length; i++) { ent2[i] = 20 + i; }
-            for (int i = 0; i < ent3.Length; i++) { ent3[i] = 30 + i; }
-            for (int i = 0; i < ent4.Length; i++) { ent4[i] = 40 + i; }
+            for (int j = 0; j < ent.Length; j++)
+            {
+                for (int i = 0; i < ent[j].Length; i++)
+                {
+                    ent[j][i] = j * 10 + i;
+                }
+            }
 
             ConsoleLog.Log("Data: " + Test.Length);
-            for (int i = 0; i < Test.Length; i++)
-            {
-                ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]);
-            }
+            for (int i = 0; i < Test.Length; i++) { ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]); }
 
-            ent1.Free();
+            ent[1].Free();
 
             ConsoleLog.Log("Data: " + Test.Length);
-            for (int i = 0; i < Test.Length; i++)
-            {
-                ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]);
-            }
+            for (int i = 0; i < Test.Length; i++) { ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]); }
+
+            ConsoleLog.Log("Indexe: " + Test.Length);
+            for (int i = 0; i < ent.Length; i++) { ConsoleLog.Log("[" + i.ToString("0") + "] " + ent[i].EntryIndex); }
+
+            ent[2].Free();
+
+            ConsoleLog.Log("Indexe: " + Test.Length);
+            for (int i = 0; i < ent.Length; i++) { ConsoleLog.Log("[" + i.ToString("0") + "] " + ent[i].EntryIndex); }
         }
 
         private void b_Plane_Click(object sender, EventArgs e)
         {
             //win = new Window();
             game = new GamePlane(Delete);
+            game.Create();
             game.Run();
-            Init("Plane");
+            game.Delete();
+            //Init("Plane");
         }
         private void b_Space_Click(object sender, EventArgs e)
         {

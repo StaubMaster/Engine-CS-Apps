@@ -19,28 +19,23 @@ namespace VoidFactory.Production.Transfer
 {
     class IO_Port
     {
-        public static DisplayPolyHedra BodyError;
-        public static DisplayPolyHedra BodyTransPorter;
-        public static DisplayPolyHedra BodyAxis;
+        public static PHEI BodyError;
+        public static PHEI BodyTransPorter;
+        public static PHEI BodyAxis;
 
-        public static DisplayPolyHedra BodyHex;
-        public static DisplayPolyHedra BodyOct;
+        public static PHEI BodyHex;
+        public static PHEI BodyOct;
 
-        public static DisplayPolyHedra BodyInn;
-        public static DisplayPolyHedra BodyInnHex;
-        public static DisplayPolyHedra BodyInnOct;
+        public static PHEI BodyInn;
+        public static PHEI BodyInnHex;
+        public static PHEI BodyInnOct;
 
-        public static DisplayPolyHedra BodyOut;
-        public static DisplayPolyHedra BodyOutHex;
-        public static DisplayPolyHedra BodyOutOct;
+        public static PHEI BodyOut;
+        public static PHEI BodyOutHex;
+        public static PHEI BodyOutOct;
 
 
 
-        public static PHEIBuffer InstMainInn;
-        public static PHEIBuffer InstMainOut;
-
-        public static EntryContainer<PHEIData> InstDataInn;
-        public static EntryContainer<PHEIData> InstDataOut;
 
 
 
@@ -59,22 +54,15 @@ namespace VoidFactory.Production.Transfer
 
             if (!InnOut)
             {
-                InstEntry = InstDataInn.Alloc(1);
+                InstEntry = BodyInn.Alloc(1);
+                InstEntry[0] = new PHEIData(new Transformation3D(pos));
+                BodyInn.TransUpdate();
             }
             else
             {
-                InstEntry = InstDataOut.Alloc(1);
-            }
-
-            InstEntry[0] = new PHEIData(new Transformation3D(pos));
-
-            if (!InnOut)
-            {
-                InstMainInn.Bind_InstTrans(InstDataInn.Data);
-            }
-            else
-            {
-                InstMainOut.Bind_InstTrans(InstDataOut.Data);
+                InstEntry = BodyOut.Alloc(1);
+                InstEntry[0] = new PHEIData(new Transformation3D(pos));
+                BodyOut.TransUpdate();
             }
 
             Buffer = new DATA_Buffer();
@@ -86,11 +74,11 @@ namespace VoidFactory.Production.Transfer
             InstEntry.Free();
             if (!InnOut)
             {
-                InstMainInn.Bind_InstTrans(InstDataInn.Data);
+                BodyInn.TransUpdate();
             }
             else
             {
-                InstMainOut.Bind_InstTrans(InstDataOut.Data);
+                BodyOut.TransUpdate();
             }
         }
         public void Remove()
@@ -138,10 +126,10 @@ namespace VoidFactory.Production.Transfer
             if (TransPorter != null) { return; }
 
             program.UniTrans(new RenderTrans(Pos));
-            if (!InnOut)
+            /*if (!InnOut)
                 BodyInn.Draw();
             else
-                BodyOut.Draw();
+                BodyOut.Draw();*/
         }
         public void Draw(CShaderTransformation program)
         {
@@ -150,11 +138,11 @@ namespace VoidFactory.Production.Transfer
             program.Trans.Value(new Transformation3D(Pos));
             if (!InnOut)
             {
-                BodyInn.Draw();
+                //BodyInn.Draw();
             }
             else
             {
-                BodyOut.Draw();
+               // BodyOut.Draw();
             }
         }
         public void Draw(BodyElemUniShader program)
@@ -167,11 +155,11 @@ namespace VoidFactory.Production.Transfer
 
             if (!InnOut)
             {
-                BodyInn.Draw();
+                //BodyInn.Draw();
             }
             else
             {
-                BodyOut.Draw();
+                //BodyOut.Draw();
             }
 
             program.LightRange.Value(0.1f, 1.0f);
@@ -268,9 +256,9 @@ namespace VoidFactory.Production.Transfer
                 program.UniTrans(new RenderTrans(Pos));
 
                 if (!InnOut)
-                    BodyInnHex.Draw();
+                    BodyInnHex.Draw_Main();
                 else
-                    BodyOutHex.Draw();
+                    BodyOutHex.Draw_Main();
             }
             public void Draw_Select(TransUniProgram program)
             {
@@ -279,9 +267,9 @@ namespace VoidFactory.Production.Transfer
                 program.UniTrans(new RenderTrans(Pos));
 
                 if (!InnOut)
-                    BodyInnOct.Draw();
+                    BodyInnOct.Draw_Main();
                 else
-                    BodyOutOct.Draw();
+                    BodyOutOct.Draw_Main();
             }
             public void Draw_Hover(CShaderTransformation program)
             {
@@ -290,9 +278,9 @@ namespace VoidFactory.Production.Transfer
                 program.Trans.Value(new Transformation3D(Pos));
 
                 if (!InnOut)
-                    BodyInnHex.Draw();
+                    BodyInnHex.Draw_Main();
                 else
-                    BodyOutHex.Draw();
+                    BodyOutHex.Draw_Main();
             }
             public void Draw_Select(CShaderTransformation program)
             {
@@ -301,9 +289,9 @@ namespace VoidFactory.Production.Transfer
                 program.Trans.Value(new Transformation3D(Pos));
 
                 if (!InnOut)
-                    BodyInnOct.Draw();
+                    BodyInnOct.Draw_Main();
                 else
-                    BodyOutOct.Draw();
+                    BodyOutOct.Draw_Main();
             }
             public void Draw_Hover(BodyElemUniShader program)
             {
@@ -315,11 +303,11 @@ namespace VoidFactory.Production.Transfer
 
                 if (!InnOut)
                 {
-                    BodyInnHex.Draw();
+                    BodyInnHex.Draw_Main();
                 }
                 else
                 {
-                    BodyOutHex.Draw();
+                    BodyOutHex.Draw_Main();
                 }
 
                 program.LightRange.Value(0.1f, 1.0f);
@@ -334,11 +322,11 @@ namespace VoidFactory.Production.Transfer
 
                 if (!InnOut)
                 {
-                    BodyInnOct.Draw();
+                    BodyInnOct.Draw_Main();
                 }
                 else
                 {
-                    BodyOutOct.Draw();
+                    BodyOutOct.Draw_Main();
                 }
 
                 program.LightRange.Value(0.1f, 1.0f);

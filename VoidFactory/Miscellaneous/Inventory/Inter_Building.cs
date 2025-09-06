@@ -32,7 +32,7 @@ namespace VoidFactory.Inventory
             {
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hover.Pos));
                 BodyUni_Shader.Trans.Value(new Engine3D.Abstract3D.Transformation3D(Hover.Pos));
-                IO_Port.BodyOct.Draw();
+                IO_Port.BodyOct.Draw_Main();
             }
 
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.HoriL, 0, -9, 0xFFFFFF,

@@ -299,7 +299,7 @@ namespace VoidFactory.Editor
                 if (poly != null)
                 {
                     Body = poly;
-                    Buffer = poly.ToBufferElem();
+                    Buffer = poly.ToBuffer();
                 }
                 else
                 {

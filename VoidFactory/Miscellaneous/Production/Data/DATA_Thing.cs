@@ -1,14 +1,16 @@
-﻿
-using Engine3D.Entity;
+﻿using Engine3D.Entity;
 using Engine3D.GraphicsOld;
+
+using Engine3D.Graphics.Display3D;
 
 namespace VoidFactory.Production.Data
 {
     partial class DATA_Thing
     {
-        public static BodyStatic[] Bodys;
         public static float[] Icon_Scales;
 
+        /*
+        public static BodyStatic[] Bodys;
         public static void BodysCreate()
         {
             Icon_Scales = new float[Bodys.Length];
@@ -28,6 +30,26 @@ namespace VoidFactory.Production.Data
                 Bodys[i].BufferDelete();
             }
             Bodys = null;
+        }
+        */
+
+
+        public static PHEI[] Mains;
+        public static void CreateMains(BodyStatic[] bodys)
+        {
+            Icon_Scales = new float[bodys.Length];
+
+            Mains = new PHEI[bodys.Length];
+            for (int i = 0; i < bodys.Length; i++)
+            {
+                Mains[i] = new PHEI(bodys[i].ToPolyHedra());
+
+                Icon_Scales[i] = (float)(0.2 / bodys[i].BoxFit().MaxSideLen());
+            }
+        }
+        public static void DeleteMains()
+        {
+            Mains = null;
         }
 
 
@@ -51,13 +73,15 @@ namespace VoidFactory.Production.Data
 
         public void Draw()
         {
-            Bodys[Idx].BufferDraw();
+            //Bodys[Idx].BufferDraw();
+            Mains[Idx].Draw_Main();
         }
         public void Draw(IconProgram program, float x, float y, float scale = 1.0f)
         {
             program.UniPos(x, y);
             program.UniScale(Icon_Scales[Idx] * scale);
-            Bodys[Idx].BufferDraw();
+            //Bodys[Idx].BufferDraw();
+            Mains[Idx].Draw_Main();
         }
         public override string ToString()
         {

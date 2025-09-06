@@ -73,7 +73,7 @@ namespace VoidFactory.Editor
             Indicator_Buffer = new BodyElemBuffer[Indicator_Body.Length];
             for (int i = 0; i < Indicator_Body.Length; i++)
             {
-                Indicator_Buffer[i] = Indicator_Body[i].ToBufferElem();
+                Indicator_Buffer[i] = Indicator_Body[i].ToBuffer();
             }
             Indicator_Trans = null;
 

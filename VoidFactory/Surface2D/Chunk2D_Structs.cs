@@ -108,6 +108,10 @@ namespace VoidFactory.Surface2D
             {
                 return "Chunk y:c[idx]" + y.ToString("00") + ":" + c.ToString("00") + "[" + idx.ToString("000") + "]" + "\n";
             }
+            public string ToLine()
+            {
+                return "y:c[idx]" + y.ToString("00") + ":" + c.ToString("00") + "[" + idx.ToString("000") + "]";
+            }
         }
         public struct LayerIndex
         {

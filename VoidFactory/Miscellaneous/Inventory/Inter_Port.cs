@@ -60,7 +60,7 @@ namespace VoidFactory.Inventory
 
             Graphic.Icon_Prog.UniScale(0.04f);
             Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
-            IO_Port.BodyTransPorter.Draw();
+            IO_Port.BodyTransPorter.Draw_Main();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Connect");
             //MainContext.Text_Buff.InsertBR(
             //    (-0.5f, +0.5f + 1), 0xFFFFFF, 20f, 2f,
@@ -71,7 +71,7 @@ namespace VoidFactory.Inventory
         {
             Graphic.Icon_Prog.UniScale(0.01f);
             Graphic.Icon_Prog.UniPos(x, y);
-            IO_Port.BodyTransPorter.Draw();
+            IO_Port.BodyTransPorter.Draw_Main();
         }
 
         public override void Func1()

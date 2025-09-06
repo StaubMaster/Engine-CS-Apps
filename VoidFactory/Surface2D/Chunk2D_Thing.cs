@@ -12,6 +12,9 @@ using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
+using Engine3D.Graphics.Display3D;
+
+using Engine3D.Miscellaneous;
 
 using VoidFactory.Production.Data;
 
@@ -19,72 +22,85 @@ namespace VoidFactory.Surface2D
 {
     partial class Chunk2D
     {
-        public class SURF_Object
+        public partial class SURF_Object
         {
-            public static DisplayPolyHedra[] Bodys;
-            public static void BodysCreate()
-            {
-                for (int i = 0; i < Bodys.Length; i++)
-                {
-                    //Bodys[i].BufferCreate();
-                    //Bodys[i].BufferFill();
-                }
-            }
-            public static void BodysDelete()
-            {
-                for (int i = 0; i < Bodys.Length; i++)
-                {
-                    //Bodys[i].BufferDelete();
-                }
-                Bodys = null;
-            }
-
-
-
             public bool ToRemove;
             public bool ToDraw;
 
-            private uint Idx;
-            private Transformation3D Trans;
+            private readonly uint Idx;
+            private readonly Transformation3D Trans;
+            private readonly TileIndex TileIdx;
+            private EntryContainer<PHEIData>.Entry InstEntry;
             public DATA_Buffer Content;
 
-            public SURF_Object(uint idx, DATA_Thing thing, uint num, Transformation3D trans)
+            public SURF_Object(uint idx, DATA_Thing thing, uint num, Transformation3D trans, TileIndex tileIdx)
             {
                 ToRemove = false;
 
                 Idx = idx;
                 Trans = trans;
                 Content = new DATA_Buffer(thing, num);
+
+                TileIdx = tileIdx;
+
+                InstEntry = null;
             }
+            public void Place()
+            {
+                if (InstEntry == null)
+                {
+                    InstEntry = Mains[Idx].Alloc(1);
+                    InstEntry[0] = new PHEIData(Trans);
+                    if (Mains != null) { Mains[Idx].TransChange(); }
+                }
+            }
+            public void Remove()
+            {
+                if (!ToRemove)
+                {
+                    ConsoleLog.Log("SURF Thing Remove " + this);
+                    InstEntry.Free();
+                    if (Mains != null) { Mains[Idx].TransChange(); }
+                    InstEntry = null;
+                    ToRemove = true;
+                }
+            }
+
+
 
             public void Draw()
             {
-                Bodys[Idx].Draw();
+                //Bodys[Idx].Draw();
+                //Mains[Idx].Draw_Main();
             }
             public void Draw(TransUniProgram program)
             {
                 program.UniTrans(new RenderTrans(Trans));
-                Bodys[Idx].Draw();
+                //Bodys[Idx].Draw();
+                //Mains[Idx].Draw_Main();
             }
             public void Draw(CShaderTransformation program)
             {
                 program.Trans.Value(Trans);
-                Bodys[Idx].Draw();
+                //Bodys[Idx].Draw();
+                //Mains[Idx].Draw_Main();
             }
             public void Draw(BodyElemUniShader program)
             {
                 program.Trans.Value(Trans);
-                Bodys[Idx].Draw();
+                //Bodys[Idx].Draw();
+                //Mains[Idx].Draw_Main();
             }
             public DATA_Cost Collect()
             {
-                DATA_Cost cost = new DATA_Cost(Content.Thing, 1);
-                Content.Num--;
-
-                if (Content.Num == 0)
-                    ToRemove = true;
-
-                return cost;
+                uint cost = 1;
+                if (Content.Num <= cost)
+                {
+                    cost = Content.Num;
+                    Remove();
+                }
+                Content.Num -= cost;
+                return new DATA_Cost(Content.Thing, cost);
             }
 
             public override string ToString()
@@ -92,10 +108,51 @@ namespace VoidFactory.Surface2D
                 string str = "";
 
                 str += Content;
-                str += "[" + Idx + "]";
+                str += "[" + Idx + "]" + " " + TileIdx.ToLine();
 
                 return str;
             }
+        }
+        public partial class SURF_Object
+        {
+            public static PHEI[] Mains;
+            public static void InstCreate(BodyStatic[] bodys)
+            {
+                Mains = new PHEI[bodys.Length];
+                for (int i = 0; i < bodys.Length; i++)
+                {
+                    Mains[i] = new PHEI(bodys[i].ToPolyHedra());
+                }
+            }
+            public static void InstDelete()
+            {
+                Mains = null;
+            }
+            public static void InstDraw()
+            {
+                for (int i = 0; i < Mains.Length; i++)
+                {
+                    Mains[i].Draw_Inst();
+                }
+            }
+            public static void InstUpdate()
+            {
+                for (int i = 0; i < Mains.Length; i++)
+                {
+                    Mains[i].TransUpdate();
+                }
+            }
+            public static string InstCountInfo()
+            {
+                string str = "";
+                for (int i = 0; i < Mains.Length; i++)
+                {
+                    str += Mains[i].Info() + ":[" + i + "]Inst\n";
+                }
+                return str;
+            }
+
+
 
             public class Template
             {
@@ -123,34 +180,37 @@ namespace VoidFactory.Surface2D
 
                 public void Draw()
                 {
-                    Bodys[Idx2].Draw();
+                    //Bodys[Idx2].Draw();
+                    Mains[Idx2].Draw_Main();
                 }
                 public void Draw(TransUniProgram program, Transformation3D trans)
                 {
                     program.UniTrans(new RenderTrans(trans));
-                    Bodys[Idx2].Draw();
+                    //Bodys[Idx2].Draw();
+                    Mains[Idx2].Draw_Main();
                 }
                 public void Draw(CShaderTransformation program, Transformation3D trans)
                 {
                     program.Trans.Value(trans);
-                    Bodys[Idx2].Draw();
+                    //Bodys[Idx2].Draw();
+                    Mains[Idx2].Draw_Main();
                 }
 
-                public SURF_Object ToInstance1(Transformation3D trans, double perc)
+                public SURF_Object ToInstance1(Transformation3D trans, double perc, TileIndex tileIdx)
                 {
                     uint num;
                     num = (uint)Math.Round((MaxVal1 - MinVal1) * perc);
                     num += MinVal1;
 
-                    return new SURF_Object(Idx1, Thing1, num, trans);
+                    return new SURF_Object(Idx1, Thing1, num, trans, tileIdx);
                 }
-                public SURF_Object ToInstance2(Transformation3D trans, double perc)
+                public SURF_Object ToInstance2(Transformation3D trans, double perc, TileIndex tileIdx)
                 {
                     uint num;
                     num = (uint)Math.Round((MaxVal2 - MinVal2) * perc);
                     num += MinVal2;
 
-                    return new SURF_Object(Idx2, Thing2, num, trans);
+                    return new SURF_Object(Idx2, Thing2, num, trans, tileIdx);
                 }
                 public override string ToString()
                 {
@@ -169,12 +229,12 @@ namespace VoidFactory.Surface2D
             public static class Interpret
             {
                 private static List<Template> ListThing;
-                private static List<DisplayPolyHedra> ListBody;
+                private static List<BodyStatic> ListBody;
 
                 public static void Create()
                 {
                     ListThing = new List<Template>();
-                    ListBody = new List<DisplayPolyHedra>();
+                    ListBody = new List<BodyStatic>();
                 }
                 public static void Delete()
                 {
@@ -242,10 +302,8 @@ namespace VoidFactory.Surface2D
                                 file2 = querys[q].Found[0][0];
 
                                 ListThing.Add(temp);
-                                //ListBody.Add(BodyStatic.File.Load(file1));
-                                //ListBody.Add(BodyStatic.File.Load(file2));
-                                ListBody.Add(new DisplayPolyHedra(file1));
-                                ListBody.Add(new DisplayPolyHedra(file2));
+                                ListBody.Add(BodyStatic.File.Load(file1));
+                                ListBody.Add(BodyStatic.File.Load(file2));
                             }
                         }
                     }
@@ -255,9 +313,24 @@ namespace VoidFactory.Surface2D
                 {
                     return ListThing.ToArray();
                 }
-                public static DisplayPolyHedra[] GetBodys()
+                public static BodyStatic[] GetBodys()
                 {
                     return ListBody.ToArray();
+                }
+
+                public static void Do(FileInterpret.FileStruct[] fileDatas, DATA_Thing[] Things)
+                {
+                    Create();
+                    for (int i = 0; i < fileDatas.Length; i++)
+                    {
+                        SetFile(fileDatas[i], Things);
+                    }
+                    //Bodys = GetBodys();
+                    InstCreate(GetBodys());
+
+                    SurfThingTemplates = GetTemplates();
+                    Delete();
+                    //BodysCreate();
                 }
             }
         }

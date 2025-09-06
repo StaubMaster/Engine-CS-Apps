@@ -154,7 +154,7 @@ namespace VoidFactory.Editor
             isHover = false;
 
             Body = body;
-            Buffer = body.ToBufferElem();
+            Buffer = body.ToBuffer();
             Box = body.CalcBox();
             Center = body.CalcAverage();
 

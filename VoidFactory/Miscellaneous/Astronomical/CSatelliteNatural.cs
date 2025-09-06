@@ -22,7 +22,7 @@ namespace VoidFactory.Astronomical
         public CSatelliteNatural(PolyHedra body, AOrbit orbit, double radius)
         {
             Body = body;
-            Buffer = body.ToBufferElem();
+            Buffer = body.ToBuffer();
 
             Orbit = orbit;
             Radius = radius;

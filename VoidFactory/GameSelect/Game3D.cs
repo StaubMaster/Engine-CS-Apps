@@ -48,6 +48,7 @@ namespace VoidFactory.GameSelect
         {
             //win.Delete();
             win.Term();
+            win = null;
             view = null;
         }
         public void Run()

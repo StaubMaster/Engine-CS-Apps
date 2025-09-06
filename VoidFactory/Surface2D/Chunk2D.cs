@@ -294,6 +294,10 @@ namespace VoidFactory.Surface2D
 
         private Chunk2D[] Neighbour;
 
+        private static uint DebugNumber = 0;
+        private static uint DebugCount = 0;
+        private uint DebugIndex;
+
         private Chunk2D(int y, int c)
         {
             Layers = new LayerData[LayerGen.Length];
@@ -307,6 +311,16 @@ namespace VoidFactory.Surface2D
             Chunk_Tile_Idx_C = Chunk_Idx_C * Tiles_Per_Side;
 
             Neighbour = new Chunk2D[8];
+
+            DebugIndex = DebugCount;
+            Engine3D.ConsoleLog.Log("++++ Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]" + " " + DebugIndex + " " + DebugNumber);
+            DebugCount++;
+            DebugNumber++;
+        }
+        ~Chunk2D()
+        {
+            DebugNumber--;
+            Engine3D.ConsoleLog.Log("---- Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]" + " " + DebugIndex + " " + DebugNumber);
         }
 
         private Chunk2D NeighbourFromBits(byte bits)
@@ -339,13 +353,36 @@ namespace VoidFactory.Surface2D
             return tile;
         }
 
+        public string ToChunkInfo()
+        {
+            string str = "";
+
+            {
+                int thingCount = 0;
+                for (int i = 0; i < Tiles_Per_Area; i++)
+                {
+                    if (Things[i] != null) { thingCount++; }
+                }
+                str += "Thins: " + thingCount + "\n";
+            }
+
+            return str;
+        }
 
         public void ObjectAdd(TileIndex tileIdx, SURF_Object thing)
         {
+            if (thing == null) { return; }
             if (Things[tileIdx.idx] == null)
+            {
                 Things[tileIdx.idx] = thing;
+                Things[tileIdx.idx].Place();
+            }
             else if (thing.Content.Num > Things[tileIdx.idx].Content.Num)
+            {
+                Things[tileIdx.idx].Remove();
                 Things[tileIdx.idx] = thing;
+                Things[tileIdx.idx].Place();
+            }
         }
         public SURF_Object ObjectIdx(TileIndex tileIdx)
         {
@@ -355,11 +392,15 @@ namespace VoidFactory.Surface2D
         {
             if (Things[tileIdx.idx] != null)
             {
+                //Engine3D.ConsoleLog.Log("ObjectSub() " + tileIdx.idx);
                 DATA_Cost cost = Things[tileIdx.idx].Collect();
                 Inventory.Inventory_Storage.CostCanRefund(cost);
 
                 if (Things[tileIdx.idx].ToRemove)
+                {
+                    //Engine3D.ConsoleLog.Log("Things[" + tileIdx.idx + "] = null");
                     Things[tileIdx.idx] = null;
+                }
 
                 return cost;
             }
@@ -370,30 +411,37 @@ namespace VoidFactory.Surface2D
         private void FeaturePlaceRef(int y, int c, double dist, double perc, SURF_Object obj)
         {
             if (perc < 0 || perc > 1)
+            {
+                Engine3D.ConsoleLog.Log("Discard: Perc 0><1 " + obj);
                 return;
+            }
 
             TileIndex tileIdx = new TileIndex(y - Chunk_Tile_Idx_Y, c - Chunk_Tile_Idx_C);
             Chunk2D chunk = NeighbourFromBits(tileIdx.BitsNeighbour());
             if (chunk != null)
+            {
                 chunk.ObjectAdd(tileIdx.Mod(), obj);
+            }
+            else
+            {
+                Engine3D.ConsoleLog.Log("Discard: no Chunk " + obj);
+            }
         }
         private void FeaturesPlaceRing(int y, int c, double dist, double perc, SURF_Object.Template temp)
         {
-            if (perc < 0 || perc > 1)
-                return;
+            if (perc < 0 || perc > 1) { return; }
 
             double h = 0.0;
             TileIndex tileIdx = new TileIndex(y - Chunk_Tile_Idx_Y, c - Chunk_Tile_Idx_C);
             Chunk2D chunk = NeighbourFromBits(tileIdx.BitsNeighbour());
-            if (chunk != null)
-                h = chunk.TileHighest(tileIdx.Mod()).Height_Mid;
+            if (chunk != null) { h = chunk.TileHighest(tileIdx.Mod()).Height_Mid; }
 
             Transformation3D trans = new Transformation3D(
                 new Point3D((y + 0.5) * Tile_Size, h, (c + 0.5) * Tile_Size),
                 new Angle3D(y * 128, c * 128, (y + c) * 128)
             );
 
-            FeaturePlaceRef(y, c, dist, perc, temp.ToInstance1(trans, perc));
+            FeaturePlaceRef(y, c, dist, perc, temp.ToInstance1(trans, perc, tileIdx));
         }
         private void FeaturesPlaceCenter(TileIndex tileIdx, SURF_Object.Template temp)
         {
@@ -413,7 +461,7 @@ namespace VoidFactory.Surface2D
             Grid2D.FuncCircle(tileIdx.y, tileIdx.c, temp.MinDist, findHighest);
 
             SURF_Object thing;
-            thing = temp.ToInstance2(new Transformation3D(new Point3D((tileIdx.y + 0.5) * Tile_Size, h, (tileIdx.c + 0.5) * Tile_Size)), 1.0);
+            thing = temp.ToInstance2(new Transformation3D(new Point3D((tileIdx.y + 0.5) * Tile_Size, h, (tileIdx.c + 0.5) * Tile_Size)), 1.0, tileIdx);
             Grid2D.FuncCircle(tileIdx.y, tileIdx.c, temp.MinDist, FeaturePlaceRef, thing);
         }
         private void GenerateFeatureTemplate(SURF_Object.Template temp)

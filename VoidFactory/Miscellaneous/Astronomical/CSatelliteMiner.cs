@@ -25,7 +25,7 @@ namespace VoidFactory.Astronomical
         public CSatelliteMiner(PolyHedra body, CSatelliteNatural source, AOrbit orbit)
         {
             Body = body;
-            Buffer = body.ToBufferElem();
+            Buffer = body.ToBuffer();
 
             Source = source;
             Orbit = orbit;

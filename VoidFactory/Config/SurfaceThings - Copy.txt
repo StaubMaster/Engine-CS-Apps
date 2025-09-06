@@ -26,7 +26,7 @@
 	range_val2 : 1024 : 1024,
 	range_dist : 2 : 8,
 
-	static : 0x87655678 : 0xFFF,
+	static : 0x87654321 : 0xFFF,
 	color : 0xFF7700,
 
 	file1 : "E:/Zeug/YMT/Stuff/Copr/Copr_Ore.txt",

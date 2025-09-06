@@ -46,7 +46,7 @@ namespace VoidFactory.Astronomical
             InitSatellites();
 
             TestPoly = PolyHedra.Generate.SphereCube(12, 10.0f);
-            TestBuffer = TestPoly.ToBufferElem();
+            TestBuffer = TestPoly.ToBuffer();
 
             MainWindow.Run();
             MainWindow.Term();
