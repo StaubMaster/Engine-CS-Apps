@@ -85,97 +85,11 @@ namespace VoidFactory.Surface2D
                 Chunks = null;
             }
 
-            /*public void Draw(Chunk2DProgram program)
-            {
-                for (int i = 0; i < Chunks.Length; i++)
-                {
-                    Chunks[i].Draw(program);
-                }
-            }*/
             public void Draw(Graphics.Chunk2D_Shader program)
             {
                 for (int i = 0; i < Chunks.Length; i++)
                 {
                     Chunks[i].Draw(program);
-                }
-            }
-            /*public void Draw(TransUniProgram program)
-            {
-                Chunk2D chunk;
-                SURF_Object thing;
-                for (int c = 0; c < Chunks.Length; c++)
-                {
-                    chunk = Chunks[c];
-                    for (int t = 0; t < Tiles_Per_Area; t++)
-                    {
-                        thing = chunk.Things[t];
-                        if (thing != null)
-                        {
-                            thing.ToDraw = true;
-                        }
-                    }
-
-                    for (int t = 0; t < Tiles_Per_Area; t++)
-                    {
-                        thing = chunk.Things[t];
-                        if (thing != null && thing.ToDraw)
-                        {
-                            thing.Draw(program);
-                            thing.ToDraw = false;
-                        }
-                    }
-                }
-            }*/
-            /*public void Draw(CShaderTransformation program)
-            {
-                Chunk2D chunk;
-                SURF_Object thing;
-                for (int c = 0; c < Chunks.Length; c++)
-                {
-                    chunk = Chunks[c];
-                    for (int t = 0; t < Tiles_Per_Area; t++)
-                    {
-                        thing = chunk.Things[t];
-                        if (thing != null)
-                            thing.ToDraw = true;
-                    }
-
-                    for (int t = 0; t < Tiles_Per_Area; t++)
-                    {
-                        thing = chunk.Things[t];
-                        if (thing != null && thing.ToDraw)
-                        {
-                            thing.Draw(program);
-                            thing.ToDraw = false;
-                        }
-                    }
-                }
-            }*/
-            public void Draw(BodyElemUniShader program)
-            {
-                Chunk2D chunk;
-                SURF_Object thing;
-                for (int c = 0; c < Chunks.Length; c++)
-                {
-                    chunk = Chunks[c];
-                    for (int t = 0; t < Tiles_Per_Area; t++)
-                    {
-                        thing = chunk.Things[t];
-                        if (thing != null)
-                        {
-                            thing.ToDraw = true;
-                        }
-                    }
-
-                    for (int t = 0; t < Tiles_Per_Area; t++)
-                    {
-                        thing = chunk.Things[t];
-                        if (thing != null && thing.ToDraw)
-                        {
-                            thing.Draw(program);
-                            thing.ToDraw = false;
-                        }
-                    }
                 }
             }
 

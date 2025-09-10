@@ -42,7 +42,7 @@ namespace VoidFactory.Inventory
             Template = template;
 
             //Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
-            Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Mains[Template.Idx2].BoxFit().MaxSideLen()));
+            Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
         }
 
         public override void Update()
@@ -73,7 +73,7 @@ namespace VoidFactory.Inventory
 
             Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
             Graphic.Icon_Prog.UniScale(0.01f);
-            Template.Draw();
+            //Template.Draw();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Surf Thing");
             Text_Buffer.InsertBR(
                 (0, +1), Text_Buffer.Default_TextSize, 0xFFFFFF,
@@ -83,7 +83,7 @@ namespace VoidFactory.Inventory
         {
             Graphic.Icon_Prog.UniScale(Icon_Scale);
             Graphic.Icon_Prog.UniPos(x, y);
-            Template.Draw();
+            //Template.Draw();
         }
 
         public override void Func1()
@@ -102,7 +102,8 @@ namespace VoidFactory.Inventory
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 BodyUni_Shader.Use();
                 BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
-                IO_Port.BodyAxis.Draw_Main();
+                //IO_Port.BodyAxis.DrawMain();
+                IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
                 if (Hit.ToLayerIndex().IsValid())
                     Inventory_Storage.Draw(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing);
@@ -202,7 +203,8 @@ namespace VoidFactory.Inventory
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 BodyUni_Shader.Use();
                 BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
-                IO_Port.BodyAxis.Draw_Main();
+                //IO_Port.BodyAxis.DrawMain();
+                IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
                 AxisBox3D box = Chunks.TileBox(Hit);
                 if (box != null)
@@ -244,7 +246,7 @@ namespace VoidFactory.Inventory
             Template = template;
 
             //Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
-            Icon_Scale = (float)(0.2 / (BLD_Base.Mains[Template.Idx].BoxFit().MaxSideLen()));
+            Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
         }
 
         public override void Update()

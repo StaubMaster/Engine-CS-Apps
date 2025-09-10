@@ -48,7 +48,8 @@ namespace VoidFactory.Inventory
             y = 0.9f;
             Graphic.Icon_Prog.UniPos(x, y);
             Graphic.Icon_Prog.UniScale(0.025f);
-            IO_Port.BodyInn.Draw_Main();
+            //IO_Port.BodyInn.DrawMain();
+            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Inn].DrawMain();
             for (int i = 0; i < recipy.RInn.Length; i++)
             {
                 y -= 0.2f;
@@ -85,7 +86,8 @@ namespace VoidFactory.Inventory
             y = 0.9f;
             Graphic.Icon_Prog.UniPos(x, y);
             Graphic.Icon_Prog.UniScale(0.025f);
-            IO_Port.BodyOut.Draw_Main();
+            //IO_Port.BodyOut.DrawMain();
+            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
             for (int o = 0; o < recipy.ROut.Length; o++)
             {
                 y -= 0.2f;
@@ -161,7 +163,8 @@ namespace VoidFactory.Inventory
             y = 0.9f;
             Graphic.Icon_Prog.UniPos(x, y);
             Graphic.Icon_Prog.UniScale(0.025f);
-            IO_Port.BodyInn.Draw_Main();
+            //IO_Port.BodyInn.DrawMain();
+            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Inn].DrawMain();
             for (int c = 0; c < cost.Sum.Length; c++)
             {
                 y -= 0.2f;
@@ -193,7 +196,8 @@ namespace VoidFactory.Inventory
             y = 0.9f;
             Graphic.Icon_Prog.UniPos(x, y);
             Graphic.Icon_Prog.UniScale(0.025f);
-            IO_Port.BodyOut.Draw_Main();
+            //IO_Port.BodyOut.DrawMain();
+            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
             for (int c = 0; c < cost.Sum.Length; c++)
             {
                 y -= 0.2f;

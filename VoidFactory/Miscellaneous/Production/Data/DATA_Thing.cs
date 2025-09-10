@@ -7,50 +7,25 @@ namespace VoidFactory.Production.Data
 {
     partial class DATA_Thing
     {
-        public static float[] Icon_Scales;
+        public static PHEI_Array Bodys;
 
-        /*
-        public static BodyStatic[] Bodys;
-        public static void BodysCreate()
+
+
+        public static float[] IconScales;
+        public static void IconScales_Create(BodyStatic[] bodys)
         {
-            Icon_Scales = new float[Bodys.Length];
-            for (int i = 0; i < Bodys.Length; i++)
-            {
-                Bodys[i].BufferCreate();
-                Bodys[i].BufferFill();
-
-                Icon_Scales[i] = (float)(0.2 / Bodys[i].BoxFit().MaxSideLen());
-            }
-        }
-        public static void BodysDelete()
-        {
-            Icon_Scales = null;
-            for (int i = 0; i < Bodys.Length; i++)
-            {
-                Bodys[i].BufferDelete();
-            }
-            Bodys = null;
-        }
-        */
-
-
-        public static PHEI[] Mains;
-        public static void CreateMains(BodyStatic[] bodys)
-        {
-            Icon_Scales = new float[bodys.Length];
-
-            Mains = new PHEI[bodys.Length];
+            IconScales = new float[bodys.Length];
             for (int i = 0; i < bodys.Length; i++)
             {
-                Mains[i] = new PHEI(bodys[i].ToPolyHedra());
-
-                Icon_Scales[i] = (float)(0.2 / bodys[i].BoxFit().MaxSideLen());
+                IconScales[i] = (float)(0.2 / bodys[i].BoxFit().MaxSideLen());
             }
         }
-        public static void DeleteMains()
+        public static void IconScales_Delete()
         {
-            Mains = null;
+            IconScales = null;
         }
+
+
 
 
 
@@ -73,15 +48,13 @@ namespace VoidFactory.Production.Data
 
         public void Draw()
         {
-            //Bodys[Idx].BufferDraw();
-            Mains[Idx].Draw_Main();
+            Bodys[Idx].DrawMain();
         }
         public void Draw(IconProgram program, float x, float y, float scale = 1.0f)
         {
             program.UniPos(x, y);
-            program.UniScale(Icon_Scales[Idx] * scale);
-            //Bodys[Idx].BufferDraw();
-            Mains[Idx].Draw_Main();
+            program.UniScale(IconScales[Idx] * scale);
+            Bodys[Idx].DrawMain();
         }
         public override string ToString()
         {

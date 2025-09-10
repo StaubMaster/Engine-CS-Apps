@@ -1,7 +1,11 @@
-﻿
-using Engine3D.Abstract3D;
+﻿using Engine3D.Abstract3D;
+using Engine3D.Abstract2D;
 using Engine3D.GraphicsOld;
 using Engine3D.Graphics.Display;
+using Engine3D.Graphics.Display2D.UserInterface;
+using Engine3D.Graphics.Display2D;
+using Engine3D.Graphics;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Buildings;
@@ -11,6 +15,64 @@ namespace VoidFactory.Inventory
 {
     static class Inventory_Interface
     {
+        public static UIBody[] BLD_Bodys;
+        public static EntryContainerDynamic<UIBodyData>.Entry[] BLD_Insts;
+
+        public static void Draw_Init()
+        {
+            if (BLD_Insts != null) { return; }
+
+            BLD_Insts = new EntryContainerBase<UIBodyData>.Entry[BLD_Bodys.Length];
+
+            UIGridPosition gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
+            UIGridSize gSize = new UIGridSize(new Point2D(100.0f, 100.0f), 25.0f);
+
+            int i = 0;
+            for (float y = +2; y >= -2; y--)
+            {
+                for (float x = -6; x <= +6; x++)
+                {
+                    if (i < BLD_Insts.Length)
+                    {
+                        BLD_Insts[i] = BLD_Bodys[i].Alloc(1);
+                        BLD_Insts[i][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.1f, new Angle3D(1.0f, -0.5f, 0));
+                        i++;
+                    }
+                }
+            }
+        }
+        public static void Draw_Free()
+        {
+            if (BLD_Insts == null) { return; }
+
+            for (int i = 0; i < BLD_Insts.Length; i++)
+            {
+                BLD_Insts[i].Free();
+            }
+            BLD_Insts = null;
+        }
+        public static void Draw_Inst()
+        {
+            if (BLD_Insts != null)
+            {
+                UIBodyData data;
+                for (int i = 0; i < BLD_Insts.Length; i++)
+                {
+                    data = BLD_Insts[i][0];
+                    data.Spin.A += 0.01f;
+                    BLD_Insts[i][0] = data;
+                }
+            }
+
+            for (int i = 0; i < BLD_Bodys.Length; i++)
+            {
+                BLD_Bodys[i].DataUpdate();
+                BLD_Bodys[i].DrawInst();
+            }
+        }
+
+
+
         /*
             Thing Storage:
                 All Things and how Many of each I Have
@@ -72,7 +134,9 @@ namespace VoidFactory.Inventory
             Categorys[3] = CatBuildings;
             Categorys[4] = CatRecipys;
             for (int i = 0; i < CatUser.Length; i++)
+            {
                 Categorys[i + 5] = CatUser[i];
+            }
 
             Category_Idx = 0;
             Category_Ref = Categorys[Category_Idx];
@@ -107,7 +171,6 @@ namespace VoidFactory.Inventory
             for (int i = 0; i < Categorys.Length; i++)
                 Categorys[i].SortDelete();
         }
-
 
         public static void Cat_Next()
         {

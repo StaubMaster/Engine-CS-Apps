@@ -57,42 +57,6 @@ namespace VoidFactory.Production.Buildings
                     }
                 }
             }
-            public void Draw(TransUniProgram programMain, TransUniProgram programGray, TransUniProgram programPort, int gray)
-            {
-                for (int i = 0; i < Buildings.Count; i++)
-                {
-                    if (i != gray)
-                    {
-                        Buildings[i].Draw(programMain, programPort);
-                    }
-                    else
-                    {
-                        Buildings[i].Draw(programGray, programPort);
-                    }
-                }
-            }
-            public void Draw(CShaderTransformation program, int gray)
-            {
-                for (int i = 0; i < Buildings.Count; i++)
-                {
-                    Buildings[i].Draw(program);
-                }
-            }
-            public void Draw(BodyElemUniShader program, int hover)
-            {
-                for (int i = 0; i < Buildings.Count; i++)
-                {
-                    if (i == hover)
-                    {
-                        program.GrayInter.T0(1.0f);
-                    }
-                    else
-                    {
-                        program.GrayInter.T1(1.0f);
-                    }
-                    Buildings[i].Draw(program);
-                }
-            }
             public void DrawCost(Select_Building hover)
             {
                 Inventory_Storage.DrawOut(Buildings[hover.Building_Idx].MaterialCost);

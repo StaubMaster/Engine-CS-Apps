@@ -10,7 +10,7 @@ using Engine3D.BodyParse;
 using Engine3D.BitManip;
 using Engine3D.Graphics.Display;
 
-using Engine3D.Miscellaneous;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using VoidFactory.GameSelect;
 using VoidFactory.Editor;
@@ -181,44 +181,13 @@ namespace VoidFactory
 
             //Engine3D.Graphics.TextPalletTest.Test('3');
 
-            EntryContainer<int> Test = new EntryContainer<int>();
+            //EntryContainerDynamic<object>.Test();
+            //EntryContainerFixed<object>.Test();
 
-            EntryContainer<int>.Entry[] ent = new EntryContainer<int>.Entry[5];
-            ent[0] = Test.Alloc(2);
-            ent[1] = Test.Alloc(1);
-            ent[2] = Test.Alloc(3);
-            ent[3] = Test.Alloc(1);
-            ent[4] = Test.Alloc(3);
-
-            ConsoleLog.Log("Indexe: " + Test.Length);
-            for (int i = 0; i < ent.Length; i++) { ConsoleLog.Log("[" + i.ToString("0") + "] " + ent[i].EntryIndex); }
-
-            ConsoleLog.Log("Data: " + Test.Length);
-            for (int i = 0; i < Test.Length; i++) { ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]); }
-
-            for (int j = 0; j < ent.Length; j++)
-            {
-                for (int i = 0; i < ent[j].Length; i++)
-                {
-                    ent[j][i] = j * 10 + i;
-                }
-            }
-
-            ConsoleLog.Log("Data: " + Test.Length);
-            for (int i = 0; i < Test.Length; i++) { ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]); }
-
-            ent[1].Free();
-
-            ConsoleLog.Log("Data: " + Test.Length);
-            for (int i = 0; i < Test.Length; i++) { ConsoleLog.Log("[" + i.ToString("00") + "] " + Test.Data[i]); }
-
-            ConsoleLog.Log("Indexe: " + Test.Length);
-            for (int i = 0; i < ent.Length; i++) { ConsoleLog.Log("[" + i.ToString("0") + "] " + ent[i].EntryIndex); }
-
-            ent[2].Free();
-
-            ConsoleLog.Log("Indexe: " + Test.Length);
-            for (int i = 0; i < ent.Length; i++) { ConsoleLog.Log("[" + i.ToString("0") + "] " + ent[i].EntryIndex); }
+            Engine3D.ConsoleLog.Log(".SizeOf");
+            Engine3D.ConsoleLog.Log("IData.   : " + Engine3D.Graphics.Basic.Data.IData.SizeOf);
+            Engine3D.ConsoleLog.Log("Point3D. : " + Engine3D.Abstract3D.Point3D.SizeOf);
+            //Engine3D.ConsoleLog.Log("Angle3D. : " + Engine3D.Abstract3D.Angle3D.SizeOf);
         }
 
         private void b_Plane_Click(object sender, EventArgs e)

@@ -129,7 +129,10 @@ namespace VoidFactory.Production.Data
                     if (ROut[o].Thing != null)
                         ROut[o].Thing.Draw(program, (float)pos.Y, (float)pos.X, icon_scale);
                     else
-                        IO_Port.BodyError.Draw_Main();
+                    {
+                        //IO_Port.BodyError.DrawMain();
+                        IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Error].DrawMain();
+                    }
 
                     idx++;
                 }
@@ -155,7 +158,10 @@ namespace VoidFactory.Production.Data
                     if (RInn[i].Thing != null)
                         RInn[i].Thing.Draw(program, (float)pos.Y, (float)pos.X, icon_scale);
                     else
-                        IO_Port.BodyError.Draw_Main();
+                    {
+                        //IO_Port.BodyError.DrawMain();
+                        IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Error].DrawMain();
+                    }
 
                     idx++;
                 }

@@ -9,7 +9,7 @@ using Engine3D.Graphics;
 using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Display;
 
-using Engine3D.Miscellaneous;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Buildings;
@@ -19,21 +19,25 @@ namespace VoidFactory.Production.Transfer
 {
     class IO_Port
     {
-        public static PHEI BodyError;
-        public static PHEI BodyTransPorter;
-        public static PHEI BodyAxis;
+        public enum MetaBodyIndex : int
+        {
+            Error,
+            TransPorter,
+            Axis,
 
-        public static PHEI BodyHex;
-        public static PHEI BodyOct;
+            Hex,
+            Oct,
 
-        public static PHEI BodyInn;
-        public static PHEI BodyInnHex;
-        public static PHEI BodyInnOct;
+            Inn,
+            InnHex,
+            InnOct,
 
-        public static PHEI BodyOut;
-        public static PHEI BodyOutHex;
-        public static PHEI BodyOutOct;
+            Out,
+            OutHex,
+            OutOct,
+        };
 
+        public static PHEI_Array Bodys;
 
 
 
@@ -41,7 +45,7 @@ namespace VoidFactory.Production.Transfer
 
         public readonly Point3D Pos;
         public readonly bool InnOut;
-        public readonly EntryContainer<PHEIData>.Entry InstEntry;
+        public readonly EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry InstEntry;
 
         public DATA_Buffer Buffer;
         public uint Limit;
@@ -54,15 +58,13 @@ namespace VoidFactory.Production.Transfer
 
             if (!InnOut)
             {
-                InstEntry = BodyInn.Alloc(1);
-                InstEntry[0] = new PHEIData(new Transformation3D(pos));
-                BodyInn.TransUpdate();
+                InstEntry = Bodys[(int)MetaBodyIndex.Inn].Alloc(1);
+                InstEntry[0] = new PolyHedraInstance3D_Data(new Transformation3D(pos));
             }
             else
             {
-                InstEntry = BodyOut.Alloc(1);
-                InstEntry[0] = new PHEIData(new Transformation3D(pos));
-                BodyOut.TransUpdate();
+                InstEntry = Bodys[(int)MetaBodyIndex.Out].Alloc(1);
+                InstEntry[0] = new PolyHedraInstance3D_Data(new Transformation3D(pos));
             }
 
             Buffer = new DATA_Buffer();
@@ -72,14 +74,6 @@ namespace VoidFactory.Production.Transfer
         ~IO_Port()
         {
             InstEntry.Free();
-            if (!InnOut)
-            {
-                BodyInn.TransUpdate();
-            }
-            else
-            {
-                BodyOut.TransUpdate();
-            }
         }
         public void Remove()
         {
@@ -256,9 +250,15 @@ namespace VoidFactory.Production.Transfer
                 program.UniTrans(new RenderTrans(Pos));
 
                 if (!InnOut)
-                    BodyInnHex.Draw_Main();
+                {
+                    Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
+                    //BodyInnHex.DrawMain();
+                }
                 else
-                    BodyOutHex.Draw_Main();
+                {
+                    Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
+                    //BodyOutHex.DrawMain();
+                }
             }
             public void Draw_Select(TransUniProgram program)
             {
@@ -267,9 +267,15 @@ namespace VoidFactory.Production.Transfer
                 program.UniTrans(new RenderTrans(Pos));
 
                 if (!InnOut)
-                    BodyInnOct.Draw_Main();
+                {
+                    Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
+                    //BodyInnOct.DrawMain();
+                }
                 else
-                    BodyOutOct.Draw_Main();
+                {
+                    Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
+                    //BodyOutOct.DrawMain();
+                }
             }
             public void Draw_Hover(CShaderTransformation program)
             {
@@ -278,9 +284,15 @@ namespace VoidFactory.Production.Transfer
                 program.Trans.Value(new Transformation3D(Pos));
 
                 if (!InnOut)
-                    BodyInnHex.Draw_Main();
+                {
+                    //BodyInnHex.DrawMain();
+                    Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
+                }
                 else
-                    BodyOutHex.Draw_Main();
+                {
+                    //BodyOutHex.DrawMain();
+                    Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
+                }
             }
             public void Draw_Select(CShaderTransformation program)
             {
@@ -289,9 +301,15 @@ namespace VoidFactory.Production.Transfer
                 program.Trans.Value(new Transformation3D(Pos));
 
                 if (!InnOut)
-                    BodyInnOct.Draw_Main();
+                {
+                    //BodyInnOct.DrawMain();
+                    Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
+                }
                 else
-                    BodyOutOct.Draw_Main();
+                {
+                    //BodyOutOct.DrawMain();
+                    Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
+                }
             }
             public void Draw_Hover(BodyElemUniShader program)
             {
@@ -303,11 +321,13 @@ namespace VoidFactory.Production.Transfer
 
                 if (!InnOut)
                 {
-                    BodyInnHex.Draw_Main();
+                    //BodyInnHex.DrawMain();
+                    Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
                 }
                 else
                 {
-                    BodyOutHex.Draw_Main();
+                    //BodyOutHex.DrawMain();
+                    Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
                 }
 
                 program.LightRange.Value(0.1f, 1.0f);
@@ -322,11 +342,13 @@ namespace VoidFactory.Production.Transfer
 
                 if (!InnOut)
                 {
-                    BodyInnOct.Draw_Main();
+                    //BodyInnOct.DrawMain();
+                    Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
                 }
                 else
                 {
-                    BodyOutOct.Draw_Main();
+                    //BodyOutOct.DrawMain();
+                    Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
                 }
 
                 program.LightRange.Value(0.1f, 1.0f);

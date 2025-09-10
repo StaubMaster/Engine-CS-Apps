@@ -15,12 +15,30 @@ namespace VoidFactory.Inventory
 {
     class Category
     {
+        /*
+         * make an Array of UIBody Entrys for all the stuff
+         * want to show thing in corner
+         * so cant stop drawing UIBody Insts
+         * add all the Entrys when Inventroy is "opened"
+         * and remove them when it is "closed"
+         * 
+         */
+
         private readonly string Name;
         private Interaction[] Items;
 
         public Category(string name)
         {
             Name = name;
+        }
+
+        public void Draw_Alloc()
+        {
+
+        }
+        public void Draw_Free()
+        {
+
         }
 
         public void Draw()

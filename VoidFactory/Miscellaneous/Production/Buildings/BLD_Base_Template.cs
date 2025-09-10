@@ -35,26 +35,28 @@ namespace VoidFactory.Production.Buildings
             public void Draw()
             {
                 //Bodys[Idx].BufferDraw();
-                Mains[Idx].Draw_Main();
+                Bodys[Idx].DrawMain();
             }
             public void Draw(TransUniProgram progMain, TransUniProgram progPort, Transformation3D trans)
             {
                 progMain.UniTrans(new RenderTrans(trans));
                 //Bodys[Idx].BufferDraw();
-                Mains[Idx].Draw_Main();
+                Bodys[Idx].DrawMain();
 
                 if (progPort != null)
                 {
                     for (int i = 0; i < Inn.Length; i++)
                     {
                         progPort.UniTrans(new RenderTrans(trans.TFore(Inn[i])));
-                        IO_Port.BodyInn.Draw_Main();
+                        //IO_Port.BodyInn.DrawMain();
+                        IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Inn].DrawMain();
                     }
 
                     for (int o = 0; o < Out.Length; o++)
                     {
                         progPort.UniTrans(new RenderTrans(trans.TFore(Out[o])));
-                        IO_Port.BodyOut.Draw_Main();
+                        //IO_Port.BodyOut.DrawMain();
+                        IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
                     }
                 }
             }
@@ -62,20 +64,22 @@ namespace VoidFactory.Production.Buildings
             {
                 progMain.Trans.Value(trans);
                 //Bodys[Idx].BufferDraw();
-                Mains[Idx].Draw_Main();
+                Bodys[Idx].DrawMain();
 
                 if (progPort != null)
                 {
                     for (int i = 0; i < Inn.Length; i++)
                     {
                         progPort.Trans.Value(new Transformation3D(trans.TFore(Inn[i])));
-                        IO_Port.BodyInn.Draw_Main();
+                        //IO_Port.BodyInn.DrawMain();
+                        IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Inn].DrawMain();
                     }
 
                     for (int o = 0; o < Out.Length; o++)
                     {
                         progPort.Trans.Value(new Transformation3D(trans.TFore(Out[o])));
-                        IO_Port.BodyOut.Draw_Main();
+                        //IO_Port.BodyOut.DrawMain();
+                        IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
                     }
                 }
             }

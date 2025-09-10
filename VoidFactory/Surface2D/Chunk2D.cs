@@ -294,10 +294,6 @@ namespace VoidFactory.Surface2D
 
         private Chunk2D[] Neighbour;
 
-        private static uint DebugNumber = 0;
-        private static uint DebugCount = 0;
-        private uint DebugIndex;
-
         private Chunk2D(int y, int c)
         {
             Layers = new LayerData[LayerGen.Length];
@@ -312,15 +308,11 @@ namespace VoidFactory.Surface2D
 
             Neighbour = new Chunk2D[8];
 
-            DebugIndex = DebugCount;
-            Engine3D.ConsoleLog.Log("++++ Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]" + " " + DebugIndex + " " + DebugNumber);
-            DebugCount++;
-            DebugNumber++;
+            Engine3D.ConsoleLog.Log("++++ Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]");
         }
         ~Chunk2D()
         {
-            DebugNumber--;
-            Engine3D.ConsoleLog.Log("---- Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]" + " " + DebugIndex + " " + DebugNumber);
+            Engine3D.ConsoleLog.Log("---- Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]");
         }
 
         private Chunk2D NeighbourFromBits(byte bits)
@@ -412,7 +404,6 @@ namespace VoidFactory.Surface2D
         {
             if (perc < 0 || perc > 1)
             {
-                Engine3D.ConsoleLog.Log("Discard: Perc 0><1 " + obj);
                 return;
             }
 
@@ -421,10 +412,6 @@ namespace VoidFactory.Surface2D
             if (chunk != null)
             {
                 chunk.ObjectAdd(tileIdx.Mod(), obj);
-            }
-            else
-            {
-                Engine3D.ConsoleLog.Log("Discard: no Chunk " + obj);
             }
         }
         private void FeaturesPlaceRing(int y, int c, double dist, double perc, SURF_Object.Template temp)
@@ -575,14 +562,14 @@ namespace VoidFactory.Surface2D
         {
             program.UniTileSize(Tile_Size, Tiles_Per_Side);
         }
-        private void Draw(Chunk2DProgram program)
+        /*private void Draw(Chunk2DProgram program)
         {
             program.UniChunkIdx(Chunk_Idx_Y, 0, Chunk_Idx_C);
             for (int l = 0; l < Layers.Length; l++)
             {
                 Layers[l].Buffer.Draw();
             }
-        }
+        }*/
         private void Draw(Graphics.Chunk2D_Shader program)
         {
             program.ChunkPos.Set(new int[] { Chunk_Idx_Y, 0, Chunk_Idx_C });

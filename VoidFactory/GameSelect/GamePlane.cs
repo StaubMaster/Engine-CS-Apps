@@ -4,6 +4,7 @@ using System.IO;
 
 using Engine3D;
 using Engine3D.Abstract3D;
+using Engine3D.Abstract2D;
 using Engine3D.GraphicsOld;
 using Engine3D.GraphicsOld.Forms;
 using Engine3D.Entity;
@@ -14,12 +15,13 @@ using Engine3D.OutPut.Uniform.Generic.Float;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Telematry;
 using Engine3D.Graphics.Manager;
 using Engine3D.Graphics.Basic.Data;
 
-using Engine3D.Miscellaneous;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using VoidFactory.Surface2D;
 using VoidFactory.Surface2D.Graphics;
@@ -48,9 +50,14 @@ namespace VoidFactory.GameSelect
         private AxisBoxShader Box_Shader;
         private AxisBoxBuffer Box_Buffer;
 
-        private PolyHedraTestManager PolyHedraMan;
-        private PHEIBuffer InstBuffer;
+        private PolyHedraTestManager PH_Man;
+        private PHEI_Buffer InstBuffer;
 
+        private EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry[][] TestBodys;
+
+        private UserInterfaceManager UI_Man;
+        private UIBody_Buffer UIBodyBuffer;
+        private Angle3D UI_Spin;
 
 
         private DisplayPolyHedra TestTower;
@@ -83,169 +90,115 @@ namespace VoidFactory.GameSelect
 
 
 
+        private void EntitiesInfo()
+        {
+            string str = "";
+            str += Buildings.Count() + ":  Converter\n";
+            str += TransPorter.Count() + ":TransPorter\n";
+            str += Chunk2D.SURF_Object.BodysCountInfo() + "\n";
+            str += Chunk2D_Buffer.SBufferEntrys.ToInfo();
+
+            Text_Buffer.InsertTR(
+                (0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF,
+                str);
+        }
         private void EntitiesUpdate()
         {
             Buildings.Update();
             TransPorter.Update();
 
-            string str = "";
-            str += Buildings.Count() +   ":  Converter\n";
-            str += TransPorter.Count() + ":TransPorter\n";
-            str += Chunk2D.SURF_Object.InstCountInfo();
-            //Text_Buff.Insert(TextBuffer.ScreenCorner.TR, 0, 0, 0xFFFFFF, str);
-            Text_Buffer.InsertTR(
-                (0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF,
-                str);
+            EntitiesInfo();
         }
         private void EntitiesDraw()
         {
             //if (!Graphic.Draw_Gray)
             //if (Graphic.Draw_Ports)
 
-            //Buildings.Draw(Shader_Default, Graphic.Draw_Gray_Exclude_Idx);
-            //TransPorter.Draw(Shader_Default);
-
-            Buildings.Draw(BodyUni_Shader, Graphic.Draw_Gray_Exclude_Idx);
             TransPorter.Draw(BodyUni_Shader);
         }
 
-        private void BodysDraw()
+        private void DebugAllBodysSpinUpdate()
         {
-            Transformation3D trans = Transformation3D.Default();
-            trans.Rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
-            trans.Pos.X = 0;
+            Angle3D rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
 
-            BodyUni_Shader.Use();
+            PolyHedraInstance3D_Data data;
 
-            PHEI[] bodys;
-
-            trans.Pos.C = 120;
-            bodys = new PHEI[]
+            for (int i = 0; i < TestBodys[0].Length; i++)
             {
-                IO_Port.BodyError,
-                IO_Port.BodyTransPorter,
-                IO_Port.BodyAxis,
-
-                IO_Port.BodyHex,
-                IO_Port.BodyOct,
-
-                IO_Port.BodyInn,
-                IO_Port.BodyInnHex,
-                IO_Port.BodyInnOct,
-
-                IO_Port.BodyOut,
-                IO_Port.BodyOutHex,
-                IO_Port.BodyOutOct,
-            };
-
-            for (int i = 0; i < bodys.Length; i++)
-            {
-                trans.Pos.Y = i * 10;
-                BodyUni_Shader.Trans.Value(trans);
-                bodys[i].Draw_Main();
+                data = TestBodys[0][i][0];
+                data.Trans = new Transformation3D(new Point3D(i * 10, 0, 120), rot);
+                TestBodys[0][i][0] = data;
             }
 
-            trans.Pos.C = 140;
-            for (int i = 0; i < DATA_Thing.Mains.Length; i++)
+            for (int i = 0; i < TestBodys[1].Length; i++)
             {
-                trans.Pos.Y = i * 10;
-                BodyUni_Shader.Trans.Value(trans);
-                DATA_Thing.Mains[i].Draw_Main();
+                data = TestBodys[1][i][0];
+                data.Trans = new Transformation3D(new Point3D(i * 10, 0, 140), rot);
+                TestBodys[1][i][0] = data;
             }
 
-            trans.Pos.C = 170;
-            for (int i = 0; i < BLD_Base.Mains.Length; i++)
+            for (int i = 0; i < TestBodys[2].Length; i++)
             {
-                trans.Pos.Y = i * 30;
-                BodyUni_Shader.Trans.Value(trans);
-                BLD_Base.Mains[i].Draw_Main();
+                data = TestBodys[2][i][0];
+                data.Trans = new Transformation3D(new Point3D(i * 30, 0, 170), rot);
+                TestBodys[2][i][0] = data;
             }
         }
-        private void InstDrawTest()
+        private void TowerDraw()
         {
-            EntryContainer<PHEIData> instData = new EntryContainer<PHEIData>();
-            Transformation3D trans = Transformation3D.Default();
-            trans.Rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
-            trans.Pos.X = 10;
+            EntryContainerDynamic<PolyHedraInstance3D_Data> instData = new EntryContainerDynamic<PolyHedraInstance3D_Data>();
 
-            PHEI[] bodys;
-
-            trans.Pos.C = 120;
-            bodys = new PHEI[]
-            {
-                IO_Port.BodyError,
-                IO_Port.BodyTransPorter,
-                IO_Port.BodyAxis,
-
-                IO_Port.BodyHex,
-                IO_Port.BodyOct,
-
-                IO_Port.BodyInn,
-                IO_Port.BodyInnHex,
-                IO_Port.BodyInnOct,
-
-                IO_Port.BodyOut,
-                IO_Port.BodyOutHex,
-                IO_Port.BodyOutOct,
-            };
-
-            EntryContainer<PHEIData>.Entry ent0 = instData.Alloc(bodys.Length);
-            for (int i = 0; i < bodys.Length; i++)
-            {
-                trans.Pos.Y = i * 10;
-                //PolyHedraMan.Trans.ChangeData(trans);
-                //bodys[i].Draw();
-                ent0[i] = new PHEIData(trans);
-            }
-
-            EntryContainer<PHEIData>.Entry ent1 = instData.Alloc(DATA_Thing.Mains.Length);
-            trans.Pos.C = 140;
-            for (int i = 0; i < DATA_Thing.Mains.Length; i++)
-            {
-                trans.Pos.Y = i * 10;
-                //PolyHedraMan.Trans.ChangeData(trans);
-                //DATA_Thing.Bodys[i].BufferDraw();
-                ent1[i] = new PHEIData(trans);
-            }
-
-            EntryContainer<PHEIData>.Entry ent2 = instData.Alloc(BLD_Base.Mains.Length);
-            trans.Pos.C = 170;
-            for (int i = 0; i < BLD_Base.Mains.Length; i++)
-            {
-                trans.Pos.Y = i * 30;
-                //PolyHedraMan.Trans.ChangeData(trans);
-                //BLD_Base.Bodys[i].BufferDraw();
-                ent2[i] = new PHEIData(trans);
-            }
-
-            EntryContainer<PHEIData>.Entry ent3 = instData.Alloc(4);
-            ent3[0] = new PHEIData(new Transformation3D(new Point3D(-320, 20, -320)));
-            ent3[1] = new PHEIData(new Transformation3D(new Point3D(+320, -100, -320)), new ColorUData(0xFF0000), LInterData.LIT1());
-            ent3[2] = new PHEIData(new Transformation3D(new Point3D(+320, -100, +320)), new ColorUData(0x00FF00), LInterData.LIT1());
-            ent3[3] = new PHEIData(new Transformation3D(new Point3D(-320, -100, +320)), new ColorUData(0x0000FF), LInterData.LIT1());
+            EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry entry = instData.Alloc(4);
+            entry[0] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(-320, 20, -320)));
+            entry[1] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(+320, -100, -320)), new ColorUData(0xFF0000), LInterData.LIT1());
+            entry[2] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(+320, -100, +320)), new ColorUData(0x00FF00), LInterData.LIT1());
+            entry[3] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(-320, -100, +320)), new ColorUData(0x0000FF), LInterData.LIT1());
 
             InstBuffer.Bind_Inst_Trans(instData.Data, instData.Data.Length);
-            PolyHedraMan.InstShader.Use();
-            InstBuffer.Draw();
+            PH_Man.InstShader.Use();
+            InstBuffer.Draw_Inst();
+        }
+        private void UI_Test()
+        {
+            return;
+
+            UIGridPosition gPos = new UIGridPosition(UIAnchor.TL(), new Point2D(0.0f, 0.0f), UICorner.TL());
+            UIGridSize gSize = new UIGridSize(new Point2D(50.0f, 50.0f), 25.0f);
+
+            UIBodyData[] UIData = new UIBodyData[]
+            {
+                new UIBodyData(gPos.WithOffset(new Point2D( 0.0f,  0.0f)), gSize, 1.0f, new Angle3D(0, 0, 0)),
+                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f,  0.0f)), gSize, 1.0f, new Angle3D(0, 0, 0)),
+                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Angle3D(0, 0, 0)),
+                new UIBodyData(gPos.WithOffset(new Point2D( 0.0f, -1.0f)), gSize, 1.0f, UI_Spin),
+            };
+
+            UI_Spin.A += 0.01f;
+
+            UIBodyBuffer.Bind_Inst(UIData, UIData.Length);
+            UI_Man.UIBodyShader.Use();
+            UIBodyBuffer.Draw_Inst();
         }
         private void InstDraw()
         {
-            PolyHedraMan.InstShader.Use();
+            PH_Man.InstShader.Use();
 
+            IO_Port.Bodys.Update();
             if (Graphic.Draw_Ports)
             {
-                PolyHedraMan.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
-                IO_Port.BodyInn.Draw_Inst();
-                IO_Port.BodyOut.Draw_Inst();
-                PolyHedraMan.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
+                PH_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
+                IO_Port.Bodys.Draw();
+                PH_Man.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
             }
 
-            for (int i = 0; i < BLD_Base.Mains.Length; i++)
-            {
-                BLD_Base.Mains[i].Draw_Inst();
-            }
+            BLD_Base.Bodys.Update();
+            BLD_Base.Bodys.Draw();
 
-            Chunk2D.SURF_Object.InstDraw();
+            DATA_Thing.Bodys.Update();
+            DATA_Thing.Bodys.Draw();
+
+            Chunk2D.SURF_Object.Bodys.Update();
+            Chunk2D.SURF_Object.Bodys.Draw();
         }
 
         private void Frame_Solar()
@@ -262,9 +215,16 @@ namespace VoidFactory.GameSelect
             string format = "+0000.00;-0000.00; 0000.00";
             {
                 string str = "";
+
                 str += "Pos.Y:" + view.Trans.Pos.Y.ToString(format) + "\n";
                 str += "Pos.X:" + view.Trans.Pos.X.ToString(format) + "\n";
-                str += "Pos.C:" + view.Trans.Pos.C.ToString(format);
+                str += "Pos.C:" + view.Trans.Pos.C.ToString(format) + "\n";
+
+                //str += "Pos: ";
+                //str += view.Trans.Pos.Y.ToString(format) + " ";
+                //str += view.Trans.Pos.X.ToString(format) + " ";
+                //str += view.Trans.Pos.C.ToString(format) + "\n";
+
                 Text_Buffer.InsertTL(
                     (0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF,
                     str);
@@ -283,6 +243,17 @@ namespace VoidFactory.GameSelect
             //view.UniTrans(TransPorter.Program);
             TransPorter.Program.UniView(new RenderTrans(view.Trans));
         }
+
+        /* UI Recipies are wack
+         * dont feel like doing those with the new system
+         * but everything else should be fine
+         * also for recipy I might just be able to do a new shader
+         * or just change the old shader
+         * everything has as GridPos
+         *  but also a 3D Pos and Rot
+         * should be simple enough
+         * but redo everything else for now
+         */
         private void Frame_Inv()
         {
             Inventory_Interface.Tool_Change((int)-win.MouseScroll());
@@ -298,7 +269,17 @@ namespace VoidFactory.GameSelect
             if (!win.MouseLocked)
             {
                 Inventory_Interface.Cat_Draw();
+                Inventory_Interface.Draw_Init();
             }
+            else
+            {
+                Inventory_Interface.Draw_Free();
+            }
+
+            UI_Man.UIBodyShader.Use();
+            Inventory_Interface.Draw_Inst();
+
+            
 
             Inventory_Interface.Tool_Draw();
         }
@@ -306,14 +287,10 @@ namespace VoidFactory.GameSelect
         {
             EntitiesUpdate();
             EntitiesDraw();
-            BodysDraw();
         }
         private void Frame_Chunk()
         {
-            //Chunk_Prog_Norm.UniView(new RenderTrans(view.Trans));
-            //Chunk_Prog_Gray.UniView(new RenderTrans(view.Trans));
-            //view.UniTrans(Chunk_Prog_Norm);
-            //view.UniTrans(Chunk_Prog_Gray);
+            Chunk2D_Buffer.SUpdate();
 
             Chunk_Shader.Use();
             Chunk_Shader.ScreenRatio.Value(win.Size_Float2());
@@ -328,32 +305,6 @@ namespace VoidFactory.GameSelect
             }
             Chunks.Draw(Chunk_Shader);
             Chunk_Shader.GrayInter.T0(1.0f);
-
-            //Chunk_Prog_Norm.UniView(new RenderTrans(view.Trans));
-            //Chunk_Prog_Gray.UniView(new RenderTrans(view.Trans));
-            //Chunk_Prog_Norm.UniSolar(Graphic.Solar);
-            //Chunk_Prog_Gray.UniSolar(Graphic.Solar);
-            //if (!Graphic.Draw_Gray)
-            //    Chunks.Draw(Chunk_Prog_Norm);
-            //else
-            //    Chunks.Draw(Chunk_Prog_Gray);
-
-            BodyUni_Shader.Use();
-            if (!Graphic.Draw_Gray)
-            {
-                BodyUni_Shader.GrayInter.T0(1.0f);
-            }
-            else
-            {
-                BodyUni_Shader.GrayInter.T1(1.0f);
-            }
-            Chunks.Draw(BodyUni_Shader);
-            BodyUni_Shader.GrayInter.T0(1.0f);
-
-            //Chunks.Draw(Graphic.Trans_Light_Norm);
-            //OAR_Shader.Use();
-            //Chunks.Draw(Shader_Default);
-            //Chunks.Draw(OAR_Shader);
         }
         private void Frame_Box()
         {
@@ -404,19 +355,14 @@ namespace VoidFactory.GameSelect
                 Init_Shaders();
             }
 
-            if (win.CheckKey(Keys.F6).IsPressed())
-            {
-                Chunk2D.SURF_Object.InstUpdate();
-            }
-
-            Chunk2D.SURF_Object.InstUpdate();
-
             (float, float) winSize = win.Size_Float2();
             Text_Buffer.DisplayConverter.X.PixelSize = winSize.Item1;
             Text_Buffer.DisplayConverter.Y.PixelSize = winSize.Item2;
+            SizeRatio winRatio = new SizeRatio(winSize.Item1, winSize.Item2);
 
             Frame_Solar();
             Frame_View();
+            DebugAllBodysSpinUpdate();
 
             BodyUni_Shader.Use();
             BodyUni_Shader.Trans.Value(new Transformation3D(new Point3D(-320, 0, -320)));
@@ -426,14 +372,17 @@ namespace VoidFactory.GameSelect
             Frame_Chunk();
             Frame_Box();
 
-            PolyHedraMan.ScreenRatio.ChangeData(new ScreenRatio(winSize.Item1, winSize.Item2));
-            PolyHedraMan.View.ChangeData(view.Trans);
-            InstDrawTest();
+            PH_Man.ScreenRatio.ChangeData(winRatio);
+            UI_Man.ScreenRatio.ChangeData(winRatio);
+            PH_Man.View.ChangeData(view.Trans);
+
             InstDraw();
 
+            TowerDraw();
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             Frame_Inv();
+            UI_Test();
 
             /*bool showRenderTelematry = false;
             if (showRenderTelematry)
@@ -482,7 +431,22 @@ namespace VoidFactory.GameSelect
         private void FromFiles()
         {
             string folder = "E:/Programmieren/VS_Code/OpenTK/VoidFactory/VoidFactory/Config/";
-            string[] fileTexts = new string[]
+
+            string[] filePaths = new string[]
+            {
+                "Void.txt",
+                "Building.txt",
+                "Raw.txt",
+                "Relays.txt",
+                "Manufacturing.txt",
+                "Iron.txt",
+                "Copper.txt",
+                "Electronics.txt",
+                "SurfaceLayerNoise.txt",
+                "SurfaceThings.txt",
+            };
+
+            /*string[] fileTexts = new string[]
             {
                 File.ReadAllText(folder + "Void.txt"),
                 File.ReadAllText(folder + "Building.txt"),
@@ -494,23 +458,14 @@ namespace VoidFactory.GameSelect
                 File.ReadAllText(folder + "Electronics.txt"),
                 File.ReadAllText(folder + "SurfaceLayerNoise.txt"),
                 File.ReadAllText(folder + "SurfaceThings.txt"),
-            };
+            };*/
 
-            FileInterpret.FileStruct[] fileDatas = new FileInterpret.FileStruct[fileTexts.Length];
-            /*for (int f = 0; f < fileDatas.Length; f++)
+            FileInterpret.FileStruct[] fileDatas = new FileInterpret.FileStruct[filePaths.Length];
+            for (int i = 0; i < fileDatas.Length; i++)
             {
-                fileDatas[f] = new FileInterpret.FileStruct(fileTexts[f]);
-            }*/
-            fileDatas[0] = new FileInterpret.FileStruct(fileTexts[0]);
-            fileDatas[1] = new FileInterpret.FileStruct(fileTexts[1]);
-            fileDatas[2] = new FileInterpret.FileStruct(fileTexts[2]);
-            fileDatas[3] = new FileInterpret.FileStruct(fileTexts[3]);
-            fileDatas[4] = new FileInterpret.FileStruct(fileTexts[4]);
-            fileDatas[5] = new FileInterpret.FileStruct(fileTexts[5]);
-            fileDatas[6] = new FileInterpret.FileStruct(fileTexts[6]);
-            fileDatas[7] = new FileInterpret.FileStruct(fileTexts[7]);
-            fileDatas[8] = new FileInterpret.FileStruct(fileTexts[8]);
-            fileDatas[9] = new FileInterpret.FileStruct(fileTexts[9]);
+                fileDatas[i] = new FileInterpret.FileStruct(File.ReadAllText(folder + filePaths[i]));
+            }
+
             /*FileInterpret.FileStruct[] fileDatas = new FileInterpret.FileStruct[]
             {
                 new FileInterpret.FileStruct(File.ReadAllText(folder + "Void.txt")),
@@ -533,58 +488,84 @@ namespace VoidFactory.GameSelect
             };
             */
 
-
+            InterpretFiles(fileDatas);
+        }
+        private void InterpretFiles(FileInterpret.FileStruct[] fileDatas)
+        {
             DATA_Thing.Interpret.Create();
-            for (int i = 0; i < fileDatas.Length; i++)
-                DATA_Thing.Interpret.SetFile(fileDatas[i]);
+            for (int i = 0; i < fileDatas.Length; i++) { DATA_Thing.Interpret.SetFile(fileDatas[i]); }
             Things = DATA_Thing.Interpret.GetThings();
-            //DATA_Thing.Bodys = DATA_Thing.Interpret.GetBodys();
-            DATA_Thing.CreateMains(DATA_Thing.Interpret.GetBodys());
+            DATA_Thing.IconScales_Create(DATA_Thing.Interpret.GetBodys());
+            DATA_Thing.Bodys = new PHEI_Array(DATA_Thing.Interpret.GetBodys());
             DATA_Thing.Interpret.Delete();
-            //DATA_Thing.BodysCreate();
-
 
             DATA_Recipy.Interpret.Create();
-            for (int i = 0; i < fileDatas.Length; i++)
-                DATA_Recipy.Interpret.SetFile(fileDatas[i], Things);
+            for (int i = 0; i < fileDatas.Length; i++) { DATA_Recipy.Interpret.SetFile(fileDatas[i], Things); }
             Recipys = DATA_Recipy.Interpret.GetRecipy();
             DATA_Recipy.Interpret.Delete();
 
-
             BLD_Base.Interpreter.Create();
-            for (int i = 0; i < fileDatas.Length; i++)
-                BLD_Base.Interpreter.SetFile(fileDatas[i], Things);
+            for (int i = 0; i < fileDatas.Length; i++) { BLD_Base.Interpreter.SetFile(fileDatas[i], Things); }
             Templates = BLD_Base.Interpreter.GetTemplates();
-            //BLD_Base.Bodys = BLD_Base.Interpreter.GetBodys();
-            BLD_Base.CreateMains(BLD_Base.Interpreter.GetBodys());
+            BLD_Base.Bodys = new PHEI_Array(BLD_Base.Interpreter.GetBodys());
+            {
+                BodyStatic[] bodys = BLD_Base.Interpreter.GetBodys();
+                Inventory_Interface.BLD_Bodys = new UIBody[bodys.Length];
+                for (int i = 0; i < bodys.Length; i++)
+                {
+                    Inventory_Interface.BLD_Bodys[i] = new UIBody(bodys[i].ToPolyHedra());
+                }
+            }
             BLD_Base.Interpreter.Delete();
-            //BLD_Base.BodysCreate();
-
-
 
             Chunk2D.Interpret.Create();
-            for (int i = 0; i < fileDatas.Length; i++)
-                Chunk2D.Interpret.SetFile(fileDatas[i], Things);
+            for (int i = 0; i < fileDatas.Length; i++) { Chunk2D.Interpret.SetFile(fileDatas[i], Things); }
             Chunk2D.LayerGen = Chunk2D.Interpret.GetLayers();
             Chunk2D.Interpret.Delete();
 
-            //Chunk2D.SURF_Object.Interpret.Create();
-            //for (int i = 0; i < fileDatas.Length; i++)
-            //{
-            //    Chunk2D.SURF_Object.Interpret.SetFile(fileDatas[i], Things);
-            //}
-            //Chunk2D.SURF_Object.Bodys = Chunk2D.SURF_Object.Interpret.GetBodys();
-            //Chunk2D.SURF_Object.CreateMains(Chunk2D.SURF_Object.Interpret.GetBodys());
+            Chunk2D.SURF_Object.Interpret.Create();
+            for (int i = 0; i < fileDatas.Length; i++) { Chunk2D.SURF_Object.Interpret.SetFile(fileDatas[i], Things); }
+            Chunk2D.SURF_Object.Bodys = new PHEI_Array(Chunk2D.SURF_Object.Interpret.GetBodys());
+            Chunk2D.SurfThingTemplates = Chunk2D.SURF_Object.Interpret.GetTemplates();
+            Chunk2D.SURF_Object.Interpret.Delete();
 
-            //Chunk2D.SurfThingTemplates = Chunk2D.SURF_Object.Interpret.GetTemplates();
-            //Chunk2D.SURF_Object.Interpret.Delete();
-            //Chunk2D.SURF_Object.BodysCreate();
+            //Chunk2D.SURF_Object.Interpret.Do(fileDatas, Things);
+        }
+        private void MetaBodysFromFiles()
+        {
+            string ymtDir = "E:/Zeug/YMT/";
 
-            Chunk2D.SURF_Object.Interpret.Do(fileDatas, Things);
+            IO_Port.Bodys = new PHEI_Array(new PHEI[]
+            {
+                new PHEI(PolyHedra.Generate.Error()),
+                new PHEI(ymtDir + "Meta/Transporter.txt"),
+                new PHEI(ymtDir + "Meta/AxisCross10.txt"),
+
+                new PHEI(ymtDir + "Meta/Box_Hex.txt"),
+                new PHEI(ymtDir + "Meta/Box_Oct.txt"),
+
+                new PHEI(ymtDir + "Meta/Inn.txt"),
+                new PHEI(ymtDir + "Meta/Inn_Box_Hex.txt"),
+                new PHEI(ymtDir + "Meta/Inn_Box_Oct.txt"),
+
+                new PHEI(ymtDir + "Meta/Out.txt"),
+                new PHEI(ymtDir + "Meta/Out_Box_Hex.txt"),
+                new PHEI(ymtDir + "Meta/Out_Box_Oct.txt"),
+            });
+        }
+        private void BodysNull()
+        {
+            DATA_Thing.Bodys = null;
+            BLD_Base.Bodys = null;
+            IO_Port.Bodys = null;
+            Chunk2D.SURF_Object.Bodys = null;
+
+            Inventory_Interface.BLD_Bodys = null;
         }
 
         private void Chunk_Create()
         {
+            Chunk2D_Buffer.SCreate();
             Chunks = new Chunk2D.Collection();
             Chunks.Create();
         }
@@ -592,32 +573,11 @@ namespace VoidFactory.GameSelect
         {
             Chunks.Delete();
             Chunks = null;
-
-            //Chunk2D.SURF_Object.BodysDelete();
-            Chunk2D.SURF_Object.InstDelete();
+            Chunk2D_Buffer.SDelete();
         }
 
         private void Entities_Create()
         {
-            string ymtDir = "E:/Zeug/YMT/";
-
-            IO_Port.BodyInn = new PHEI(ymtDir + "Meta/Inn.txt");
-            IO_Port.BodyInnHex = new PHEI(ymtDir + "Meta/Inn_Box_Hex.txt");
-            IO_Port.BodyInnOct = new PHEI(ymtDir + "Meta/Inn_Box_Oct.txt");
-
-            IO_Port.BodyOut = new PHEI(ymtDir + "Meta/Out.txt");
-            IO_Port.BodyOutHex = new PHEI(ymtDir + "Meta/Out_Box_Hex.txt");
-            IO_Port.BodyOutOct = new PHEI(ymtDir + "Meta/Out_Box_Oct.txt");
-
-            IO_Port.BodyHex = new PHEI(ymtDir + "Meta/Box_Hex.txt");
-            IO_Port.BodyOct = new PHEI(ymtDir + "Meta/Box_Oct.txt");
-
-            IO_Port.BodyTransPorter = new PHEI(ymtDir + "Meta/Transporter.txt");
-            IO_Port.BodyAxis = new PHEI(ymtDir + "Meta/AxisCross10.txt");
-            IO_Port.BodyError = new PHEI("");
-
-
-
             Buildings = new BLD_Base.Collection();
             Buildings.Create();
 
@@ -634,11 +594,6 @@ namespace VoidFactory.GameSelect
         }
         private void Entities_Delete()
         {
-            //IO_Port.Bodys = null;
-
-            DATA_Thing.DeleteMains();
-            BLD_Base.DeleteMains();
-
             Recipys = null;
             Templates = null;
 
@@ -734,14 +689,46 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.TilesPreSide.Set(new int[] { Chunk2D.Tiles_Per_Side });
             Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
 
-            PolyHedraMan = new PolyHedraTestManager(shaderDir);
-            PolyHedraMan.Depth.ChangeData(new DepthData(view.Depth.Near, view.Depth.Far));
+            PH_Man = new PolyHedraTestManager(shaderDir);
+            PH_Man.Depth.ChangeData(new DepthData(view.Depth.Near, view.Depth.Far));
 
             PolyHedra tower = Engine3D.BodyParse.TBodyFile.LoadTextFile("E:/Zeug/YMT/Tower/YMT/Tower_Segmented_60m.ymt");
-            InstBuffer = new PHEIBuffer();
+            InstBuffer = new PHEI_Buffer();
             tower.ToBuffer(InstBuffer);
 
+            PolyHedra cube = PolyHedra.Generate.Cube();
+            UI_Man = new UserInterfaceManager(shaderDir);
+            UIBodyBuffer = new UIBody_Buffer();
+            cube.ToBuffer(UIBodyBuffer);
+            //UI_Man.Depth.ChangeData(new DepthData(-1000, +1000));
+            UI_Spin = new Angle3D(0, -0.5f, 0);
+
             Ref_Graphics();
+
+            {
+                TestBodys = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[3][];
+
+                TestBodys[0] = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[IO_Port.Bodys.Length];
+                for (int i = 0; i < IO_Port.Bodys.Length; i++)
+                {
+                    TestBodys[0][i] = IO_Port.Bodys[i].Alloc(1);
+                    TestBodys[0][i][0] = new PolyHedraInstance3D_Data(Transformation3D.Default());
+                }
+
+                TestBodys[1] = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[DATA_Thing.Bodys.Length];
+                for (int i = 0; i < DATA_Thing.Bodys.Length; i++)
+                {
+                    TestBodys[1][i] = DATA_Thing.Bodys[i].Alloc(1);
+                    TestBodys[1][i][0] = new PolyHedraInstance3D_Data(Transformation3D.Default());
+                }
+
+                TestBodys[2] = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[BLD_Base.Bodys.Length];
+                for (int i = 0; i < BLD_Base.Bodys.Length; i++)
+                {
+                    TestBodys[2][i] = BLD_Base.Bodys[i].Alloc(1);
+                    TestBodys[2][i][0] = new PolyHedraInstance3D_Data(Transformation3D.Default());
+                }
+            }
         }
 
 
@@ -772,6 +759,7 @@ namespace VoidFactory.GameSelect
             //win.KeyChecks.Add(DebugReloadShaders);
 
             FromFiles();
+            MetaBodysFromFiles();
 
             Cache_Create();
             Entities_Create();
@@ -801,6 +789,7 @@ namespace VoidFactory.GameSelect
 
             Graphic.Delete();
 
+            BodysNull();
 
             Cache_Delete();
             Entities_Delete();
