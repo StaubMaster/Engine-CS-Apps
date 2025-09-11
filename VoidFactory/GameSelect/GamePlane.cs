@@ -19,7 +19,7 @@ using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Telematry;
 using Engine3D.Graphics.Manager;
-using Engine3D.Graphics.Basic.Data;
+using Engine3D.DataStructs;
 
 using Engine3D.Miscellaneous.EntryContainer;
 
@@ -41,33 +41,39 @@ namespace VoidFactory.GameSelect
      *      all Gray except one
      *      one without Light
      */
+    /*  PolyHedra
+     *      finally start using Textures
+     *      fix FileInterpretation Variables
+     *      use FileInterpretation for PolyHedra
+     *      allow PolyHedra to be made of multiple Files
+     */
     partial class GamePlane : Game3D
     {
+        private Transformation3D Solar;
+
         private GraphicsData Graphic;
         private BodyElemUniShader BodyUni_Shader;
+
         private TextShader Text_Shader;
         private TextBuffer Text_Buffer;
+
         private AxisBoxShader Box_Shader;
         private AxisBoxBuffer Box_Buffer;
 
-        private PolyHedraTestManager PH_Man;
+        private PolyHedraShaderManager PH_Man;
         private PHEI_Buffer InstBuffer;
 
-        private EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry[][] TestBodys;
+        private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry[][] TestBodys;
 
         private UserInterfaceManager UI_Man;
         private UIBody_Buffer UIBodyBuffer;
         private Angle3D UI_Spin;
 
 
-        private DisplayPolyHedra TestTower;
-
         private Chunk2D.Collection Chunks;
         private Chunk2D_Shader Chunk_Shader;
 
 
-
-        private Cache<string, BodyStatic> Static_Body_Cache;
 
         private DATA_Thing[] Things;
         private BLD_Base.Template_Base[] Templates;
@@ -121,7 +127,7 @@ namespace VoidFactory.GameSelect
         {
             Angle3D rot = new Angle3D((Graphic.Tick * Angle3D.Full) / 512, 0, 0);
 
-            PolyHedraInstance3D_Data data;
+            PolyHedraInstance_3D_Data data;
 
             for (int i = 0; i < TestBodys[0].Length; i++)
             {
@@ -146,13 +152,13 @@ namespace VoidFactory.GameSelect
         }
         private void TowerDraw()
         {
-            EntryContainerDynamic<PolyHedraInstance3D_Data> instData = new EntryContainerDynamic<PolyHedraInstance3D_Data>();
+            EntryContainerDynamic<PolyHedraInstance_3D_Data> instData = new EntryContainerDynamic<PolyHedraInstance_3D_Data>();
 
-            EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry entry = instData.Alloc(4);
-            entry[0] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(-320, 20, -320)));
-            entry[1] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(+320, -100, -320)), new ColorUData(0xFF0000), LInterData.LIT1());
-            entry[2] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(+320, -100, +320)), new ColorUData(0x00FF00), LInterData.LIT1());
-            entry[3] = new PolyHedraInstance3D_Data(new Transformation3D(new Point3D(-320, -100, +320)), new ColorUData(0x0000FF), LInterData.LIT1());
+            EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry entry = instData.Alloc(4);
+            entry[0] = new PolyHedraInstance_3D_Data(new Transformation3D(new Point3D(-320, 20, -320)));
+            entry[1] = new PolyHedraInstance_3D_Data(new Transformation3D(new Point3D(+320, -100, -320)), new ColorUData(0xFF0000), LInterData.LIT1());
+            entry[2] = new PolyHedraInstance_3D_Data(new Transformation3D(new Point3D(+320, -100, +320)), new ColorUData(0x00FF00), LInterData.LIT1());
+            entry[3] = new PolyHedraInstance_3D_Data(new Transformation3D(new Point3D(-320, -100, +320)), new ColorUData(0x0000FF), LInterData.LIT1());
 
             InstBuffer.Bind_Inst_Trans(instData.Data, instData.Data.Length);
             PH_Man.InstShader.Use();
@@ -160,17 +166,15 @@ namespace VoidFactory.GameSelect
         }
         private void UI_Test()
         {
-            return;
-
-            UIGridPosition gPos = new UIGridPosition(UIAnchor.TL(), new Point2D(0.0f, 0.0f), UICorner.TL());
+            UIGridPosition gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
             UIGridSize gSize = new UIGridSize(new Point2D(50.0f, 50.0f), 25.0f);
 
             UIBodyData[] UIData = new UIBodyData[]
             {
-                new UIBodyData(gPos.WithOffset(new Point2D( 0.0f,  0.0f)), gSize, 1.0f, new Angle3D(0, 0, 0)),
-                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f,  0.0f)), gSize, 1.0f, new Angle3D(0, 0, 0)),
-                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Angle3D(0, 0, 0)),
-                new UIBodyData(gPos.WithOffset(new Point2D( 0.0f, -1.0f)), gSize, 1.0f, UI_Spin),
+                new UIBodyData(gPos.WithOffset(new Point2D( 0.0f,  0.0f)), gSize, 1.0f, new Angle3D(UI_Spin.A, 0, 0)),
+                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f,  0.0f)), gSize, 1.0f, UI_Spin),
+                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(0.0f, 0, 0), UI_Spin)),
+                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(3.0f, 0, 0), UI_Spin)),
             };
 
             UI_Spin.A += 0.01f;
@@ -201,50 +205,51 @@ namespace VoidFactory.GameSelect
             Chunk2D.SURF_Object.Bodys.Draw();
         }
 
-        private void Frame_Solar()
+        private void Update_Solar()
         {
-            //solar = !(new Punkt(-1, +3, -2));
-            Graphic.Solar = !(new Point3D(-2, +1, 0));
-            Graphic.Solar = Graphic.Solar + new Angle3D(Graphic.Tick / 255.0, 0, 0);
+            Solar.Rot.A += 0.01f;
+            Point3D solar = !(Solar.Pos + Solar.Rot);
+
+            PH_Man.LightSolar.ChangeData(solar);
+            Chunk_Shader.LightSolar.Value(solar);
         }
-        private void Frame_View()
+        private void Update_View()
         {
             TMovement.FlatX(ref view.Trans, win.MoveByKeys(), win.SpinByMouse());
             view.Update(win.MouseRay());
-            //Text_Buff.Insert(TextBuffer.ScreenCorner.TL, 0, 0, 0xFFFFFF, view.ToString());
-            string format = "+0000.00;-0000.00; 0000.00";
-            {
-                string str = "";
 
+            {
+                string format = "+0000.00;-0000.00; 0000.00";
+                string str = "";
                 str += "Pos.Y:" + view.Trans.Pos.Y.ToString(format) + "\n";
                 str += "Pos.X:" + view.Trans.Pos.X.ToString(format) + "\n";
                 str += "Pos.C:" + view.Trans.Pos.C.ToString(format) + "\n";
-
-                //str += "Pos: ";
-                //str += view.Trans.Pos.Y.ToString(format) + " ";
-                //str += view.Trans.Pos.X.ToString(format) + " ";
-                //str += view.Trans.Pos.C.ToString(format) + "\n";
-
-                Text_Buffer.InsertTL(
-                    (0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF,
-                    str);
+                Text_Buffer.InsertTL((0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF, str);
             }
+            Graphic._View_Ray = view.Ray;
 
-            if (!win.CheckKey(Keys.Q).IsPressed()) { Graphic.View_Ray = view.Trans.ToRay(); }
-
-            Graphic.Update(view);
-            //  Update View (and Solar)
-
-            BodyUni_Shader.Use();
             BodyUni_Shader.View.Value(view.Trans);
-            BodyUni_Shader.ScreenRatio.Value(win.Size_Float2());
-
-            //TransPorter.Program.UniView(new RenderTrans(view.Trans));
-            //view.UniTrans(TransPorter.Program);
+            Chunk_Shader.View.Value(view.Trans);
             TransPorter.Program.UniView(new RenderTrans(view.Trans));
+            PH_Man.View.ChangeData(view.Trans);
+            Box_Shader.View.Value(view.Trans);
+        }
+        private void Update_WinSize()
+        {
+            (float, float) winSize = win.Size_Float2();
+            BodyUni_Shader.ScreenRatio.Value(winSize);
+            Chunk_Shader.ScreenRatio.Value(winSize);
+            Box_Shader.ScreenRatio.Value(winSize);
+
+            SizeRatio winRatio = new SizeRatio(winSize.Item1, winSize.Item2);
+            Inventory_Interface.SizeRatio = winRatio;
+            PH_Man.ViewPortSizeRatio.ChangeData(winRatio);
+            UI_Man.ScreenRatio.ChangeData(winRatio);
         }
 
-        /* UI Recipies are wack
+        private void Frame_Inv()
+        {
+            /* UI Recipies are wack
          * dont feel like doing those with the new system
          * but everything else should be fine
          * also for recipy I might just be able to do a new shader
@@ -254,8 +259,7 @@ namespace VoidFactory.GameSelect
          * should be simple enough
          * but redo everything else for now
          */
-        private void Frame_Inv()
-        {
+
             Inventory_Interface.Tool_Change((int)-win.MouseScroll());
 
             if (win.CheckKey(Keys.PageUp).IsPressed()) { Inventory_Interface.Cat_Next(); }
@@ -268,8 +272,9 @@ namespace VoidFactory.GameSelect
 
             if (!win.MouseLocked)
             {
-                Inventory_Interface.Cat_Draw();
+                //Inventory_Interface.Cat_Draw();
                 Inventory_Interface.Draw_Init();
+                Inventory_Interface.Update_Mouse(win.MousePixel(), Text_Buffer);
             }
             else
             {
@@ -279,22 +284,13 @@ namespace VoidFactory.GameSelect
             UI_Man.UIBodyShader.Use();
             Inventory_Interface.Draw_Inst();
 
-            
-
             Inventory_Interface.Tool_Draw();
-        }
-        private void Frame_Draw()
-        {
-            EntitiesUpdate();
-            EntitiesDraw();
         }
         private void Frame_Chunk()
         {
             Chunk2D_Buffer.SUpdate();
 
             Chunk_Shader.Use();
-            Chunk_Shader.ScreenRatio.Value(win.Size_Float2());
-            Chunk_Shader.View.Value(view.Trans);
             if (!Graphic.Draw_Gray)
             {
                 Chunk_Shader.GrayInter.T0(1.0f);
@@ -309,12 +305,8 @@ namespace VoidFactory.GameSelect
         private void Frame_Box()
         {
             Box_Shader.Use();
-            Box_Shader.ScreenRatio.Value(win.Size_Float2());
-            Box_Shader.View.Value(view.Trans);
-
             Box_Buffer.BindList();
             Box_Buffer.Draw();
-            //Box_Buffer.Bind(new BoundBox.BoxRenderData[0]);
         }
         private void Frame_Text()
         {
@@ -333,17 +325,6 @@ namespace VoidFactory.GameSelect
         }
         protected override void Frame()
         {
-            //win.UText.BufferFill(Text_Buff);
-
-            //if (Chunk_Save_Load.Check())
-            //{
-            //    Chunk.File.Save_Text("E:/Programmieren/VS_Code/Spiel Zeug/Maps/Surface/chunk.txt", in chunks[0]);
-            //    Chunk.File.Load_Text("E:/Programmieren/VS_Code/Spiel Zeug/Maps/Surface/chunk.txt", out chunks[0]);
-            //}
-
-            //TelematryDataBuffer telematry_data_text = Text_Buffer.Telematry.Report();
-            //TelematryDataBuffer telematry_data_box = Box_Buffer.Telematry.Report();
-
             if (win.CheckKey(Keys.Pause).IsPressed())
             {
                 ConsoleLog.Log("Pause Break: Garbage Collect");
@@ -355,26 +336,19 @@ namespace VoidFactory.GameSelect
                 Init_Shaders();
             }
 
-            (float, float) winSize = win.Size_Float2();
-            Text_Buffer.DisplayConverter.X.PixelSize = winSize.Item1;
-            Text_Buffer.DisplayConverter.Y.PixelSize = winSize.Item2;
-            SizeRatio winRatio = new SizeRatio(winSize.Item1, winSize.Item2);
+            Graphic.Update();
 
-            Frame_Solar();
-            Frame_View();
+            Update_Solar();
+            Update_View();
+            Update_WinSize();
+
             DebugAllBodysSpinUpdate();
 
-            BodyUni_Shader.Use();
-            BodyUni_Shader.Trans.Value(new Transformation3D(new Point3D(-320, 0, -320)));
-            TestTower.Draw();
+            EntitiesUpdate();
+            EntitiesDraw();
 
-            Frame_Draw();
             Frame_Chunk();
             Frame_Box();
-
-            PH_Man.ScreenRatio.ChangeData(winRatio);
-            UI_Man.ScreenRatio.ChangeData(winRatio);
-            PH_Man.View.ChangeData(view.Trans);
 
             InstDraw();
 
@@ -382,51 +356,12 @@ namespace VoidFactory.GameSelect
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             Frame_Inv();
-            UI_Test();
-
-            /*bool showRenderTelematry = false;
-            if (showRenderTelematry)
-            {
-                Text_Buffer.Insert(
-                    new Engine3D.Graphics.TextOrientation(new Normal1Point(-1.0f, 0.0f), Engine3D.Graphics.TextDirection.DiagRC, (+0.5f, 0.0f)),
-                    Text_Buffer.Default_TextSize, 0xFFFFFF, telematry_data_text.ToMultiLine());
-
-                Text_Buffer.Insert(
-                    new Engine3D.Graphics.TextOrientation(new Normal1Point(0.0f, 0.0f), Engine3D.Graphics.TextDirection.DiagRC, (+0.5f, 0.0f)),
-                    Text_Buffer.Default_TextSize, 0xFFFFFF, telematry_data_box.ToMultiLine());
-            }*/
+            //UI_Test();
 
             Frame_Text();
         }
 
 
-
-        private void Cache_Create()
-        {
-            TestTower = new DisplayPolyHedra("E:/Zeug/YMT/Tower/YMT/Tower.ymt");
-
-            //string folder = "E:/Programmieren/Spiel Zeug/3D/";
-            string folder = "E:/Zeug/YMT/";
-
-            Static_Body_Cache = new Cache<string, BodyStatic>();
-
-            Static_Body_Cache.Insert("RED", folder + "FigurRED.txt");
-            Static_Body_Cache.Insert("GRN", folder + "FigurGRN.txt");
-            Static_Body_Cache.Insert("BLU", folder + "FigurBLU.txt");
-
-            Static_Body_Cache.Insert("platform0",   folder + "Maschine/Platform.txt");
-            Static_Body_Cache.Insert("platform1",   folder + "Maschine/Platform_1.txt");
-            Static_Body_Cache.Insert("platform2",   folder + "Maschine/Platform_2.txt");
-
-            Static_Body_Cache.FuncAllIO(BodyStatic.File.Load);
-            Static_Body_Cache.Insert("error", BodyStatic.Create.ErrorBody());
-            Static_Body_Cache.FuncAllO(BodyStatic.BufferCreate);
-        }
-        private void Cache_Delete()
-        {
-            Static_Body_Cache.FuncAllO(BodyStatic.BufferDelete);
-            Static_Body_Cache = null;
-        }
 
         private void FromFiles()
         {
@@ -495,8 +430,17 @@ namespace VoidFactory.GameSelect
             DATA_Thing.Interpret.Create();
             for (int i = 0; i < fileDatas.Length; i++) { DATA_Thing.Interpret.SetFile(fileDatas[i]); }
             Things = DATA_Thing.Interpret.GetThings();
-            DATA_Thing.IconScales_Create(DATA_Thing.Interpret.GetBodys());
-            DATA_Thing.Bodys = new PHEI_Array(DATA_Thing.Interpret.GetBodys());
+            {
+                BodyStatic[] bodys = DATA_Thing.Interpret.GetBodys();
+                DATA_Thing.IconScales_Create(bodys);
+                DATA_Thing.Bodys = new PHEI_Array(bodys);
+
+                Inventory_Interface.DATA_Thing_Bodys = new UIBody[bodys.Length];
+                for (int i = 0; i < bodys.Length; i++)
+                {
+                    Inventory_Interface.DATA_Thing_Bodys[i] = new UIBody(bodys[i].ToPolyHedra());
+                }
+            }
             DATA_Thing.Interpret.Delete();
 
             DATA_Recipy.Interpret.Create();
@@ -507,9 +451,10 @@ namespace VoidFactory.GameSelect
             BLD_Base.Interpreter.Create();
             for (int i = 0; i < fileDatas.Length; i++) { BLD_Base.Interpreter.SetFile(fileDatas[i], Things); }
             Templates = BLD_Base.Interpreter.GetTemplates();
-            BLD_Base.Bodys = new PHEI_Array(BLD_Base.Interpreter.GetBodys());
             {
                 BodyStatic[] bodys = BLD_Base.Interpreter.GetBodys();
+                BLD_Base.Bodys = new PHEI_Array(bodys);
+
                 Inventory_Interface.BLD_Bodys = new UIBody[bodys.Length];
                 for (int i = 0; i < bodys.Length; i++)
                 {
@@ -535,23 +480,32 @@ namespace VoidFactory.GameSelect
         {
             string ymtDir = "E:/Zeug/YMT/";
 
-            IO_Port.Bodys = new PHEI_Array(new PHEI[]
+            PolyHedra[] bodys = new PolyHedra[]
             {
-                new PHEI(PolyHedra.Generate.Error()),
-                new PHEI(ymtDir + "Meta/Transporter.txt"),
-                new PHEI(ymtDir + "Meta/AxisCross10.txt"),
+                PolyHedra.Generate.Error(),
 
-                new PHEI(ymtDir + "Meta/Box_Hex.txt"),
-                new PHEI(ymtDir + "Meta/Box_Oct.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Transporter.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/AxisCross10.txt"),
 
-                new PHEI(ymtDir + "Meta/Inn.txt"),
-                new PHEI(ymtDir + "Meta/Inn_Box_Hex.txt"),
-                new PHEI(ymtDir + "Meta/Inn_Box_Oct.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Box_Hex.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Box_Oct.txt"),
 
-                new PHEI(ymtDir + "Meta/Out.txt"),
-                new PHEI(ymtDir + "Meta/Out_Box_Hex.txt"),
-                new PHEI(ymtDir + "Meta/Out_Box_Oct.txt"),
-            });
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Inn.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Inn_Box_Hex.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Inn_Box_Oct.txt"),
+
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Out.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Out_Box_Hex.txt"),
+                Engine3D.BodyParse.TBodyFile.LoadTextFile(ymtDir + "Meta/Out_Box_Oct.txt"),
+            };
+
+            IO_Port.Bodys = new PHEI_Array(bodys);
+
+            Inventory_Interface.Meta_Bodys = new UIBody[bodys.Length];
+            for (int i = 0; i < bodys.Length; i++)
+            {
+                Inventory_Interface.Meta_Bodys[i] = new UIBody(bodys[i]);
+            }
         }
         private void BodysNull()
         {
@@ -561,6 +515,7 @@ namespace VoidFactory.GameSelect
             Chunk2D.SURF_Object.Bodys = null;
 
             Inventory_Interface.BLD_Bodys = null;
+            Inventory_Interface.DATA_Thing_Bodys = null;
         }
 
         private void Chunk_Create()
@@ -689,7 +644,7 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.TilesPreSide.Set(new int[] { Chunk2D.Tiles_Per_Side });
             Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
 
-            PH_Man = new PolyHedraTestManager(shaderDir);
+            PH_Man = new PolyHedraShaderManager(shaderDir);
             PH_Man.Depth.ChangeData(new DepthData(view.Depth.Near, view.Depth.Far));
 
             PolyHedra tower = Engine3D.BodyParse.TBodyFile.LoadTextFile("E:/Zeug/YMT/Tower/YMT/Tower_Segmented_60m.ymt");
@@ -706,27 +661,27 @@ namespace VoidFactory.GameSelect
             Ref_Graphics();
 
             {
-                TestBodys = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[3][];
+                TestBodys = new EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[3][];
 
-                TestBodys[0] = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[IO_Port.Bodys.Length];
+                TestBodys[0] = new EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[IO_Port.Bodys.Length];
                 for (int i = 0; i < IO_Port.Bodys.Length; i++)
                 {
                     TestBodys[0][i] = IO_Port.Bodys[i].Alloc(1);
-                    TestBodys[0][i][0] = new PolyHedraInstance3D_Data(Transformation3D.Default());
+                    TestBodys[0][i][0] = new PolyHedraInstance_3D_Data(Transformation3D.Default());
                 }
 
-                TestBodys[1] = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[DATA_Thing.Bodys.Length];
+                TestBodys[1] = new EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[DATA_Thing.Bodys.Length];
                 for (int i = 0; i < DATA_Thing.Bodys.Length; i++)
                 {
                     TestBodys[1][i] = DATA_Thing.Bodys[i].Alloc(1);
-                    TestBodys[1][i][0] = new PolyHedraInstance3D_Data(Transformation3D.Default());
+                    TestBodys[1][i][0] = new PolyHedraInstance_3D_Data(Transformation3D.Default());
                 }
 
-                TestBodys[2] = new EntryContainerBase<PolyHedraInstance3D_Data>.Entry[BLD_Base.Bodys.Length];
+                TestBodys[2] = new EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[BLD_Base.Bodys.Length];
                 for (int i = 0; i < BLD_Base.Bodys.Length; i++)
                 {
                     TestBodys[2][i] = BLD_Base.Bodys[i].Alloc(1);
-                    TestBodys[2][i][0] = new PolyHedraInstance3D_Data(Transformation3D.Default());
+                    TestBodys[2][i][0] = new PolyHedraInstance_3D_Data(Transformation3D.Default());
                 }
             }
         }
@@ -743,25 +698,18 @@ namespace VoidFactory.GameSelect
             ConsoleLog.TabInc();
             base.Create();
 
-            //view.renderDepth.Calc(1, 1000);
+            Solar = new Transformation3D(new Point3D(-2, +3, -1));
+
             view.Depth.Near = 1.0f;
             view.Depth.Far = 1000.0f;
 
 
-            //View_Ray_Key = new KeyToggle(Keys.Q);
-            //win.KeyChecks.Add(View_Ray_Key);
 
             Graphic.Create();
-            //Graphic.UpdateView(new RenderDepthFactors(view.DepthN, view.DepthF), view.Fov);
-            Graphic.UpdateView(view);
-
-            //DebugReloadShaders = new KeyPress(Keys.F5);
-            //win.KeyChecks.Add(DebugReloadShaders);
 
             FromFiles();
             MetaBodysFromFiles();
 
-            Cache_Create();
             Entities_Create();
             Chunk_Create();
 
@@ -785,13 +733,11 @@ namespace VoidFactory.GameSelect
             base.Delete();
 
 
-            //View_Ray_Key = null;
 
             Graphic.Delete();
 
             BodysNull();
 
-            Cache_Delete();
             Entities_Delete();
             Chunk_Delete();
 

@@ -45,7 +45,7 @@ namespace VoidFactory.Production.Transfer
 
         public readonly Point3D Pos;
         public readonly bool InnOut;
-        public readonly EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry InstEntry;
+        public readonly EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry InstEntry;
 
         public DATA_Buffer Buffer;
         public uint Limit;
@@ -59,12 +59,12 @@ namespace VoidFactory.Production.Transfer
             if (!InnOut)
             {
                 InstEntry = Bodys[(int)MetaBodyIndex.Inn].Alloc(1);
-                InstEntry[0] = new PolyHedraInstance3D_Data(new Transformation3D(pos));
+                InstEntry[0] = new PolyHedraInstance_3D_Data(new Transformation3D(pos));
             }
             else
             {
                 InstEntry = Bodys[(int)MetaBodyIndex.Out].Alloc(1);
-                InstEntry[0] = new PolyHedraInstance3D_Data(new Transformation3D(pos));
+                InstEntry[0] = new PolyHedraInstance_3D_Data(new Transformation3D(pos));
             }
 
             Buffer = new DATA_Buffer();

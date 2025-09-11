@@ -185,7 +185,7 @@ namespace VoidFactory
             //EntryContainerFixed<object>.Test();
 
             Engine3D.ConsoleLog.Log(".SizeOf");
-            Engine3D.ConsoleLog.Log("IData.   : " + Engine3D.Graphics.Basic.Data.IData.SizeOf);
+            Engine3D.ConsoleLog.Log("IData.   : " + Engine3D.DataStructs.IData.SizeOf);
             Engine3D.ConsoleLog.Log("Point3D. : " + Engine3D.Abstract3D.Point3D.SizeOf);
             //Engine3D.ConsoleLog.Log("Angle3D. : " + Engine3D.Abstract3D.Angle3D.SizeOf);
         }

@@ -59,19 +59,37 @@ namespace VoidFactory.GameSelect
 
         public class GraphicsData
         {
-            public int Tick;
+            /*  remove
+                    this stuff is mostly used in Inventory ?
+                    fix Inventory, replace this, remove this
+             */
 
-            public Point3D Solar;
+            public int Tick { get { return _Tick; } set { _Tick = value; } }
+            public int _Tick;
 
-            public Ray3D View_Ray;
 
-            public bool Draw_Gray;
-            public int Draw_Gray_Exclude_Idx;
-            public bool Draw_Ports;
+            public Ray3D View_Ray { get { return _View_Ray; } set { _View_Ray = value; } }
+            public Ray3D _View_Ray;
 
-            public IconProgram Icon_Prog;
-            private Angle3D Icon_Spin;
-            public float[] Icon_Spin_flt;
+
+
+            public bool Draw_Ports { get { return _Draw_Ports; } set { _Draw_Ports = value; } }
+            public bool _Draw_Ports;
+            public bool Draw_Gray { get { return _Draw_Gray; } set { _Draw_Gray = value; } }
+            public bool _Draw_Gray;
+            public int Draw_Gray_Exclude_Idx { get { return _Draw_Gray_Exclude_Idx; } set { _Draw_Gray_Exclude_Idx = value; } }
+            public int _Draw_Gray_Exclude_Idx;
+
+
+
+            public IconProgram Icon_Prog { get { return _Icon_Prog; } set { _Icon_Prog = value; } }
+            public IconProgram _Icon_Prog;
+            private Angle3D Icon_Spin { get { return _Icon_Spin; } set { _Icon_Spin = value; } }
+            private Angle3D _Icon_Spin;
+            public float[] Icon_Spin_flt { get { return _Icon_Spin_flt; } set { _Icon_Spin_flt = value; } }
+            public float[] _Icon_Spin_flt;
+
+
 
             public void Create()
             {
@@ -88,36 +106,19 @@ namespace VoidFactory.GameSelect
                 //Icon_Spin_flt = null;
             }
 
-            public void UpdateView(DisplayCamera view)
-            {
-                //Trans_Light_Norm.UniProj(depth, fov);
-                //Trans_Light_Gray.UniProj(depth, fov);
-                //Trans_Direct.UniProj(depth, fov);
-            }
-            public void Update(DisplayCamera view)
+            public void Update()
             {
                 Tick++;
 
-                //RenderTrans viewRender = new RenderTrans(view.Trans);
-                //Trans_Light_Norm.UniView(viewRender);
-                //Trans_Light_Gray.UniView(viewRender);
-                //Trans_Direct.UniView(viewRender);
+                Angle3D spin;
+                spin = Icon_Spin;
+                spin.A = Tick / 64.0;
+                Icon_Spin = spin;
 
-                {
-                    Icon_Spin.A = Tick / 64.0;
-                    int idx = 0;
-                    Icon_Spin.FloatsSinCos(Icon_Spin_flt, ref idx);
-                    Icon_Prog.UniRot(Icon_Spin_flt);
-                }
+                int idx = 0;
+                Icon_Spin.FloatsSinCos(Icon_Spin_flt, ref idx);
+                Icon_Prog.UniRot(Icon_Spin_flt);
             }
         }
-        /*
-        public class WorldData
-        {
-            public Chunk2D[] chunks;
-            public BLD_Base.Collection Buildings;
-            public IO_TransPorter.Collection TransPorter;            
-        }
-        */
     }
 }

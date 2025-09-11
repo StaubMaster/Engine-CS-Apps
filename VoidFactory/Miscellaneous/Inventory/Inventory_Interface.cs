@@ -6,6 +6,7 @@ using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Display2D;
 using Engine3D.Graphics;
 using Engine3D.Miscellaneous.EntryContainer;
+using Engine3D.DataStructs;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Buildings;
@@ -15,62 +16,193 @@ namespace VoidFactory.Inventory
 {
     static class Inventory_Interface
     {
+        private static bool IsDraw;
+
+        public static SizeRatio SizeRatio;
+
+        private static UIGridPosition gPos;
+        private static UIGridSize gSize;
+
+        public static UIBody[] Meta_Bodys;
+        public static EntryContainerDynamic<UIBodyData>.Entry[] Meta_Insts;
         public static UIBody[] BLD_Bodys;
         public static EntryContainerDynamic<UIBodyData>.Entry[] BLD_Insts;
+        public static UIBody[] DATA_Thing_Bodys;
+        public static EntryContainerDynamic<UIBodyData>.Entry[] DATA_Thing_Insts;
 
         public static void Draw_Init()
         {
-            if (BLD_Insts != null) { return; }
+            if (IsDraw) { return; }
+            IsDraw = true;
 
+            Meta_Insts = new EntryContainerBase<UIBodyData>.Entry[Meta_Bodys.Length];
             BLD_Insts = new EntryContainerBase<UIBodyData>.Entry[BLD_Bodys.Length];
+            DATA_Thing_Insts = new EntryContainerBase<UIBodyData>.Entry[DATA_Thing_Bodys.Length];
 
-            UIGridPosition gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
-            UIGridSize gSize = new UIGridSize(new Point2D(100.0f, 100.0f), 25.0f);
+            gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
+            gSize = new UIGridSize(new Point2D(100.0f, 100.0f), 25.0f);
 
             int i = 0;
+            int j;
             for (float y = +2; y >= -2; y--)
             {
                 for (float x = -6; x <= +6; x++)
                 {
-                    if (i < BLD_Insts.Length)
+                    j = i;
+                    if (j < Meta_Insts.Length)
                     {
-                        BLD_Insts[i] = BLD_Bodys[i].Alloc(1);
-                        BLD_Insts[i][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.1f, new Angle3D(1.0f, -0.5f, 0));
-                        i++;
+                        Meta_Insts[j] = Meta_Bodys[j].Alloc(1);
+                        Meta_Insts[j][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.2f, new Angle3D(1.0f, -0.5f, 0));
                     }
+                    else
+                    {
+                        j = j - BLD_Insts.Length;
+                        if (j < BLD_Insts.Length)
+                        {
+                            BLD_Insts[j] = BLD_Bodys[j].Alloc(1);
+                            BLD_Insts[j][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.1f, new Angle3D(1.0f, -0.5f, 0));
+                        }
+                        else
+                        {
+                            j = j - BLD_Insts.Length;
+                            if (j < DATA_Thing_Insts.Length)
+                            {
+                                DATA_Thing_Insts[j] = DATA_Thing_Bodys[j].Alloc(1);
+                                DATA_Thing_Insts[j][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.4f, new Angle3D(1.0f, -0.5f, 0));
+                            }
+                        }
+                    }
+                    i++;
                 }
             }
         }
         public static void Draw_Free()
         {
-            if (BLD_Insts == null) { return; }
+            if (!IsDraw) { return; }
+            IsDraw = false;
+
+            for (int i = 0; i < Meta_Insts.Length; i++)
+            {
+                Meta_Insts[i].Free();
+            }
+            Meta_Insts = null;
 
             for (int i = 0; i < BLD_Insts.Length; i++)
             {
                 BLD_Insts[i].Free();
             }
             BLD_Insts = null;
+
+            for (int i = 0; i < DATA_Thing_Insts.Length; i++)
+            {
+                DATA_Thing_Insts[i].Free();
+            }
+            DATA_Thing_Insts = null;
         }
         public static void Draw_Inst()
         {
+            if (Meta_Insts != null)
+            {
+                UIBodyData data;
+                for (int i = 0; i < Meta_Insts.Length; i++)
+                {
+                    if (Meta_Insts[i] != null)
+                    {
+                        data = Meta_Insts[i][0];
+                        data.Trans.Rot.A += 0.01f;
+                        Meta_Insts[i][0] = data;
+                    }
+                }
+            }
             if (BLD_Insts != null)
             {
                 UIBodyData data;
                 for (int i = 0; i < BLD_Insts.Length; i++)
                 {
-                    data = BLD_Insts[i][0];
-                    data.Spin.A += 0.01f;
-                    BLD_Insts[i][0] = data;
+                    if (BLD_Insts[i] != null)
+                    {
+                        data = BLD_Insts[i][0];
+                        data.Trans.Rot.A += 0.01f;
+                        BLD_Insts[i][0] = data;
+                    }
+                }
+            }
+            if (DATA_Thing_Insts != null)
+            {
+                UIBodyData data;
+                for (int i = 0; i < DATA_Thing_Insts.Length; i++)
+                {
+                    if (DATA_Thing_Insts[i] != null)
+                    {
+                        data = DATA_Thing_Insts[i][0];
+                        data.Trans.Rot.A += 0.01f;
+                        DATA_Thing_Insts[i][0] = data;
+                    }
                 }
             }
 
+            for (int i = 0; i < Meta_Bodys.Length; i++)
+            {
+                Meta_Bodys[i].DataUpdate();
+                Meta_Bodys[i].DrawInst();
+            }
             for (int i = 0; i < BLD_Bodys.Length; i++)
             {
                 BLD_Bodys[i].DataUpdate();
                 BLD_Bodys[i].DrawInst();
             }
+            for (int i = 0; i < DATA_Thing_Bodys.Length; i++)
+            {
+                DATA_Thing_Bodys[i].DataUpdate();
+                DATA_Thing_Bodys[i].DrawInst();
+            }
         }
 
+        public static void Update_Mouse(Point2D mouse, TextBuffer text)
+        {
+            string str = "";
+
+            {
+                UIBodyData instData = Meta_Insts[3][0];
+                instData.Pos.Offset = new Point2D(-3, +2);
+                Meta_Insts[3][0] = instData;
+            }
+
+            int hoverIDX = -1;
+            float hoverX = float.NaN;
+            float hoverY = float.NaN;
+
+            for (int i = 0; i < BLD_Insts.Length; i++)
+            {
+                UIBodyData data = BLD_Insts[i][0];
+                Point2D sizeHalf = new Point2D(data.Size.Size.X * 0.5f, data.Size.Size.Y * 0.5f);
+
+                Point2D center;
+                center.X = data.Pos.Pixel.X + data.Pos.Offset.X * (data.Size.Size.X + data.Size.Padding);
+                center.Y = data.Pos.Pixel.Y + data.Pos.Offset.Y * (data.Size.Size.Y + data.Size.Padding);
+
+                Point2D anchor;
+                anchor.X = ((data.Pos.Normal.X + 1) / 2) * SizeRatio.SizeW;
+                anchor.Y = ((data.Pos.Normal.Y + 1) / 2) * SizeRatio.SizeH;
+
+                AxisBox2D box = AxisBox2D.MinMax((center + anchor) - sizeHalf, (center + anchor) + sizeHalf);
+
+                if (box.Intersekt(mouse))
+                {
+                    hoverX = data.Pos.Offset.X;
+                    hoverY = data.Pos.Offset.Y;
+
+                    UIBodyData instData = Meta_Insts[3][0];
+                    instData.Pos.Offset = data.Pos.Offset;
+                    Meta_Insts[3][0] = instData;
+                }
+            }
+
+            str += "Hover IDX: " + hoverIDX + "\n";
+            str += "Hover X: " + hoverX + "\n";
+            str += "Hover Y: " + hoverY + "\n";
+            text.InsertTL((0, -4), text.Default_TextSize, 0xFFFFFF, str);
+        }
 
 
         /*

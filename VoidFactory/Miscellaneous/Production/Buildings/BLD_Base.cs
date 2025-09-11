@@ -30,7 +30,7 @@ namespace VoidFactory.Production.Buildings
         private string Cat;
 
         private Transformation3D Trans;
-        private EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry InstEntry;
+        private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry InstEntry;
 
         protected IO_Port[] Inn;
         protected IO_Port[] Out;
@@ -49,7 +49,7 @@ namespace VoidFactory.Production.Buildings
             Trans = trans;
 
             InstEntry = Bodys[Idx].Alloc(1);
-            InstEntry[0] = new PolyHedraInstance3D_Data(trans);
+            InstEntry[0] = new PolyHedraInstance_3D_Data(trans);
 
             Inn = new IO_Port[temp.Inn.Length];
             for (int i = 0; i < Inn.Length; i++)

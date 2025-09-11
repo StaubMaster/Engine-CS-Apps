@@ -8,6 +8,8 @@ using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
 using Engine3D.BodyParse;
 using Engine3D.Miscellaneous;
+using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Manager;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -76,6 +78,8 @@ namespace VoidFactory.Editor
 
         private BodyElemUniShader BodyUniFull_Shader;
         private BodyElemUniWireShader BodyUniWire_Shader;
+
+        private PolyHedraShaderManager PH_Man;
 
         private UserInterfaceBodyShader UserInterface_Shader;
 
@@ -202,10 +206,12 @@ namespace VoidFactory.Editor
             Edit_Index_Hovering = -1;
             if (Hovering_Indicator) { return; }
 
+            //Intersekt.RayInterval inter = Scene.Intersekt(MainCamera.Ray, out Edit_Index_Hovering);
+
             double HoverDistance = double.PositiveInfinity;
-            for (int i = 0; i < Scene.AllBodys.Count; i++)
+            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
             {
-                Intersekt.RayInterval inter = Scene.AllBodys[i].Intersekt(MainCamera.Ray);
+                Intersekt.RayInterval inter = Scene.AllBodysOld[i].Intersekt(MainCamera.Ray);
                 if (inter.Is)
                 {
                     if (inter.Interval < HoverDistance)
@@ -219,23 +225,25 @@ namespace VoidFactory.Editor
 
 
 
+
+
         private void Draw_Default()
         {
             BodyUniFull_Shader.Use();
             BodyUniFull_Shader.OtherColorInter.T0(1.0f);
             BodyUniFull_Shader.LightRange.Value(0.1f, 1.0f);
 
-            for (int i = 0; i < Scene.AllBodys.Count; i++)
+            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
             {
-                Scene.AllBodys[i].Draw(BodyUniFull_Shader);
+                Scene.AllBodysOld[i].Draw(BodyUniFull_Shader);
             }
         }
         private void Draw_Wire()
         {
             BodyUniWire_Shader.Use();
-            for (int i = 0; i < Scene.AllBodys.Count; i++)
+            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
             {
-                Scene.AllBodys[i].Draw(BodyUniWire_Shader);
+                Scene.AllBodysOld[i].Draw(BodyUniWire_Shader);
             }
         }
         private void Draw_SelectHover_Mono()
@@ -244,10 +252,10 @@ namespace VoidFactory.Editor
             BodyUniFull_Shader.OtherColorInter.T1(1.0f);
             BodyUniFull_Shader.LightRange.Value(1.0f, 1.0f);
 
-            for (int i = 0; i < Scene.AllBodys.Count; i++)
+            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
             {
                 BodyUniFull_Shader.OtherColor.Value(ColorSelectHover(i == Edit_Index_Hovering, i == Edit_Index_Selected));
-                Scene.AllBodys[i].Draw(BodyUniFull_Shader);
+                Scene.AllBodysOld[i].Draw(BodyUniFull_Shader);
             }
         }
         private void Draw_SelectHover_Mult()
@@ -256,10 +264,10 @@ namespace VoidFactory.Editor
             BodyUniFull_Shader.OtherColorInter.T1(1.0f);
             BodyUniFull_Shader.LightRange.Value(1.0f, 1.0f);
 
-            for (int i = 0; i < Scene.AllBodys.Count; i++)
+            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
             {
                 BodyUniFull_Shader.OtherColor.Value(ColorSelectHover(i == Edit_Index_Hovering, BodyIsSelected[i]));
-                Scene.AllBodys[i].Draw(BodyUniFull_Shader);
+                Scene.AllBodysOld[i].Draw(BodyUniFull_Shader);
             }
         }
 
@@ -299,7 +307,7 @@ namespace VoidFactory.Editor
                     Edit_Index_Selected = Edit_Index_Hovering;
                     if (Edit_Index_Selected != -1)
                     {
-                        Edit_Change_Mouse.Trans_Calc(Scene.AllBodys[Edit_Index_Selected].Trans);
+                        Edit_Change_Mouse.Trans_Calc(Scene.AllBodysOld[Edit_Index_Selected].Trans);
                     }
                     else
                     {
@@ -475,7 +483,7 @@ namespace VoidFactory.Editor
                     str += "\nSelected Index: " + Edit_Index_Selected;
                     if (Edit_Index_Selected != -1)
                     {
-                        DisplayBody body = Scene.AllBodys[Edit_Index_Selected];
+                        DisplayBody body = Scene.AllBodysOld[Edit_Index_Selected];
                         Transformation3D trans = body.Trans;
                         AxisBox3D box = body.Body.BoxFit();
 
@@ -494,8 +502,6 @@ namespace VoidFactory.Editor
 
             (float, float) winSize = MainWindow.Size_Float2();
             MainWindow.ClearBufferDepth();
-            Text_Buffer.DisplayConverter.X.PixelSize = winSize.Item1;
-            Text_Buffer.DisplayConverter.Y.PixelSize = winSize.Item2;
 
             Text_Shader.Use();
             Text_Buffer.Bind_Strings();
@@ -517,7 +523,7 @@ namespace VoidFactory.Editor
             ConsoleLog.LogLoad("Scene " + FilePath + " ...");
             Scene = PolySoma.Parse.LoadFile(FilePath);
             Scene.Edit_Begin();
-            BodyIsSelected = new ArrayList<bool>(Scene.AllBodys.Count);
+            BodyIsSelected = new ArrayList<bool>(Scene.AllBodysOld.Count);
         }
         public void Scene_Save()
         {
@@ -548,6 +554,8 @@ namespace VoidFactory.Editor
             BodyUniWire_Shader.OtherColor.Value(0x000000);
             BodyUniWire_Shader.OtherColorInter.T1(1.0f);
 
+            PH_Man = new PolyHedraShaderManager(shaderDir);
+
             UserInterface_Shader = new UserInterfaceBodyShader(shaderDir);
             UserInterface_Shader.Use();
 
@@ -555,7 +563,6 @@ namespace VoidFactory.Editor
 
             Text_Buffer = new TextBuffer();
             Text_Buffer.Bind_Pallets();
-            Text_Buffer.DisplayConverter = new DisplayPointConverter(1000, 1000);
             Text_Shader = new TextShader(shaderDir);
         }
         public void Init_Mouse_Edit(string dir)
@@ -615,6 +622,7 @@ namespace VoidFactory.Editor
 
             Hovering_Indicator = false;
         }
+
         public EditorPolySoma(Func<string> load, Func<string> save)
         {
             Func_Load = load;

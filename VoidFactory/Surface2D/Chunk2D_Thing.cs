@@ -30,7 +30,7 @@ namespace VoidFactory.Surface2D
             private readonly uint Idx;
             private readonly Transformation3D Trans;
             private readonly TileIndex TileIdx;
-            private EntryContainerDynamic<PolyHedraInstance3D_Data>.Entry InstEntry;
+            private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry InstEntry;
             public DATA_Buffer Content;
 
             public SURF_Object(uint idx, DATA_Thing thing, uint num, Transformation3D trans, TileIndex tileIdx)
@@ -50,7 +50,7 @@ namespace VoidFactory.Surface2D
                 if (InstEntry == null)
                 {
                     InstEntry = Bodys[Idx].Alloc(1);
-                    InstEntry[0] = new PolyHedraInstance3D_Data(Trans);
+                    InstEntry[0] = new PolyHedraInstance_3D_Data(Trans);
                 }
             }
             public void Remove()
