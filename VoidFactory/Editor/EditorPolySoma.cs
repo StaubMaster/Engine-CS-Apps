@@ -275,7 +275,7 @@ namespace VoidFactory.Editor
 
         private void Update_View()
         {
-            TMovement.FlatX(ref MainCamera.Trans, MainWindow.MoveByKeys(0.1, 10), MainWindow.SpinByMouse());
+            TMovement.FlatX(ref MainCamera.Trans, MainWindow.MoveByKeys(0.1f, 10), MainWindow.SpinByMouse());
             MainCamera.Update(MainWindow.MouseRay());
 
             BodyUniFull_Shader.View.Value(MainCamera.Trans);

@@ -64,6 +64,11 @@ namespace VoidFactory.Inventory
     }
     class Inter_Remover : Inter_Building
     {
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.Error);
+        }
+
         public override void Draw()
         {
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Remover");
@@ -104,6 +109,11 @@ namespace VoidFactory.Inventory
             base.Init();
             Tick = 0;
             Crafting = false;
+        }
+
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Recipy(pos, size, Recipy);
         }
 
         public override void Update()

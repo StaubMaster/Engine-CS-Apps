@@ -144,7 +144,7 @@ namespace VoidFactory
                 winkel.D = Rotation.D * wnk;
 
                 rotated = Origin + winkel;
-                rotated = rotated * Poly_Size;
+                rotated = rotated * (float)Poly_Size;
                 rotated = rotated + Offset;
 
                 Ring[i] = rotated;
@@ -163,7 +163,7 @@ namespace VoidFactory
         {
             Point3D layer, ring;
 
-            layer = Direction * (l * Layer_Size);
+            layer = Direction * (float)(l * Layer_Size);
             for (uint i = 0; i < Poly_Num; i++)
             {
                 ring = Ring[i] + layer;

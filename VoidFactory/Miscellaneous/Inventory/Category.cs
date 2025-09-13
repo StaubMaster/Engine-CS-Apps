@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Engine3D.Abstract2D;
 using Engine3D.Abstract3D;
 using Engine3D.GraphicsOld;
 
@@ -26,19 +27,64 @@ namespace VoidFactory.Inventory
 
         private readonly string Name;
         private Interaction[] Items;
+        private bool Visible;
 
         public Category(string name)
         {
             Name = name;
+            Visible = false;
         }
 
-        public void Draw_Alloc()
+        public void Draw_Icons_Alloc()
         {
+            if (Visible) { return; }
+            Visible = true;
 
+            int i = 0;
+            for (float y = +2; y >= -2; y--)
+            {
+                for (float x = -6; x <= +6; x++)
+                {
+                    if (i < Items.Length)
+                    {
+                        Items[i].Draw_Icon_Alloc(Inventory_Interface.gPos.WithOffset((x, y)), Inventory_Interface.gSize);
+                    }
+                    i++;
+                }
+            }
         }
-        public void Draw_Free()
+        public void Draw_Icons_Update()
         {
+            for (int i = 0; i < Items.Length; i++)
+            {
+                Items[i].Draw_Icon_Update();
+            }
+        }
+        public void Draw_Icons_Dispose()
+        {
+            if (!Visible) { return; }
+            Visible = false;
 
+            for (int i = 0; i < Items.Length; i++)
+            {
+                Items[i].Draw_Icon_Dispose();
+            }
+        }
+
+        public int Hover(Point2D mouse)
+        {
+            for (int i = 0; i < Items.Length; i++)
+            {
+                if (Items[i].Hover(mouse))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        public Point2D GetOffset(int idx)
+        {
+            return Items[idx].GetOffset();
         }
 
         public void Draw()

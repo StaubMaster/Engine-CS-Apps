@@ -136,7 +136,7 @@ namespace VoidFactory.Surface2D
                 SurfaceHit hit = new SurfaceHit();
                 hit.Reset();
 
-                Ray3D chunkRay = new Ray3D(ray.Pos * (1.0 / Chunk_Size_Per_Side), ray.Dir * 1.0);
+                Ray3D chunkRay = new Ray3D(ray.Pos * (1.0f / Chunk_Size_Per_Side), ray.Dir * 1.0f);
                 Ray3D tileRay = new Ray3D(+ray.Pos, +ray.Dir);
 
                 ChunkIndex? chunkIdx;

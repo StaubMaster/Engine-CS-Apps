@@ -424,7 +424,7 @@ namespace VoidFactory.Surface2D
             if (chunk != null) { h = chunk.TileHighest(tileIdx.Mod()).Height_Mid; }
 
             Transformation3D trans = new Transformation3D(
-                new Point3D((y + 0.5) * Tile_Size, h, (c + 0.5) * Tile_Size),
+                new Point3D((float)(y + 0.5) * Tile_Size, (float)h, (float)(c + 0.5) * Tile_Size),
                 new Angle3D(y * 128, c * 128, (y + c) * 128)
             );
 
@@ -448,7 +448,7 @@ namespace VoidFactory.Surface2D
             Grid2D.FuncCircle(tileIdx.y, tileIdx.c, temp.MinDist, findHighest);
 
             SURF_Object thing;
-            thing = temp.ToInstance2(new Transformation3D(new Point3D((tileIdx.y + 0.5) * Tile_Size, h, (tileIdx.c + 0.5) * Tile_Size)), 1.0, tileIdx);
+            thing = temp.ToInstance2(new Transformation3D(new Point3D((float)(tileIdx.y + 0.5) * Tile_Size, (float)h, (float)(tileIdx.c + 0.5) * Tile_Size)), 1.0, tileIdx);
             Grid2D.FuncCircle(tileIdx.y, tileIdx.c, temp.MinDist, FeaturePlaceRef, thing);
         }
         private void GenerateFeatureTemplate(SURF_Object.Template temp)
@@ -614,16 +614,16 @@ namespace VoidFactory.Surface2D
 
         public static Point3D PunktTileCenter(TileIndex tileIdx, double h)
         {
-            return new Point3D(tileIdx.y + 0.5, h, tileIdx.c + 0.5);
+            return new Point3D(tileIdx.y + 0.5f, (float)h, tileIdx.c + 0.5f);
         }
         public static Point3D[] PunktTileConers(TileIndex tileIdx, double h00, double h01, double h11, double h10)
         {
             return new Point3D[4]
             {
-                new Point3D(tileIdx.y + 0, h00, tileIdx.c + 0),
-                new Point3D(tileIdx.y + 0, h01, tileIdx.c + 1),
-                new Point3D(tileIdx.y + 1, h11, tileIdx.c + 1),
-                new Point3D(tileIdx.y + 1, h10, tileIdx.c + 0),
+                new Point3D(tileIdx.y + 0, (float)h00, tileIdx.c + 0),
+                new Point3D(tileIdx.y + 0, (float)h01, tileIdx.c + 1),
+                new Point3D(tileIdx.y + 1, (float)h11, tileIdx.c + 1),
+                new Point3D(tileIdx.y + 1, (float)h10, tileIdx.c + 0),
             };
         }
 
@@ -703,7 +703,7 @@ namespace VoidFactory.Surface2D
             Point3D[] corn = new Point3D[5];
             TileData tile = Layers[layerIdx.idx].Tiles[tileIdx.idx];
 
-            corn[0] = Intern_Extern(new Point3D(tileIdx.y + 0.5, tile.Height_Mid, tileIdx.c + 0.5));
+            corn[0] = Intern_Extern(new Point3D(tileIdx.y + 0.5f, tile.Height_Mid, tileIdx.c + 0.5f));
             corn[1] = Intern_Extern(new Point3D(tileIdx.y + 0, tile.Height_MnsMns, tileIdx.c + 0));
             corn[2] = Intern_Extern(new Point3D(tileIdx.y + 0, tile.Height_MnsPls, tileIdx.c + 1));
             corn[3] = Intern_Extern(new Point3D(tileIdx.y + 1, tile.Height_PlsPls, tileIdx.c + 1));

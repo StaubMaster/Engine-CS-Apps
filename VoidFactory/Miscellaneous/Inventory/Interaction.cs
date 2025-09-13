@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Engine3D.Abstract2D;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
 
@@ -16,6 +17,8 @@ namespace VoidFactory.Inventory
         public static TextBuffer Text_Buffer;
         public static AxisBoxBuffer Box_Buffer;
 
+        protected UI_3D_Base InstRef;
+
         public virtual void Init()
         {
             Graphic.Draw_Gray = false;
@@ -27,6 +30,34 @@ namespace VoidFactory.Inventory
         public virtual void Draw_Inv_Icon(float x, float y)
         {
 
+        }
+
+        public abstract void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size);
+        public void Draw_Icon_Update()
+        {
+            if (InstRef != null)
+            {
+                InstRef.Update();
+            }
+        }
+        public void Draw_Icon_Dispose()
+        {
+            if (InstRef != null)
+            {
+                InstRef.Dispose();
+                InstRef = null;
+            }
+        }
+
+        public bool Hover(Point2D mouse)
+        {
+            if (InstRef == null) { return false; }
+            AxisBox2D box = InstRef.PixelBoxNoPadding((Inventory_Interface.SizeRatio.SizeW, Inventory_Interface.SizeRatio.SizeH));
+            return (box.Intersekt(mouse));
+        }
+        public Point2D GetOffset()
+        {
+            return InstRef.Pos.Offset;
         }
 
         protected void Text_Type(string type)

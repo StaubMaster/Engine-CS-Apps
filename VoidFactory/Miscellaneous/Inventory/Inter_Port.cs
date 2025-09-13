@@ -5,6 +5,7 @@ using Engine3D.Graphics.Display;
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
 using VoidFactory.Production.Buildings;
+using Engine3D.Graphics;
 
 namespace VoidFactory.Inventory
 {
@@ -43,6 +44,11 @@ namespace VoidFactory.Inventory
         public static IO_TransPorter.Collection TransPorter;
 
         private IO_Port.Select_Port Select;
+
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.TransPorter);
+        }
 
         public override void Draw()
         {
@@ -101,6 +107,11 @@ namespace VoidFactory.Inventory
         public Inter_Thing(DATA_Thing thing)
         {
             Thing = thing;
+        }
+
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Thing(pos, size, Thing);
         }
 
         public override void Update()

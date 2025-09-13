@@ -120,7 +120,7 @@ namespace VoidFactory.Production.Data
                     wnk.A = ((idx * Angle3D.Full) / sum) - tick;
                     wnk.FloatsSinCos(flt);
 
-                    pos = (new Point3D(0.5 * scale, 0, 0) + wnk);
+                    pos = (new Point3D(0.5f * scale, 0, 0) + wnk);
                     pos.Y /= 2.0f;
                     pos += middle;
 
@@ -149,7 +149,7 @@ namespace VoidFactory.Production.Data
                     wnk.A = ((idx * Angle3D.Full) / sum) + tick;
                     wnk.FloatsSinCos(flt);
 
-                    pos = (new Point3D(1.0 * scale, 0, 0) + wnk);
+                    pos = (new Point3D(1.0f * scale, 0, 0) + wnk);
                     pos.Y /= 2.0f;
                     pos += middle;
 

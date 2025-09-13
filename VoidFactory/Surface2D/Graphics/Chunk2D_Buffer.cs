@@ -92,7 +92,7 @@ namespace VoidFactory.Surface2D.Graphics
         {
             if (BufferEntry != null)
             {
-                BufferEntry.Free();
+                BufferEntry.Dispose();
                 BufferEntry = null;
             }
 

@@ -68,7 +68,7 @@ namespace VoidFactory.Production.Buildings
         }
         ~BLD_Base()
         {
-            InstEntry.Free();
+            InstEntry.Dispose();
         }
         public void Remove()
         {

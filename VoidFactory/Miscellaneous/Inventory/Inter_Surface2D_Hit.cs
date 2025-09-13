@@ -8,6 +8,7 @@ using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
 using VoidFactory.Production.Buildings;
 using VoidFactory.Surface2D;
+using Engine3D.Graphics;
 
 namespace VoidFactory.Inventory
 {
@@ -43,6 +44,11 @@ namespace VoidFactory.Inventory
 
             //Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
             Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
+        }
+
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+
         }
 
         public override void Update()
@@ -93,6 +99,11 @@ namespace VoidFactory.Inventory
     }
     class Inter_Surf2D_Tile : Inter_Surface2D_Hit
     {
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.Axis);
+        }
+
         public override void Draw()
         {
             base.Draw();
@@ -194,6 +205,11 @@ namespace VoidFactory.Inventory
     }
     class Inter_Surf2D_Rad : Inter_Surface2D_Hit
     {
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.Axis);
+        }
+
         public override void Draw()
         {
             base.Draw();
@@ -247,6 +263,11 @@ namespace VoidFactory.Inventory
 
             //Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
             Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
+        }
+
+        public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
+        {
+            InstRef = new UI_Building(pos, size, Template);
         }
 
         public override void Update()

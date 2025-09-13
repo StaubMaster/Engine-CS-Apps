@@ -169,12 +169,12 @@ namespace VoidFactory.GameSelect
             UIGridPosition gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
             UIGridSize gSize = new UIGridSize(new Point2D(50.0f, 50.0f), 25.0f);
 
-            UIBodyData[] UIData = new UIBodyData[]
+            UIBody_Data[] UIData = new UIBody_Data[]
             {
-                new UIBodyData(gPos.WithOffset(new Point2D( 0.0f,  0.0f)), gSize, 1.0f, new Angle3D(UI_Spin.A, 0, 0)),
-                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f,  0.0f)), gSize, 1.0f, UI_Spin),
-                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(0.0f, 0, 0), UI_Spin)),
-                new UIBodyData(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(3.0f, 0, 0), UI_Spin)),
+                new UIBody_Data(gPos.WithOffset(new Point2D( 0.0f,  0.0f)), gSize, 1.0f, new Angle3D(UI_Spin.A, 0, 0)),
+                new UIBody_Data(gPos.WithOffset(new Point2D(+1.0f,  0.0f)), gSize, 1.0f, UI_Spin),
+                new UIBody_Data(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(0.0f, 0, 0), UI_Spin)),
+                new UIBody_Data(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(3.0f, 0, 0), UI_Spin)),
             };
 
             UI_Spin.A += 0.01f;
@@ -250,36 +250,57 @@ namespace VoidFactory.GameSelect
         private void Frame_Inv()
         {
             /* UI Recipies are wack
-         * dont feel like doing those with the new system
-         * but everything else should be fine
-         * also for recipy I might just be able to do a new shader
-         * or just change the old shader
-         * everything has as GridPos
-         *  but also a 3D Pos and Rot
-         * should be simple enough
-         * but redo everything else for now
-         */
+             * dont feel like doing those with the new system
+             * but everything else should be fine
+             * also for recipy I might just be able to do a new shader
+             * or just change the old shader
+             * everything has as GridPos
+             *  but also a 3D Pos and Rot
+             * should be simple enough
+             * but redo everything else for now
+             */
 
             Inventory_Interface.Tool_Change((int)-win.MouseScroll());
 
-            if (win.CheckKey(Keys.PageUp).IsPressed()) { Inventory_Interface.Cat_Next(); }
-            if (win.CheckKey(Keys.PageDown).IsPressed()) { Inventory_Interface.Cat_Prev(); }
-
-            if (win.CheckKey(MouseButton.Left).IsPressed()) { Inventory_Interface.Tool_Func1(); }
-            if (win.CheckKey(MouseButton.Right).IsPressed()) { Inventory_Interface.Tool_Func2(); }
-
-            Inventory_Interface.Tool_Update();
+            if (win.MouseLocked)
+            {
+                Inventory_Interface.Cat_Hide();
+            }
+            else
+            {
+                Inventory_Interface.Cat_Show();
+            }
 
             if (!win.MouseLocked)
             {
                 //Inventory_Interface.Cat_Draw();
-                Inventory_Interface.Draw_Init();
-                Inventory_Interface.Update_Mouse(win.MousePixel(), Text_Buffer);
+                Inventory_Interface.Draw_Init(Recipys);
+                Inventory_Interface.Mouse_Hover(win.MousePixel());
             }
             else
             {
                 Inventory_Interface.Draw_Free();
             }
+
+            if (win.MouseLocked)
+            {
+                if (win.CheckKey(MouseButton.Left).IsPressed()) { Inventory_Interface.Tool_Func1(); }
+                if (win.CheckKey(MouseButton.Right).IsPressed()) { Inventory_Interface.Tool_Func2(); }
+            }
+            else
+            {
+                if (win.CheckKey(Keys.PageUp).IsPressed()) { Inventory_Interface.Cat_Next(); }
+                if (win.CheckKey(Keys.PageDown).IsPressed()) { Inventory_Interface.Cat_Prev(); }
+
+                if (win.CheckKey(MouseButton.Left).IsPressed()) { Inventory_Interface.Mouse_Select(); }
+            }
+
+            Inventory_Interface.Tool_Update();
+
+            string str = "";
+            str += "Hovering: " + Inventory_Interface.Hovering_Idx + "\n";
+            str += "Selected: " + Inventory_Interface.Selected_Idx + "\n";
+            Text_Buffer.InsertTL((0, -4), Text_Buffer.Default_TextSize, 0xFFFFFF, str);
 
             UI_Man.UIBodyShader.Use();
             Inventory_Interface.Draw_Inst();
@@ -434,12 +455,7 @@ namespace VoidFactory.GameSelect
                 BodyStatic[] bodys = DATA_Thing.Interpret.GetBodys();
                 DATA_Thing.IconScales_Create(bodys);
                 DATA_Thing.Bodys = new PHEI_Array(bodys);
-
-                Inventory_Interface.DATA_Thing_Bodys = new UIBody[bodys.Length];
-                for (int i = 0; i < bodys.Length; i++)
-                {
-                    Inventory_Interface.DATA_Thing_Bodys[i] = new UIBody(bodys[i].ToPolyHedra());
-                }
+                Inventory_Interface.DATA_Thing_Bodys = new UIBody_Array(bodys);
             }
             DATA_Thing.Interpret.Delete();
 
@@ -454,12 +470,7 @@ namespace VoidFactory.GameSelect
             {
                 BodyStatic[] bodys = BLD_Base.Interpreter.GetBodys();
                 BLD_Base.Bodys = new PHEI_Array(bodys);
-
-                Inventory_Interface.BLD_Bodys = new UIBody[bodys.Length];
-                for (int i = 0; i < bodys.Length; i++)
-                {
-                    Inventory_Interface.BLD_Bodys[i] = new UIBody(bodys[i].ToPolyHedra());
-                }
+                Inventory_Interface.BLD_Bodys = new UIBody_Array(bodys);
             }
             BLD_Base.Interpreter.Delete();
 
@@ -500,12 +511,7 @@ namespace VoidFactory.GameSelect
             };
 
             IO_Port.Bodys = new PHEI_Array(bodys);
-
-            Inventory_Interface.Meta_Bodys = new UIBody[bodys.Length];
-            for (int i = 0; i < bodys.Length; i++)
-            {
-                Inventory_Interface.Meta_Bodys[i] = new UIBody(bodys[i]);
-            }
+            Inventory_Interface.Meta_Bodys = new UIBody_Array(bodys);
         }
         private void BodysNull()
         {
@@ -514,6 +520,7 @@ namespace VoidFactory.GameSelect
             IO_Port.Bodys = null;
             Chunk2D.SURF_Object.Bodys = null;
 
+            Inventory_Interface.Meta_Bodys = null;
             Inventory_Interface.BLD_Bodys = null;
             Inventory_Interface.DATA_Thing_Bodys = null;
         }

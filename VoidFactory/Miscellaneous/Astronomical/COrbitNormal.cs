@@ -23,7 +23,7 @@ namespace VoidFactory.Astronomical
 
         public override void Update()
         {
-            Trans.Pos = (new Point3D(0, 0, Dist) + Circle.Update()) + Center.Trans.Pos;
+            Trans.Pos = (new Point3D(0, 0, (float)Dist) + Circle.Update()) + Center.Trans.Pos;
             Trans.Rot = Spin.Update();
         }
     }

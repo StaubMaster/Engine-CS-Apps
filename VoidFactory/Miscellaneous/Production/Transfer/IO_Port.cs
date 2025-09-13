@@ -73,7 +73,7 @@ namespace VoidFactory.Production.Transfer
         }
         ~IO_Port()
         {
-            InstEntry.Free();
+            InstEntry.Dispose();
         }
         public void Remove()
         {

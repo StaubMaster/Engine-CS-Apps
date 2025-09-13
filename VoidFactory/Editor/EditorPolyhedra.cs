@@ -155,7 +155,7 @@ namespace VoidFactory.Editor
                 if (Y_Pls) { move.Y += (float)speed; }
                 if (X_Mns) { move.X -= (float)speed; }
                 if (X_Pls) { move.X += (float)speed; }
-                if (Speed) { move *= fast; }
+                if (Speed) { move *= (float)fast; }
                 return move;
             }
         }
@@ -655,7 +655,7 @@ namespace VoidFactory.Editor
         }
         private void glC_Display_MouseWheel(object sender, MouseEventArgs e)
         {
-            Point3D move = new Point3D(0, 0, e.Delta * 0.01);
+            Point3D move = new Point3D(0, 0, e.Delta * 0.01f);
             Engine3D.TMovement.Unrestricted(ref MainCamera.Trans, move, Angle3D.Null());
             Display_Draw();
         }

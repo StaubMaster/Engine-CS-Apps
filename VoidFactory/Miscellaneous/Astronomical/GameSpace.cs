@@ -121,7 +121,7 @@ namespace VoidFactory.Astronomical
                 temp.Rot = temp.Rot - perpRot.InvertMns();
 
                 //temp.Rot.D = 0;
-                TMovement.Unrestricted(ref temp, MainWindow.MoveByKeys(0.01, 100), MainWindow.SpinByMouse());
+                TMovement.Unrestricted(ref temp, MainWindow.MoveByKeys(0.01f, 100), MainWindow.SpinByMouse());
 
                 // Flat To Relative
                 temp.Pos = temp.Pos + perpRot.InvertMns();
@@ -136,7 +136,7 @@ namespace VoidFactory.Astronomical
             }
             else
             {
-                TMovement.Unrestricted(ref MainCamera.Trans, MainWindow.MoveByKeys(0.1, 100), MainWindow.SpinByMouse());
+                TMovement.Unrestricted(ref MainCamera.Trans, MainWindow.MoveByKeys(0.1f, 100), MainWindow.SpinByMouse());
             }
             MainCamera.Update(MainWindow.MouseRay());
 
@@ -175,7 +175,7 @@ namespace VoidFactory.Astronomical
                 {
                     CSatelliteNatural nat = Astro[interAstro.Index];
                     Point3D rel = nat.Orbit.Trans.TBack(interAstro.Pos);
-                    rel = rel * ((nat.Radius) / rel.Len);
+                    rel = rel * (float)((nat.Radius) / rel.Len);
                     Miner.Add(new CSatelliteMiner(PolyHedra.Generate.Cube(), nat, new COrbitHover(nat.Orbit, new SAngledRotation(0.01, 0, 0), rel)));
                 }
                 if (interMiner.Is && interMiner.Interval < interAstro.Interval)

@@ -5,6 +5,7 @@ using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Display2D;
 using Engine3D.Graphics;
+using Engine3D.Entity;
 using Engine3D.Miscellaneous.EntryContainer;
 using Engine3D.DataStructs;
 
@@ -20,27 +21,42 @@ namespace VoidFactory.Inventory
 
         public static SizeRatio SizeRatio;
 
-        private static UIGridPosition gPos;
-        private static UIGridSize gSize;
+        public static UIGridPosition gPos;
+        public static UIGridSize gSize;
 
-        public static UIBody[] Meta_Bodys;
-        public static EntryContainerDynamic<UIBodyData>.Entry[] Meta_Insts;
-        public static UIBody[] BLD_Bodys;
-        public static EntryContainerDynamic<UIBodyData>.Entry[] BLD_Insts;
-        public static UIBody[] DATA_Thing_Bodys;
-        public static EntryContainerDynamic<UIBodyData>.Entry[] DATA_Thing_Insts;
 
-        public static void Draw_Init()
+
+        public static UIBody_Array Meta_Bodys;
+        public static UIBody_Array BLD_Bodys;
+        public static UIBody_Array DATA_Thing_Bodys;
+
+        public static EntryContainerDynamic<UIBody_Data>.Entry MetaHovering;
+        public static EntryContainerDynamic<UIBody_Data>.Entry MetaSelected;
+        public static int Hovering_Idx;
+        public static int Selected_Idx;
+
+        public static UI_3D_Base[] InventoryInsts;
+
+
+
+        public static void Draw_Init(DATA_Recipy[] recipys)
         {
             if (IsDraw) { return; }
             IsDraw = true;
 
-            Meta_Insts = new EntryContainerBase<UIBodyData>.Entry[Meta_Bodys.Length];
-            BLD_Insts = new EntryContainerBase<UIBodyData>.Entry[BLD_Bodys.Length];
-            DATA_Thing_Insts = new EntryContainerBase<UIBodyData>.Entry[DATA_Thing_Bodys.Length];
-
             gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
             gSize = new UIGridSize(new Point2D(100.0f, 100.0f), 25.0f);
+
+            MetaHovering = Meta_Bodys[3].Alloc(1);
+            MetaSelected = Meta_Bodys[4].Alloc(1);
+            MetaHovering[0] = new UIBody_Data(gPos, gSize, 0.3f, new Angle3D(0, -0.5f, 0));
+            MetaSelected[0] = new UIBody_Data(gPos, gSize, 0.3f, new Angle3D(0, -0.5f, 0));
+            Select_None();
+            Hover_None();
+
+            return;
+
+            /*InventoryInsts = new UI_3D_Base[BLD_Bodys.Length + DATA_Thing_Bodys.Length + recipys.Length];
 
             int i = 0;
             int j;
@@ -48,161 +64,168 @@ namespace VoidFactory.Inventory
             {
                 for (float x = -6; x <= +6; x++)
                 {
+                    UIGridPosition lPos = gPos.WithOffset(x, y);
+
                     j = i;
-                    if (j < Meta_Insts.Length)
                     {
-                        Meta_Insts[j] = Meta_Bodys[j].Alloc(1);
-                        Meta_Insts[j][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.2f, new Angle3D(1.0f, -0.5f, 0));
-                    }
-                    else
-                    {
-                        j = j - BLD_Insts.Length;
-                        if (j < BLD_Insts.Length)
+                        if (j < BLD_Bodys.Length)
                         {
-                            BLD_Insts[j] = BLD_Bodys[j].Alloc(1);
-                            BLD_Insts[j][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.1f, new Angle3D(1.0f, -0.5f, 0));
+                            InventoryInsts[i] = new UI_Building(lPos, gSize, j);
                         }
                         else
                         {
-                            j = j - BLD_Insts.Length;
-                            if (j < DATA_Thing_Insts.Length)
+                            j = j - BLD_Bodys.Length;
+                            if (j < DATA_Thing_Bodys.Length)
                             {
-                                DATA_Thing_Insts[j] = DATA_Thing_Bodys[j].Alloc(1);
-                                DATA_Thing_Insts[j][0] = new UIBodyData(gPos.WithOffset(x, y), gSize, 0.4f, new Angle3D(1.0f, -0.5f, 0));
+                                InventoryInsts[i] = new UI_Thing(lPos, gSize, j);
+                            }
+                            else
+                            {
+                                j = j - DATA_Thing_Bodys.Length;
+                                if (j < recipys.Length)
+                                {
+                                    InventoryInsts[i] = new UI_Recipy(lPos, gSize, recipys[j]);
+                                }
                             }
                         }
                     }
                     i++;
                 }
-            }
+            }*/
         }
         public static void Draw_Free()
         {
             if (!IsDraw) { return; }
             IsDraw = false;
 
-            for (int i = 0; i < Meta_Insts.Length; i++)
-            {
-                Meta_Insts[i].Free();
-            }
-            Meta_Insts = null;
+            MetaHovering.Dispose();
+            MetaSelected.Dispose();
+            MetaHovering = null;
+            MetaSelected = null;
 
-            for (int i = 0; i < BLD_Insts.Length; i++)
+            if (InventoryInsts != null)
             {
-                BLD_Insts[i].Free();
+                for (int i = 0; i < InventoryInsts.Length; i++)
+                {
+                    if (InventoryInsts[i] != null)
+                    {
+                        InventoryInsts[i].Dispose();
+                    }
+                }
+                InventoryInsts = null;
             }
-            BLD_Insts = null;
-
-            for (int i = 0; i < DATA_Thing_Insts.Length; i++)
-            {
-                DATA_Thing_Insts[i].Free();
-            }
-            DATA_Thing_Insts = null;
         }
         public static void Draw_Inst()
         {
-            if (Meta_Insts != null)
+            if (InventoryInsts != null)
             {
-                UIBodyData data;
-                for (int i = 0; i < Meta_Insts.Length; i++)
+                for (int i = 0; i < InventoryInsts.Length; i++)
                 {
-                    if (Meta_Insts[i] != null)
-                    {
-                        data = Meta_Insts[i][0];
-                        data.Trans.Rot.A += 0.01f;
-                        Meta_Insts[i][0] = data;
-                    }
-                }
-            }
-            if (BLD_Insts != null)
-            {
-                UIBodyData data;
-                for (int i = 0; i < BLD_Insts.Length; i++)
-                {
-                    if (BLD_Insts[i] != null)
-                    {
-                        data = BLD_Insts[i][0];
-                        data.Trans.Rot.A += 0.01f;
-                        BLD_Insts[i][0] = data;
-                    }
-                }
-            }
-            if (DATA_Thing_Insts != null)
-            {
-                UIBodyData data;
-                for (int i = 0; i < DATA_Thing_Insts.Length; i++)
-                {
-                    if (DATA_Thing_Insts[i] != null)
-                    {
-                        data = DATA_Thing_Insts[i][0];
-                        data.Trans.Rot.A += 0.01f;
-                        DATA_Thing_Insts[i][0] = data;
-                    }
+                    InventoryInsts[i].Update();
                 }
             }
 
-            for (int i = 0; i < Meta_Bodys.Length; i++)
+            Category_Ref.Draw_Icons_Update();
+
+            if (Hovering_Idx != -1 && MetaHovering != null)
             {
-                Meta_Bodys[i].DataUpdate();
-                Meta_Bodys[i].DrawInst();
+                UIBody_Data instData = MetaHovering[0];
+                instData.Trans.Rot.A += 0.01f;
+                MetaHovering[0] = instData;
             }
-            for (int i = 0; i < BLD_Bodys.Length; i++)
+
+            if (Selected_Idx != -1 && MetaSelected != null)
             {
-                BLD_Bodys[i].DataUpdate();
-                BLD_Bodys[i].DrawInst();
+                UIBody_Data instData = MetaSelected[0];
+                instData.Trans.Rot.A += 0.01f;
+                MetaSelected[0] = instData;
             }
-            for (int i = 0; i < DATA_Thing_Bodys.Length; i++)
-            {
-                DATA_Thing_Bodys[i].DataUpdate();
-                DATA_Thing_Bodys[i].DrawInst();
-            }
+
+            Meta_Bodys.Update();
+            Meta_Bodys.Draw();
+
+            BLD_Bodys.Update();
+            BLD_Bodys.Draw();
+
+            DATA_Thing_Bodys.Update();
+            DATA_Thing_Bodys.Draw();
         }
 
-        public static void Update_Mouse(Point2D mouse, TextBuffer text)
+        public static void Hover_None()
         {
-            string str = "";
+            UIBody_Data instData = MetaHovering[0];
+            instData.Pos.Offset = Point2D.Null();
+            MetaHovering[0] = instData;
 
+            Hovering_Idx = -1;
+        }
+        public static void Hover_Idx(int idx)
+        {
+            UIBody_Data instData = MetaHovering[0];
+            //instData.Pos.Offset = InventoryInsts[idx].Pos.Offset;
+            instData.Pos.Offset = Category_Ref.GetOffset(idx);
+            MetaHovering[0] = instData;
+            Hovering_Idx = idx;
+        }
+        public static void Select_None()
+        {
+            UIBody_Data instData = MetaSelected[0];
+            instData.Pos.Offset = Point2D.Null();
+            MetaSelected[0] = instData;
+
+            Selected_Idx = -1;
+        }
+        public static void Select_Idx(int idx)
+        {
+            UIBody_Data instData = MetaSelected[0];
+            //instData.Pos.Offset = InventoryInsts[idx].Pos.Offset;
+            instData.Pos.Offset = Category_Ref.GetOffset(idx);
+            MetaSelected[0] = instData;
+            Selected_Idx = idx;
+
+            Tool_Select();
+        }
+
+        public static void Mouse_Hover(Point2D mouse)
+        {
+            /*Hover_None();
+            if (InventoryInsts != null)
             {
-                UIBodyData instData = Meta_Insts[3][0];
-                instData.Pos.Offset = new Point2D(-3, +2);
-                Meta_Insts[3][0] = instData;
-            }
-
-            int hoverIDX = -1;
-            float hoverX = float.NaN;
-            float hoverY = float.NaN;
-
-            for (int i = 0; i < BLD_Insts.Length; i++)
-            {
-                UIBodyData data = BLD_Insts[i][0];
-                Point2D sizeHalf = new Point2D(data.Size.Size.X * 0.5f, data.Size.Size.Y * 0.5f);
-
-                Point2D center;
-                center.X = data.Pos.Pixel.X + data.Pos.Offset.X * (data.Size.Size.X + data.Size.Padding);
-                center.Y = data.Pos.Pixel.Y + data.Pos.Offset.Y * (data.Size.Size.Y + data.Size.Padding);
-
-                Point2D anchor;
-                anchor.X = ((data.Pos.Normal.X + 1) / 2) * SizeRatio.SizeW;
-                anchor.Y = ((data.Pos.Normal.Y + 1) / 2) * SizeRatio.SizeH;
-
-                AxisBox2D box = AxisBox2D.MinMax((center + anchor) - sizeHalf, (center + anchor) + sizeHalf);
-
-                if (box.Intersekt(mouse))
+                for (int i = 0; i < InventoryInsts.Length; i++)
                 {
-                    hoverX = data.Pos.Offset.X;
-                    hoverY = data.Pos.Offset.Y;
+                    AxisBox2D box = InventoryInsts[i].PixelBoxNoPadding((SizeRatio.SizeW, SizeRatio.SizeH));
+                    if (box.Intersekt(mouse))
+                    {
+                        Hover_Idx(i);
+                    }
+                }
+            }*/
 
-                    UIBodyData instData = Meta_Insts[3][0];
-                    instData.Pos.Offset = data.Pos.Offset;
-                    Meta_Insts[3][0] = instData;
+            int idx = Category_Ref.Hover(mouse);
+            if (idx != -1)
+            {
+                Hover_Idx(idx);
+            }
+            else
+            {
+                Hover_None();
+            }
+        }
+        public static void Mouse_Select()
+        {
+            if (Hovering_Idx != Selected_Idx)
+            {
+                if (Hovering_Idx != -1)
+                {
+                    Select_Idx(Hovering_Idx);
+                }
+                else
+                {
+                    Select_None();
                 }
             }
-
-            str += "Hover IDX: " + hoverIDX + "\n";
-            str += "Hover X: " + hoverX + "\n";
-            str += "Hover Y: " + hoverY + "\n";
-            text.InsertTL((0, -4), text.Default_TextSize, 0xFFFFFF, str);
         }
+
 
 
         /*
@@ -238,6 +261,7 @@ namespace VoidFactory.Inventory
         private static Category[] Categorys;
         private static Category Category_Ref;
         private static int Category_Idx;
+
         private static int Tool_Idx;
         private static Interaction Tool;
 
@@ -278,9 +302,9 @@ namespace VoidFactory.Inventory
         }
         public static void Delete()
         {
+            Cat_Hide();
             Categorys = null;
         }
-
         public static void Sort(DATA_Thing[] things, BLD_Base.Template_Base[] templates, DATA_Recipy[] recipys, Chunk2D.SURF_Object.Template[] surfTemp)
         {
             for (int i = 0; i < Categorys.Length; i++)
@@ -304,23 +328,37 @@ namespace VoidFactory.Inventory
                 Categorys[i].SortDelete();
         }
 
+
+
         public static void Cat_Next()
         {
+            Cat_Hide();
             Category_Idx++;
             Category_Idx = Category_Idx % Categorys.Length;
             Category_Idx = Category_Idx + Categorys.Length;
             Category_Idx = Category_Idx % Categorys.Length;
             Category_Ref = Categorys[Category_Idx];
+            Cat_Show();
             Tool_Select(false);
         }
         public static void Cat_Prev()
         {
+            Cat_Hide();
             Category_Idx--;
             Category_Idx = Category_Idx % Categorys.Length;
             Category_Idx = Category_Idx + Categorys.Length;
             Category_Idx = Category_Idx % Categorys.Length;
             Category_Ref = Categorys[Category_Idx];
+            Cat_Show();
             Tool_Select(false);
+        }
+        public static void Cat_Show()
+        {
+            Category_Ref.Draw_Icons_Alloc();
+        }
+        public static void Cat_Hide()
+        {
+            Category_Ref.Draw_Icons_Dispose();
         }
         public static void Cat_Draw()
         {
@@ -338,6 +376,19 @@ namespace VoidFactory.Inventory
         }
 
 
+
+        private static void Tool_Select()
+        {
+            Tool_Idx = Selected_Idx;
+            if (Tool_Idx != -1)
+            {
+                Tool = Category_Ref[Tool_Idx];
+            }
+            else
+            {
+                Tool = null;
+            }
+        }
         private static void Tool_Select(bool select)
         {
             if (select)
