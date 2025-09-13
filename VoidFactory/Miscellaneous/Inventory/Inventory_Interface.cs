@@ -35,11 +35,9 @@ namespace VoidFactory.Inventory
         public static int Hovering_Idx;
         public static int Selected_Idx;
 
-        public static UI_3D_Base[] InventoryInsts;
 
 
-
-        public static void Draw_Init(DATA_Recipy[] recipys)
+        public static void Draw_Init()
         {
             if (IsDraw) { return; }
             IsDraw = true;
@@ -53,45 +51,6 @@ namespace VoidFactory.Inventory
             MetaSelected[0] = new UIBody_Data(gPos, gSize, 0.3f, new Angle3D(0, -0.5f, 0));
             Select_None();
             Hover_None();
-
-            return;
-
-            /*InventoryInsts = new UI_3D_Base[BLD_Bodys.Length + DATA_Thing_Bodys.Length + recipys.Length];
-
-            int i = 0;
-            int j;
-            for (float y = +2; y >= -2; y--)
-            {
-                for (float x = -6; x <= +6; x++)
-                {
-                    UIGridPosition lPos = gPos.WithOffset(x, y);
-
-                    j = i;
-                    {
-                        if (j < BLD_Bodys.Length)
-                        {
-                            InventoryInsts[i] = new UI_Building(lPos, gSize, j);
-                        }
-                        else
-                        {
-                            j = j - BLD_Bodys.Length;
-                            if (j < DATA_Thing_Bodys.Length)
-                            {
-                                InventoryInsts[i] = new UI_Thing(lPos, gSize, j);
-                            }
-                            else
-                            {
-                                j = j - DATA_Thing_Bodys.Length;
-                                if (j < recipys.Length)
-                                {
-                                    InventoryInsts[i] = new UI_Recipy(lPos, gSize, recipys[j]);
-                                }
-                            }
-                        }
-                    }
-                    i++;
-                }
-            }*/
         }
         public static void Draw_Free()
         {
@@ -102,29 +61,9 @@ namespace VoidFactory.Inventory
             MetaSelected.Dispose();
             MetaHovering = null;
             MetaSelected = null;
-
-            if (InventoryInsts != null)
-            {
-                for (int i = 0; i < InventoryInsts.Length; i++)
-                {
-                    if (InventoryInsts[i] != null)
-                    {
-                        InventoryInsts[i].Dispose();
-                    }
-                }
-                InventoryInsts = null;
-            }
         }
-        public static void Draw_Inst()
+        public static void Draw_UI_Insts()
         {
-            if (InventoryInsts != null)
-            {
-                for (int i = 0; i < InventoryInsts.Length; i++)
-                {
-                    InventoryInsts[i].Update();
-                }
-            }
-
             Category_Ref.Draw_Icons_Update();
 
             if (Hovering_Idx != -1 && MetaHovering != null)
@@ -149,6 +88,34 @@ namespace VoidFactory.Inventory
 
             DATA_Thing_Bodys.Update();
             DATA_Thing_Bodys.Draw();
+        }
+        public static void Draw_UI_Info(TextBuffer text)
+        {
+            string str = "";
+            int sum;
+
+            sum = 0;
+            for (int i = 0; i < Meta_Bodys.Length; i++)
+            {
+                sum += Meta_Bodys[i].Count;
+            }
+            str += "Meta: " + sum + "\n";
+
+            sum = 0;
+            for (int i = 0; i < BLD_Bodys.Length; i++)
+            {
+                sum += BLD_Bodys[i].Count;
+            }
+            str += "Building: " + sum + "\n";
+
+            sum = 0;
+            for (int i = 0; i < DATA_Thing_Bodys.Length; i++)
+            {
+                sum += DATA_Thing_Bodys[i].Count;
+            }
+            str += "Thing: " + sum + "\n";
+
+            text.InsertTR((0, -3), text.Default_TextSize, 0x000000, str);
         }
 
         public static void Hover_None()
@@ -379,6 +346,11 @@ namespace VoidFactory.Inventory
 
         private static void Tool_Select()
         {
+            if (Tool != null)
+            {
+                Tool.Draw_Dispose();
+            }
+
             Tool_Idx = Selected_Idx;
             if (Tool_Idx != -1)
             {
@@ -387,6 +359,11 @@ namespace VoidFactory.Inventory
             else
             {
                 Tool = null;
+            }
+
+            if (Tool != null)
+            {
+                Tool.Draw_Alloc();
             }
         }
         private static void Tool_Select(bool select)
@@ -413,7 +390,7 @@ namespace VoidFactory.Inventory
             Tool_Select(true);
         }
 
-        public static void Tool_Init()
+        private static void Tool_Init()
         {
             if (Tool != null) { Tool.Init(); }
             else

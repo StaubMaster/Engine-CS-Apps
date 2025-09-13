@@ -116,6 +116,15 @@ namespace VoidFactory.Inventory
             InstRef = new UI_Recipy(pos, size, Recipy);
         }
 
+        public override void Draw_Alloc()
+        {
+            Inventory_Storage.Draw_Init(Recipy);
+        }
+        public override void Draw_Dispose()
+        {
+            Inventory_Storage.Draw_Free();
+        }
+
         public override void Update()
         {
             base.Update();

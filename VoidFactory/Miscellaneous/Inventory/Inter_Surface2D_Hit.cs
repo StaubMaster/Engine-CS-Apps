@@ -269,6 +269,10 @@ namespace VoidFactory.Inventory
         {
             InstRef = new UI_Building(pos, size, Template);
         }
+        public override void Draw_Alloc()
+        {
+            Inventory_Storage.Draw_Init_Inn(Template.Cost);
+        }
 
         public override void Update()
         {

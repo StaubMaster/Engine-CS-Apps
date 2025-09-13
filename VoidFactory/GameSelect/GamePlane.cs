@@ -101,9 +101,8 @@ namespace VoidFactory.GameSelect
             string str = "";
             str += Buildings.Count() + ":  Converter\n";
             str += TransPorter.Count() + ":TransPorter\n";
-            str += Chunk2D.SURF_Object.BodysCountInfo() + "\n";
-            str += Chunk2D_Buffer.SBufferEntrys.ToInfo();
-
+            //str += Chunk2D.SURF_Object.BodysCountInfo() + "\n";
+            //str += Chunk2D_Buffer.SBufferEntrys.ToInfo();
             Text_Buffer.InsertTR(
                 (0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF,
                 str);
@@ -249,52 +248,31 @@ namespace VoidFactory.GameSelect
 
         private void Frame_Inv()
         {
-            /* UI Recipies are wack
-             * dont feel like doing those with the new system
-             * but everything else should be fine
-             * also for recipy I might just be able to do a new shader
-             * or just change the old shader
-             * everything has as GridPos
-             *  but also a 3D Pos and Rot
-             * should be simple enough
-             * but redo everything else for now
-             */
-
             Inventory_Interface.Tool_Change((int)-win.MouseScroll());
 
             if (win.MouseLocked)
             {
-                Inventory_Interface.Cat_Hide();
-            }
-            else
-            {
-                Inventory_Interface.Cat_Show();
-            }
-
-            if (!win.MouseLocked)
-            {
-                //Inventory_Interface.Cat_Draw();
-                Inventory_Interface.Draw_Init(Recipys);
-                Inventory_Interface.Mouse_Hover(win.MousePixel());
-            }
-            else
-            {
                 Inventory_Interface.Draw_Free();
-            }
+                Inventory_Interface.Cat_Hide();
 
-            if (win.MouseLocked)
-            {
                 if (win.CheckKey(MouseButton.Left).IsPressed()) { Inventory_Interface.Tool_Func1(); }
                 if (win.CheckKey(MouseButton.Right).IsPressed()) { Inventory_Interface.Tool_Func2(); }
             }
             else
             {
+                Inventory_Interface.Draw_Init();
+                Inventory_Interface.Cat_Show();
+
+                //Inventory_Interface.Cat_Draw();
+                Inventory_Interface.Mouse_Hover(win.MousePixel());
+
                 if (win.CheckKey(Keys.PageUp).IsPressed()) { Inventory_Interface.Cat_Next(); }
                 if (win.CheckKey(Keys.PageDown).IsPressed()) { Inventory_Interface.Cat_Prev(); }
 
                 if (win.CheckKey(MouseButton.Left).IsPressed()) { Inventory_Interface.Mouse_Select(); }
             }
 
+            Inventory_Storage.Draw_Update();
             Inventory_Interface.Tool_Update();
 
             string str = "";
@@ -303,7 +281,8 @@ namespace VoidFactory.GameSelect
             Text_Buffer.InsertTL((0, -4), Text_Buffer.Default_TextSize, 0xFFFFFF, str);
 
             UI_Man.UIBodyShader.Use();
-            Inventory_Interface.Draw_Inst();
+            Inventory_Interface.Draw_UI_Insts();
+            Inventory_Interface.Draw_UI_Info(Text_Buffer);
 
             Inventory_Interface.Tool_Draw();
         }
@@ -484,6 +463,8 @@ namespace VoidFactory.GameSelect
             Chunk2D.SURF_Object.Bodys = new PHEI_Array(Chunk2D.SURF_Object.Interpret.GetBodys());
             Chunk2D.SurfThingTemplates = Chunk2D.SURF_Object.Interpret.GetTemplates();
             Chunk2D.SURF_Object.Interpret.Delete();
+
+            Engine3D.ConsoleLog.Log("Bodys Interpret done");
 
             //Chunk2D.SURF_Object.Interpret.Do(fileDatas, Things);
         }

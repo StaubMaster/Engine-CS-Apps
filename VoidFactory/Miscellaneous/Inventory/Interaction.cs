@@ -49,6 +49,9 @@ namespace VoidFactory.Inventory
             }
         }
 
+        public virtual void Draw_Alloc() { }
+        public virtual void Draw_Dispose() { }
+
         public bool Hover(Point2D mouse)
         {
             if (InstRef == null) { return false; }

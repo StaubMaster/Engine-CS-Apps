@@ -40,6 +40,7 @@ namespace VoidFactory.Inventory
             if (Visible) { return; }
             Visible = true;
 
+            Engine3D.ConsoleLog.Log("Cat Alloc");
             int i = 0;
             for (float y = +2; y >= -2; y--)
             {

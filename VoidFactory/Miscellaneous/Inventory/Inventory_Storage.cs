@@ -1,7 +1,10 @@
 ﻿
 using Engine3D.Abstract2D;
+using Engine3D.Abstract3D;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
+using Engine3D.Miscellaneous.EntryContainer;
+using Engine3D.Graphics.Display2D.UserInterface;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -37,6 +40,138 @@ namespace VoidFactory.Inventory
             }
             return null;
         }
+
+
+
+        private static UIGridPosition sPos;
+        private static UIGridSize sSize;
+        private static Angle3D spin;
+
+        private static EntryContainerDynamic<UIBody_Data>.Entry[] InstData;
+        private static int InstDataIndex;
+
+        private static void Draw_Init_Meta(IO_Port.MetaBodyIndex idx, Point2D offset)
+        {
+            InstData[InstDataIndex] = Inventory_Interface.Meta_Bodys[(int)idx].Alloc(1);
+            InstData[InstDataIndex][0] = new UIBody_Data(sPos.WithOffset(offset), sSize, 0.4f, spin);
+            InstDataIndex++;
+        }
+        private static void Draw_Init_Buffers(DATA_Buffer[] buffers, Point2D offset)
+        {
+            for (int i = 0; i < buffers.Length; i++)
+            {
+                if (buffers[i].Thing != null)
+                {
+                    InstData[InstDataIndex] = Inventory_Interface.DATA_Thing_Bodys[buffers[i].Thing.Idx].Alloc(1);
+                }
+                else
+                {
+                    InstData[InstDataIndex] = Inventory_Interface.Meta_Bodys[(int)IO_Port.MetaBodyIndex.Error].Alloc(1);
+                }
+                InstData[InstDataIndex][0] = new UIBody_Data(sPos.WithOffset(offset.X, offset.Y -i), sSize, 0.4f, spin);
+                InstDataIndex++;
+            }
+        }
+
+        public static void Init_Consts()
+        {
+            sPos = new UIGridPosition(UIAnchor.TR(), new Point2D(0, 0), UICorner.TR());
+            sSize = new UIGridSize(new Point2D(100, 100), 25);
+            spin = new Angle3D(0, -0.5f, 0);
+        }
+        public static void Draw_Init(DATA_Recipy recipy)
+        {
+            if (InstData != null) { return; }
+
+            Init_Consts();
+
+            InstData = new EntryContainerBase<UIBody_Data>.Entry[recipy.RInn.Length + recipy.ROut.Length + 2];
+            InstDataIndex = 0;
+
+            Draw_Init_Meta(IO_Port.MetaBodyIndex.Inn, new Point2D(-0, -0));
+            Draw_Init_Buffers(recipy.RInn, new Point2D(-0, -1));
+
+            Draw_Init_Meta(IO_Port.MetaBodyIndex.Out, new Point2D(-1, -0));
+            Draw_Init_Buffers(recipy.ROut, new Point2D(-1, -1));
+        }
+        public static void Draw_Init_Inn(DATA_Cost cost)
+        {
+            if (InstData != null) { return; }
+
+            Init_Consts();
+
+            InstData = new EntryContainerBase<UIBody_Data>.Entry[cost.Sum.Length + 1];
+            InstDataIndex = 0;
+
+            Draw_Init_Meta(IO_Port.MetaBodyIndex.Inn, new Point2D(-0, -0));
+            Draw_Init_Buffers(cost.Sum, new Point2D(-0, -1));
+        }
+        public static void Draw_Init_Out(DATA_Cost cost)
+        {
+            if (InstData != null) { return; }
+
+            Init_Consts();
+
+            InstData = new EntryContainerBase<UIBody_Data>.Entry[cost.Sum.Length + 1];
+            InstDataIndex = 0;
+
+            Draw_Init_Meta(IO_Port.MetaBodyIndex.Out, new Point2D(-1, -0));
+            Draw_Init_Buffers(cost.Sum, new Point2D(-1, -1));
+        }
+        public static void Draw_Init_Buffer(DATA_Thing thing, int off = 0)
+        {
+            if (InstData != null) { return; }
+
+            Init_Consts();
+
+            InstData = new EntryContainerBase<UIBody_Data>.Entry[1];
+            InstDataIndex = 0;
+
+            InstData[InstDataIndex] = Inventory_Interface.DATA_Thing_Bodys[thing.Idx].Alloc(1);
+            InstData[InstDataIndex][0] = new UIBody_Data(sPos.WithOffset(new Point2D(0, -off)), sSize, 0.4f, spin);
+            InstDataIndex++;
+        }
+        public static void Draw_Init_Buffer(DATA_Buffer buffer, int off = 0)
+        {
+            if (InstData != null) { return; }
+
+            Init_Consts();
+
+            InstData = new EntryContainerBase<UIBody_Data>.Entry[1];
+            InstDataIndex = 0;
+
+            if (buffer.Thing != null)
+            {
+                InstData[InstDataIndex] = Inventory_Interface.DATA_Thing_Bodys[buffer.Thing.Idx].Alloc(1);
+            }
+            else
+            {
+                InstData[InstDataIndex] = Inventory_Interface.Meta_Bodys[(int)IO_Port.MetaBodyIndex.Error].Alloc(1);
+            }
+            InstData[InstDataIndex][0] = new UIBody_Data(sPos.WithOffset(new Point2D(0, -off)), sSize, 0.4f, spin);
+            InstDataIndex++;
+        }
+        public static void Draw_Free()
+        {
+            if (InstData == null) { return; }
+            for (int i = 0; i < InstData.Length; i++)
+            {
+                InstData[i].Dispose();
+            }
+            InstData = null;
+        }
+        public static void Draw_Update()
+        {
+            if (InstData == null) { return; }
+            for (int i = 0; i < InstData.Length; i++)
+            {
+                UIBody_Data data;
+                data = InstData[i][0];
+                data.Trans.Rot.A += 0.01f;
+                InstData[i][0] = data;
+            }
+        }
+
         public static void Draw(DATA_Recipy recipy)
         {
             Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);

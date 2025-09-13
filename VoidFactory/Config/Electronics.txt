@@ -82,7 +82,7 @@ RAM
 
 	proc : "assambler",
 	inn : "quartz" : 4,
-	inn : "copr_coi" : 2,
+	inn : "copr_coil" : 2,
 	inn : "chip" : 2,
 	out : "ram" : 1,
 

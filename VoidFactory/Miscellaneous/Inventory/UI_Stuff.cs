@@ -111,14 +111,18 @@ namespace VoidFactory.Inventory
                 if (buf.Thing != null)
                 {
                     Inn[idx] = Inventory_Interface.DATA_Thing_Bodys[buf.Thing.Idx].Alloc((int)buf.Num);
-                    for (uint off = 0; off < buf.Num; off++)
-                    {
-                        Transformation3D trans = Transformation3D.Default();
-                        trans.Pos.C = 1.0f;
-                        trans.Rot.S = -0.5f;
-                        Inn[idx][(int)off] = new UIBody_Data(pos, size, 0.1f, trans);
-                        total_sum++;
-                    }
+                }
+                else
+                {
+                    Inn[idx] = Inventory_Interface.Meta_Bodys[(int)IO_Port.MetaBodyIndex.Error].Alloc((int)buf.Num);
+                }
+                for (uint off = 0; off < buf.Num; off++)
+                {
+                    Transformation3D trans = Transformation3D.Default();
+                    trans.Pos.C = 1.0f;
+                    trans.Rot.S = -0.5f;
+                    Inn[idx][(int)off] = new UIBody_Data(pos, size, 0.1f, trans);
+                    total_sum++;
                 }
             }
             total_idx = 0;
@@ -144,14 +148,18 @@ namespace VoidFactory.Inventory
                 if (buf.Thing != null)
                 {
                     Out[idx] = Inventory_Interface.DATA_Thing_Bodys[buf.Thing.Idx].Alloc((int)buf.Num);
-                    for (uint off = 0; off < buf.Num; off++)
-                    {
-                        Transformation3D trans = Transformation3D.Default();
-                        trans.Pos.C = 0.5f;
-                        trans.Rot.S = -0.5f;
-                        Out[idx][(int)off] = new UIBody_Data(pos, size, 0.1f, trans);
-                        total_sum++;
-                    }
+                }
+                else
+                {
+                    Out[idx] = Inventory_Interface.Meta_Bodys[(int)IO_Port.MetaBodyIndex.Error].Alloc((int)buf.Num);
+                }
+                for (uint off = 0; off < buf.Num; off++)
+                {
+                    Transformation3D trans = Transformation3D.Default();
+                    trans.Pos.C = 0.5f;
+                    trans.Rot.S = -0.5f;
+                    Out[idx][(int)off] = new UIBody_Data(pos, size, 0.1f, trans);
+                    total_sum++;
                 }
             }
             total_idx = 0;
