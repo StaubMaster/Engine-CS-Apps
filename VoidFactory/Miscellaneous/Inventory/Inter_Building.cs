@@ -2,6 +2,8 @@
 using Engine3D.GraphicsOld;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
+using Engine3D.Miscellaneous.EntryContainer;
+using Engine3D.Graphics.Display2D.UserInterface;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -97,11 +99,15 @@ namespace VoidFactory.Inventory
         private DATA_Cost CostInn;
         private DATA_Cost CostOut;
 
+        private Entry_Array InstThings;
+
         public Inter_Recipy(DATA_Recipy recipy)
         {
             Recipy = recipy;
             CostInn = new DATA_Cost(Recipy.RInn);
             CostOut = new DATA_Cost(Recipy.ROut);
+
+            InstThings = null;
         }
 
         public override void Init()
@@ -118,16 +124,41 @@ namespace VoidFactory.Inventory
 
         public override void Draw_Alloc()
         {
-            Inventory_Storage.Draw_Init(Recipy);
+            if (InstThings != null)
+            {
+                InstThings.Dispose();
+                InstThings = null;
+            }
+
+            InstThings = Inventory_Storage.Alloc_Recipy(Recipy);
         }
         public override void Draw_Dispose()
         {
-            Inventory_Storage.Draw_Free();
+            if (InstThings != null)
+            {
+                InstThings.Dispose();
+                InstThings = null;
+            }
         }
 
         public override void Update()
         {
             base.Update();
+
+            if (Crafting)
+            {
+                Tick++;
+                if (Tick >= Recipy.Ticks)
+                {
+                    if (Inventory_Storage.CostCanDeduct(CostInn) && Inventory_Storage.CostCanRefund(CostOut))
+                    {
+                        Inventory_Storage.CostDeduct(CostInn);
+                        Inventory_Storage.CostRefund(CostOut);
+                    }
+                    Crafting = false;
+                    Tick = 0;
+                }
+            }
         }
         public override void Draw()
         {
@@ -149,20 +180,13 @@ namespace VoidFactory.Inventory
 
             Inventory_Storage.Draw(Recipy);
 
-            if (Crafting)
+            if (InstThings != null)
             {
-                Tick++;
-                if (Tick >= Recipy.Ticks)
-                {
-                    if (Inventory_Storage.CostCanDeduct(CostInn) && Inventory_Storage.CostCanRefund(CostOut))
-                    {
-                        Inventory_Storage.CostDeduct(CostInn);
-                        Inventory_Storage.CostRefund(CostOut);
-                    }
-                    Crafting = false;
-                    Tick = 0;
-                }
+                InstThings.Dispose();
+                InstThings = null;
             }
+
+            InstThings = Inventory_Storage.Alloc_Recipy(Recipy);
         }
         public override void Draw_Inv_Icon(float x, float y)
         {

@@ -104,14 +104,26 @@ namespace VoidFactory.Inventory
     {
         private DATA_Thing Thing;
 
+        private Entry_Array StorageInst;
+
         public Inter_Thing(DATA_Thing thing)
         {
             Thing = thing;
+
+            StorageInst = null;
         }
 
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
         {
             InstRef = new UI_Thing(pos, size, Thing);
+        }
+        public override void Draw_Dispose()
+        {
+            if (StorageInst != null)
+            {
+                StorageInst.Dispose();
+                StorageInst = null;
+            }
         }
 
         public override void Update()
@@ -120,6 +132,12 @@ namespace VoidFactory.Inventory
         }
         public override void Draw()
         {
+            if (StorageInst != null)
+            {
+                StorageInst.Dispose();
+                StorageInst = null;
+            }
+
             Thing.Draw(Graphic.Icon_Prog, +0.75f, -0.75f);
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Thing");
             //MainContext.Text_Buff.InsertBR(
@@ -128,6 +146,7 @@ namespace VoidFactory.Inventory
             Text_Type("Thing");
 
             Inventory_Storage.Draw(Thing);
+            StorageInst = Inventory_Storage.Alloc_Thing(Thing, 1);
         }
         public override void Draw_Inv_Icon(float x, float y)
         {

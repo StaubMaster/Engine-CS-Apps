@@ -3,6 +3,8 @@ using Engine3D.Abstract3D;
 using Engine3D.GraphicsOld;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics.Display;
+using Engine3D.Miscellaneous.EntryContainer;
+using Engine3D.Graphics.Display2D.UserInterface;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -99,14 +101,39 @@ namespace VoidFactory.Inventory
     }
     class Inter_Surf2D_Tile : Inter_Surface2D_Hit
     {
+        private UI_3D_Base TileHoverContent;
+
+        private Entry_Array InstTile;
+        private Entry_Array InstOre;
+
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
         {
             InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.Axis);
+        }
+        public override void Draw_Dispose()
+        {
+            if (InstTile != null)
+            {
+                InstTile.Dispose();
+                InstTile = null;
+            }
+
+            if (InstOre != null)
+            {
+                InstOre.Dispose();
+                InstOre = null;
+            }
         }
 
         public override void Draw()
         {
             base.Draw();
+
+            if (InstTile != null)
+            {
+                InstTile.Dispose();
+                InstTile = null;
+            }
 
             if (Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Valid)
             {
@@ -117,7 +144,10 @@ namespace VoidFactory.Inventory
                 IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
                 if (Hit.ToLayerIndex().IsValid())
+                {
                     Inventory_Storage.Draw(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing);
+                    InstTile = Inventory_Storage.Alloc_Thing(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing, 1);
+                }
 
                 AxisBox3D box = Chunks.TileBox(Hit);
                 if (box != null)
@@ -136,6 +166,15 @@ namespace VoidFactory.Inventory
                 }
             }
 
+            if (InstOre != null)
+            {
+                for (int i = 0; i < InstOre.Length; i++)
+                {
+                    InstOre[i].Dispose();
+                }
+                InstOre = null;
+            }
+
             string strInfo = "\n";
             if (Hit.IsValid())
             {
@@ -149,6 +188,8 @@ namespace VoidFactory.Inventory
                 if (thing != null)
                 {
                     strInfo += thing.ToString();
+
+                    InstOre = Inventory_Storage.Alloc_Buffer(thing.Content, 2);
                 }
             }
 
@@ -257,6 +298,8 @@ namespace VoidFactory.Inventory
         private Transformation3D Trans;
         private int angle;
 
+        private Entry_Array Cost_Insts;
+
         public Inter_Surf2D_Building(BLD_Base.Template_Base template)
         {
             Template = template;
@@ -271,7 +314,21 @@ namespace VoidFactory.Inventory
         }
         public override void Draw_Alloc()
         {
-            Inventory_Storage.Draw_Init_Inn(Template.Cost);
+            if (Cost_Insts != null)
+            {
+                Cost_Insts.Dispose();
+                Cost_Insts = null;
+            }
+
+            Cost_Insts = Inventory_Storage.Alloc_Cost_Inn(Template.Cost);
+        }
+        public override void Draw_Dispose()
+        {
+            if (Cost_Insts != null)
+            {
+                Cost_Insts.Dispose();
+                Cost_Insts = null;
+            }
         }
 
         public override void Update()

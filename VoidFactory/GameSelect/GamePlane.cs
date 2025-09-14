@@ -272,7 +272,6 @@ namespace VoidFactory.GameSelect
                 if (win.CheckKey(MouseButton.Left).IsPressed()) { Inventory_Interface.Mouse_Select(); }
             }
 
-            Inventory_Storage.Draw_Update();
             Inventory_Interface.Tool_Update();
 
             string str = "";
