@@ -19,14 +19,14 @@ namespace VoidFactory.Inventory
 
         public override void Init()
         {
-            Graphic.Draw_Gray = true;
-            Graphic.Draw_Ports = false;
+            Interaction.Draw_Gray = true;
+            Interaction.Draw_Ports = false;
         }
 
         public override void Update()
         {
-            Hover = Buildings.Select(Graphic.View_Ray);
-            Graphic.Draw_Gray_Exclude_Idx = Hover.Building_Idx;
+            Hover = Buildings.Select(Interaction.View.Ray);
+            Interaction.Draw_Gray_Exclude_Idx = Hover.Building_Idx;
         }
         public override void Draw()
         {
@@ -171,7 +171,7 @@ namespace VoidFactory.Inventory
             //    "Recipy:\n" + Recipy);
             Text_Info("Recipy:\n" + Recipy);
 
-            Recipy.Draw(Graphic.Icon_Prog, Graphic.Tick / 64.0, +0.75f, -0.75f, 0.4f);
+            //Recipy.Draw(Graphic.Icon_Prog, Graphic.Tick / 64.0, +0.75f, -0.75f, 0.4f);
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, Tick + " Recipy");
             //MainContext.Text_Buff.InsertBR(
             //    (+0.5f, -0.5f - 1), 0xFFFFFF, 20f, 2f,
@@ -190,7 +190,7 @@ namespace VoidFactory.Inventory
         }
         public override void Draw_Inv_Icon(float x, float y)
         {
-            Recipy.Draw(Graphic.Icon_Prog, Graphic.Tick / 64.0, x, y, 0.1f);
+            //Recipy.Draw(Graphic.Icon_Prog, Graphic.Tick / 64.0, x, y, 0.1f);
         }
 
         public override void Func1()

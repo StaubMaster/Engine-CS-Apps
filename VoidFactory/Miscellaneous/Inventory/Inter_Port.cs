@@ -17,14 +17,14 @@ namespace VoidFactory.Inventory
 
         public override void Init()
         {
-            Graphic.Draw_Gray = true;
-            Graphic.Draw_Gray_Exclude_Idx = -1;
-            Graphic.Draw_Ports = true;
+            Interaction.Draw_Gray = true;
+            Interaction.Draw_Gray_Exclude_Idx = -1;
+            Interaction.Draw_Ports = true;
         }
 
         public override void Update()
         {
-            Hover = Buildings.Port_Select(Graphic.View_Ray);
+            Hover = Buildings.Port_Select(Interaction.View.Ray);
         }
         public override void Draw()
         {
@@ -64,8 +64,8 @@ namespace VoidFactory.Inventory
                 (0, -4), Text_Buffer.Default_TextSize, 0xFFFFFF,
                 "Select Port:\n" + Select);
 
-            Graphic.Icon_Prog.UniScale(0.04f);
-            Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
+            //Graphic.Icon_Prog.UniScale(0.04f);
+            //Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
             //IO_Port.BodyTransPorter.DrawMain();
             IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Connect");
@@ -76,8 +76,8 @@ namespace VoidFactory.Inventory
         }
         public override void Draw_Inv_Icon(float x, float y)
         {
-            Graphic.Icon_Prog.UniScale(0.01f);
-            Graphic.Icon_Prog.UniPos(x, y);
+            //Graphic.Icon_Prog.UniScale(0.01f);
+            //Graphic.Icon_Prog.UniPos(x, y);
             //IO_Port.BodyTransPorter.DrawMain();
             IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
         }
@@ -138,7 +138,7 @@ namespace VoidFactory.Inventory
                 StorageInst = null;
             }
 
-            Thing.Draw(Graphic.Icon_Prog, +0.75f, -0.75f);
+            //Thing.Draw(Graphic.Icon_Prog, +0.75f, -0.75f);
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Thing");
             //MainContext.Text_Buff.InsertBR(
             //    (-0.5f, +0.5f + 1), 0xFFFFFF, 20f, 2f,
@@ -150,7 +150,7 @@ namespace VoidFactory.Inventory
         }
         public override void Draw_Inv_Icon(float x, float y)
         {
-            Thing.Draw(Graphic.Icon_Prog, x, y, 0.5f);
+            //Thing.Draw(Graphic.Icon_Prog, x, y, 0.5f);
         }
     }
 }

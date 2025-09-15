@@ -79,7 +79,7 @@ namespace VoidFactory.Editor
         private BodyElemUniShader BodyUniFull_Shader;
         private BodyElemUniWireShader BodyUniWire_Shader;
 
-        private PolyHedraShaderManager PH_Man;
+        private PolyHedra_Shader_Manager PH_Man;
 
         private UserInterfaceBodyShader UserInterface_Shader;
 
@@ -554,7 +554,7 @@ namespace VoidFactory.Editor
             BodyUniWire_Shader.OtherColor.Value(0x000000);
             BodyUniWire_Shader.OtherColorInter.T1(1.0f);
 
-            PH_Man = new PolyHedraShaderManager(shaderDir);
+            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
 
             UserInterface_Shader = new UserInterfaceBodyShader(shaderDir);
             UserInterface_Shader.Use();

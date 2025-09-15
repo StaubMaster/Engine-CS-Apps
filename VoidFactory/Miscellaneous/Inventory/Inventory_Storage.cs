@@ -45,7 +45,6 @@ namespace VoidFactory.Inventory
 
     static class Inventory_Storage
     {
-        public static GameSelect.Game3D.GraphicsData Graphic;
         //public static DisplayContext MainContext;
         public static TextBuffer Text_Buffer;
 

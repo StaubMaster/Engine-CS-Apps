@@ -133,7 +133,7 @@ namespace VoidFactory.Inventory
                     for (int off = 0; off < Inn[idx].Length; off++)
                     {
                         data = Inn[idx][off];
-                        data.Trans.Rot.A = (Angle3D.Full * total_idx) / total_sum;
+                        data.Trans.Rot.A = (Angle3D.Deg360 * total_idx) / total_sum;
                         Inn[idx][off] = data;
                         total_idx++;
                     }
@@ -170,7 +170,7 @@ namespace VoidFactory.Inventory
                     for (int off = 0; off < Out[idx].Length; off++)
                     {
                         data = Out[idx][off];
-                        data.Trans.Rot.A = (Angle3D.Full * total_idx) / total_sum;
+                        data.Trans.Rot.A = (Angle3D.Deg360 * total_idx) / total_sum;
                         Out[idx][off] = data;
                         total_idx++;
                     }

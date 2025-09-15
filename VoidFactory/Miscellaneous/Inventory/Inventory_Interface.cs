@@ -395,8 +395,8 @@ namespace VoidFactory.Inventory
             if (Tool != null) { Tool.Init(); }
             else
             {
-                Interaction.Graphic.Draw_Gray = false;
-                Interaction.Graphic.Draw_Ports = false;
+                Interaction.Draw_Gray = false;
+                Interaction.Draw_Ports = false;
             }
         }
         public static void Tool_Update()

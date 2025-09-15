@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Engine3D.Abstract2D;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
+using Engine3D.OutPut;
 
 using VoidFactory.GameSelect;
 using VoidFactory.Production.Transfer;
@@ -12,7 +13,12 @@ namespace VoidFactory.Inventory
 {
     abstract class Interaction
     {
-        public static Game3D.GraphicsData Graphic;
+        public static DisplayCamera View;
+
+        public static bool Draw_Ports;
+        public static bool Draw_Gray;
+        public static int Draw_Gray_Exclude_Idx;
+
         public static BodyElemUniShader BodyUni_Shader;
         public static TextBuffer Text_Buffer;
         public static AxisBoxBuffer Box_Buffer;
@@ -21,8 +27,8 @@ namespace VoidFactory.Inventory
 
         public virtual void Init()
         {
-            Graphic.Draw_Gray = false;
-            Graphic.Draw_Ports = false;
+            Interaction.Draw_Gray = false;
+            Interaction.Draw_Ports = false;
         }
 
         public abstract void Update();
@@ -87,9 +93,9 @@ namespace VoidFactory.Inventory
 
         public static void Draw_Inv_Box(float x, float y)
         {
-            Graphic.Icon_Prog.UniScale(0.025f);
-            Graphic.Icon_Prog.UniPos(x, y);
-            Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);
+            //Graphic.Icon_Prog.UniScale(0.025f);
+            //Graphic.Icon_Prog.UniPos(x, y);
+            //Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);
             //IO_Port.BodyHex.DrawMain();
             IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Hex].DrawMain();
         }

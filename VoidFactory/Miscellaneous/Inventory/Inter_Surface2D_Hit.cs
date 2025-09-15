@@ -22,7 +22,7 @@ namespace VoidFactory.Inventory
 
         public override void Update()
         {
-            Hit = Chunks.CrossSurface(Graphic.View_Ray);
+            Hit = Chunks.CrossSurface(View.Ray);
         }
         public override void Draw()
         {
@@ -79,8 +79,8 @@ namespace VoidFactory.Inventory
             //    "Generate:\n" + Template);
             Text_Info("Generate:\n" + Template);
 
-            Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
-            Graphic.Icon_Prog.UniScale(0.01f);
+            //Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
+            //Graphic.Icon_Prog.UniScale(0.01f);
             //Template.Draw();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Surf Thing");
             Text_Buffer.InsertBR(
@@ -89,8 +89,8 @@ namespace VoidFactory.Inventory
         }
         public override void Draw_Inv_Icon(float x, float y)
         {
-            Graphic.Icon_Prog.UniScale(Icon_Scale);
-            Graphic.Icon_Prog.UniPos(x, y);
+            //Graphic.Icon_Prog.UniScale(Icon_Scale);
+            //Graphic.Icon_Prog.UniPos(x, y);
             //Template.Draw();
         }
 
@@ -336,7 +336,7 @@ namespace VoidFactory.Inventory
             base.Update();
 
             if (Hit.IsValid())
-                Trans = new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Center, new Angle3D((angle / 4.0) * Angle3D.Full, 0, 0));
+                Trans = new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Center, new Angle3D((angle / 4.0) * Angle3D.Deg360, 0, 0));
             else
                 Trans = Transformation3D.Default();
         }
@@ -357,9 +357,9 @@ namespace VoidFactory.Inventory
             //    "Template:\n" + Template);
             Text_Info("Template:\n" + Template);
 
-            Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
-            Graphic.Icon_Prog.UniScale(0.01f);
-            Template.Draw();
+            //Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
+            //Graphic.Icon_Prog.UniScale(0.01f);
+            //Template.Draw();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Template");
             //MainContext.Text_Buff.InsertBR(
             //    (-0.5f, +0.5f + 1), 0xFFFFFF, 20f, 2f,
@@ -370,9 +370,9 @@ namespace VoidFactory.Inventory
         }
         public override void Draw_Inv_Icon(float x, float y)
         {
-            Graphic.Icon_Prog.UniScale(Icon_Scale);
-            Graphic.Icon_Prog.UniPos(x, y);
-            Template.Draw();
+            //Graphic.Icon_Prog.UniScale(Icon_Scale);
+            //Graphic.Icon_Prog.UniPos(x, y);
+            //Template.Draw();
         }
 
         public override void Func1()

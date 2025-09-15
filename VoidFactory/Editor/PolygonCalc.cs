@@ -138,7 +138,7 @@ namespace VoidFactory
             Points_Flat.Text = "";
             for (uint i = 0; i < Poly_Num; i++)
             {
-                wnk = (Angle3D.Full * i) / Poly_Num;
+                wnk = (Angle3D.Deg360 * i) / Poly_Num;
                 winkel.A = Rotation.A * wnk;
                 winkel.S = Rotation.S * wnk;
                 winkel.D = Rotation.D * wnk;

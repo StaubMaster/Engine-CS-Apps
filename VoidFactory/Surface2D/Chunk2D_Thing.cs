@@ -57,7 +57,7 @@ namespace VoidFactory.Surface2D
             {
                 if (!ToRemove)
                 {
-                    ConsoleLog.Log("SURF Thing Remove " + this);
+                    //ConsoleLog.Log("SURF Thing Remove " + this);
                     InstEntry.Dispose();
                     InstEntry = null;
                     ToRemove = true;

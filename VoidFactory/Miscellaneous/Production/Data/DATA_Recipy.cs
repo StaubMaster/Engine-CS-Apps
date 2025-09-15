@@ -117,7 +117,7 @@ namespace VoidFactory.Production.Data
             {
                 for (int n = 0; n < ROut[o].Num; n++)
                 {
-                    wnk.A = ((idx * Angle3D.Full) / sum) - tick;
+                    wnk.A = ((idx * Angle3D.Deg360) / sum) - tick;
                     wnk.FloatsSinCos(flt);
 
                     pos = (new Point3D(0.5f * scale, 0, 0) + wnk);
@@ -146,7 +146,7 @@ namespace VoidFactory.Production.Data
             {
                 for (int n = 0; n < RInn[i].Num; n++)
                 {
-                    wnk.A = ((idx * Angle3D.Full) / sum) + tick;
+                    wnk.A = ((idx * Angle3D.Deg360) / sum) + tick;
                     wnk.FloatsSinCos(flt);
 
                     pos = (new Point3D(1.0f * scale, 0, 0) + wnk);

@@ -308,11 +308,11 @@ namespace VoidFactory.Surface2D
 
             Neighbour = new Chunk2D[8];
 
-            Engine3D.ConsoleLog.Log("++++ Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]");
+            //Engine3D.ConsoleLog.Log("++++ Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]");
         }
         ~Chunk2D()
         {
-            Engine3D.ConsoleLog.Log("---- Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]");
+            //Engine3D.ConsoleLog.Log("---- Chunk2D " + "[ " + Chunk_Idx_Y + " , " + Chunk_Idx_C + " ]");
         }
 
         private Chunk2D NeighbourFromBits(byte bits)
