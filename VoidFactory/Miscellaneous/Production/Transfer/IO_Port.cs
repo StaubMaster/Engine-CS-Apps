@@ -37,7 +37,8 @@ namespace VoidFactory.Production.Transfer
             OutOct,
         };
 
-        public static PHEI_Array Bodys;
+        //public static PHEI_Array Bodys;
+        public static GameSelect.Game3D game;
 
 
 
@@ -58,12 +59,14 @@ namespace VoidFactory.Production.Transfer
 
             if (!InnOut)
             {
-                InstEntry = Bodys[(int)MetaBodyIndex.Inn].Alloc(1);
+                //InstEntry = Bodys[(int)MetaBodyIndex.Inn].Alloc(1);
+                InstEntry = game.PH_3D[(int)MetaBodyIndex.Inn].Alloc(1);
                 InstEntry[0] = new PolyHedraInstance_3D_Data(new Transformation3D(pos));
             }
             else
             {
-                InstEntry = Bodys[(int)MetaBodyIndex.Out].Alloc(1);
+                //InstEntry = Bodys[(int)MetaBodyIndex.Out].Alloc(1);
+                InstEntry = game.PH_3D[(int)MetaBodyIndex.Out].Alloc(1);
                 InstEntry[0] = new PolyHedraInstance_3D_Data(new Transformation3D(pos));
             }
 
@@ -113,50 +116,6 @@ namespace VoidFactory.Production.Transfer
         public void tryOutA(DATA_Buffer buffer)
         {
             Buffer.tryOutA(buffer);
-        }
-
-        public void Draw(TransUniProgram program)
-        {
-            if (TransPorter != null) { return; }
-
-            program.UniTrans(new RenderTrans(Pos));
-            /*if (!InnOut)
-                BodyInn.Draw();
-            else
-                BodyOut.Draw();*/
-        }
-        public void Draw(CShaderTransformation program)
-        {
-            if (TransPorter != null) { return; }
-
-            program.Trans.Value(new Transformation3D(Pos));
-            if (!InnOut)
-            {
-                //BodyInn.Draw();
-            }
-            else
-            {
-               // BodyOut.Draw();
-            }
-        }
-        public void Draw(BodyElemUniShader program)
-        {
-            if (TransPorter != null) { return; }
-
-            program.Use();
-            program.Trans.Value(new Transformation3D(Pos));
-            program.LightRange.Value(1.0f, 1.0f);
-
-            if (!InnOut)
-            {
-                //BodyInn.Draw();
-            }
-            else
-            {
-                //BodyOut.Draw();
-            }
-
-            program.LightRange.Value(0.1f, 1.0f);
         }
 
         public override string ToString()
@@ -243,74 +202,6 @@ namespace VoidFactory.Production.Transfer
 
                 return str;
             }
-            public void Draw_Hover(TransUniProgram program)
-            {
-                if (!Valid) { return; }
-
-                program.UniTrans(new RenderTrans(Pos));
-
-                if (!InnOut)
-                {
-                    Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
-                    //BodyInnHex.DrawMain();
-                }
-                else
-                {
-                    Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
-                    //BodyOutHex.DrawMain();
-                }
-            }
-            public void Draw_Select(TransUniProgram program)
-            {
-                if (!Valid) { return; }
-
-                program.UniTrans(new RenderTrans(Pos));
-
-                if (!InnOut)
-                {
-                    Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
-                    //BodyInnOct.DrawMain();
-                }
-                else
-                {
-                    Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
-                    //BodyOutOct.DrawMain();
-                }
-            }
-            public void Draw_Hover(CShaderTransformation program)
-            {
-                if (!Valid) { return; }
-
-                program.Trans.Value(new Transformation3D(Pos));
-
-                if (!InnOut)
-                {
-                    //BodyInnHex.DrawMain();
-                    Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
-                }
-                else
-                {
-                    //BodyOutHex.DrawMain();
-                    Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
-                }
-            }
-            public void Draw_Select(CShaderTransformation program)
-            {
-                if (!Valid) { return; }
-
-                program.Trans.Value(new Transformation3D(Pos));
-
-                if (!InnOut)
-                {
-                    //BodyInnOct.DrawMain();
-                    Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
-                }
-                else
-                {
-                    //BodyOutOct.DrawMain();
-                    Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
-                }
-            }
             public void Draw_Hover(BodyElemUniShader program)
             {
                 if (!Valid) { return; }
@@ -322,12 +213,14 @@ namespace VoidFactory.Production.Transfer
                 if (!InnOut)
                 {
                     //BodyInnHex.DrawMain();
-                    Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
+                    //Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
+                    game.PH_3D[(int)MetaBodyIndex.InnHex].DrawMain();
                 }
                 else
                 {
                     //BodyOutHex.DrawMain();
-                    Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
+                    //Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
+                    game.PH_3D[(int)MetaBodyIndex.OutHex].DrawMain();
                 }
 
                 program.LightRange.Value(0.1f, 1.0f);
@@ -343,12 +236,14 @@ namespace VoidFactory.Production.Transfer
                 if (!InnOut)
                 {
                     //BodyInnOct.DrawMain();
-                    Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
+                    //Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
+                    game.PH_3D[(int)MetaBodyIndex.InnOct].DrawMain();
                 }
                 else
                 {
                     //BodyOutOct.DrawMain();
-                    Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
+                    //Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
+                    game.PH_3D[(int)MetaBodyIndex.OutOct].DrawMain();
                 }
 
                 program.LightRange.Value(0.1f, 1.0f);

@@ -97,7 +97,7 @@ namespace VoidFactory.Inventory
             //Graphic.Icon_Prog.UniPos(x, y);
             //Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);
             //IO_Port.BodyHex.DrawMain();
-            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Hex].DrawMain();
+            IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Hex].DrawMain();
         }
     }
 }

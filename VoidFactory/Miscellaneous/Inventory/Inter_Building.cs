@@ -35,7 +35,7 @@ namespace VoidFactory.Inventory
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hover.Pos));
                 BodyUni_Shader.Trans.Value(new Engine3D.Abstract3D.Transformation3D(Hover.Pos));
                 //IO_Port.BodyOct.DrawMain();
-                IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
+                IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
             }
 
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.HoriL, 0, -9, 0xFFFFFF,
@@ -178,7 +178,7 @@ namespace VoidFactory.Inventory
             //    Tick + " Recipy");
             Text_Type(Tick + " Recipy");
 
-            Inventory_Storage.Draw(Recipy);
+            //Inventory_Storage.Draw(Recipy);
 
             if (InstThings != null)
             {

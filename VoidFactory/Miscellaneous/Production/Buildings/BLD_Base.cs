@@ -18,7 +18,7 @@ namespace VoidFactory.Production.Buildings
 {
     abstract partial class BLD_Base
     {
-        public static PHEI_Array Bodys;
+        //public static PHEI_Array Bodys;
 
 
 
@@ -48,7 +48,7 @@ namespace VoidFactory.Production.Buildings
 
             Trans = trans;
 
-            InstEntry = Bodys[Idx].Alloc(1);
+            InstEntry = game.PH_3D[Idx].Alloc(1);
             InstEntry[0] = new PolyHedraInstance_3D_Data(trans);
 
             Inn = new IO_Port[temp.Inn.Length];
@@ -68,7 +68,6 @@ namespace VoidFactory.Production.Buildings
         }
         ~BLD_Base()
         {
-            InstEntry.Dispose();
         }
         public void Remove()
         {
@@ -80,6 +79,12 @@ namespace VoidFactory.Production.Buildings
 
             for (int o = 0; o < Out.Length; o++)
                 Out[o].Remove();
+
+            if (InstEntry != null)
+            {
+                InstEntry.Dispose();
+                InstEntry = null;
+            }
 
             Inventory_Storage.CostRefund(MaterialCost);
             ToRemove = true;

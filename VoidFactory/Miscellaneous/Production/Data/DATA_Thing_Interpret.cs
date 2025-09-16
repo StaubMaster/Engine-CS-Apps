@@ -8,6 +8,8 @@ namespace VoidFactory.Production.Data
 {
     partial class DATA_Thing
     {
+        public static GameSelect.Game3D game;
+
         public static class Interpret
         {
             private static List<DATA_Thing> ListThing;
@@ -38,6 +40,7 @@ namespace VoidFactory.Production.Data
                 };
                 int q;
 
+                uint off = (uint)game.PolyHedras.Length;
                 uint idx;
                 string name;
                 string id;
@@ -59,7 +62,7 @@ namespace VoidFactory.Production.Data
                             cat = querys[q].Found[0][0]; q++;
                             file = querys[q].Found[0][0];
 
-                            ListThing.Add(new DATA_Thing(idx, name, id, cat));
+                            ListThing.Add(new DATA_Thing(idx + off, name, id, cat));
                             ListBody.Add(BodyStatic.File.Load(file));
                         }
                     }

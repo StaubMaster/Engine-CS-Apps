@@ -61,26 +61,6 @@ namespace VoidFactory.Production.Transfer
                     }
                 }
             }
-            public void Draw(TransUniProgram programMain)
-            {
-                for (int i = 0; i < TransPorter.Count; i++)
-                {
-                    TransPorter[i].Draw(programMain);
-                }
-
-                Program.Use();
-                Buffer.Draw();
-            }
-            public void Draw(CShaderTransformation programMain)
-            {
-                for (int i = 0; i < TransPorter.Count; i++)
-                {
-                    TransPorter[i].Draw(programMain);
-                }
-
-                Program.Use();
-                Buffer.Draw();
-            }
             public void Draw(BodyElemUniShader programMain)
             {
                 for (int i = 0; i < TransPorter.Count; i++)

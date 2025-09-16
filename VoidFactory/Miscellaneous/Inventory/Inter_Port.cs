@@ -67,7 +67,7 @@ namespace VoidFactory.Inventory
             //Graphic.Icon_Prog.UniScale(0.04f);
             //Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
             //IO_Port.BodyTransPorter.DrawMain();
-            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
+            IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Connect");
             //MainContext.Text_Buff.InsertBR(
             //    (-0.5f, +0.5f + 1), 0xFFFFFF, 20f, 2f,
@@ -79,7 +79,7 @@ namespace VoidFactory.Inventory
             //Graphic.Icon_Prog.UniScale(0.01f);
             //Graphic.Icon_Prog.UniPos(x, y);
             //IO_Port.BodyTransPorter.DrawMain();
-            IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
+            IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
         }
 
         public override void Func1()
@@ -145,7 +145,7 @@ namespace VoidFactory.Inventory
             //    "Thing");
             Text_Type("Thing");
 
-            Inventory_Storage.Draw(Thing);
+            //Inventory_Storage.Draw(Thing);
             StorageInst = Inventory_Storage.Alloc_Thing(Thing, 1);
         }
         public override void Draw_Inv_Icon(float x, float y)

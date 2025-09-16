@@ -59,7 +59,7 @@ namespace VoidFactory.Production.Buildings
             }
             public void DrawCost(Select_Building hover)
             {
-                Inventory_Storage.DrawOut(Buildings[hover.Building_Idx].MaterialCost);
+                //Inventory_Storage.DrawOut(Buildings[hover.Building_Idx].MaterialCost);
             }
             public string StringOf(int idx)
             {

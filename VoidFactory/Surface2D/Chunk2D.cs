@@ -72,6 +72,8 @@ namespace VoidFactory.Surface2D
      */
     partial class Chunk2D
     {
+        public static GameSelect.Game3D game;
+
         public const int Tiles_Per_Side = 1 << 4;
         private const int Tiles_Per_Area = Tiles_Per_Side * Tiles_Per_Side;
 

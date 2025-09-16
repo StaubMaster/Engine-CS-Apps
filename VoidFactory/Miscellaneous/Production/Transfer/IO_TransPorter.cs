@@ -116,32 +116,6 @@ namespace VoidFactory.Production.Transfer
             }
         }
 
-        public void Draw(TransUniProgram program)
-        {
-            Ray3D ray = new Ray3D(Inn.Pos, Out.Pos - Inn.Pos);
-            Transformation3D trans = Transformation3D.Default();
-
-            for (int i = 0; i < Count; i++)
-            {
-                if (Thing[i] == null) { break; }
-                trans.Pos = ray.Scale((1.0 * Tick[i]) / Thing_Tick_Limit);
-                program.UniTrans(new RenderTrans(trans));
-                Thing[i].Draw();
-            }
-        }
-        public void Draw(CShaderTransformation program)
-        {
-            Ray3D ray = new Ray3D(Inn.Pos, Out.Pos - Inn.Pos);
-            Transformation3D trans = Transformation3D.Default();
-        
-            for (int i = 0; i < Count; i++)
-            {
-                if (Thing[i] == null) { break; }
-                trans.Pos = ray.Scale((1.0 * Tick[i]) / Thing_Tick_Limit);
-                program.Trans.Value(trans);
-                Thing[i].Draw();
-            }
-        }
         public void Draw(BodyElemUniShader program)
         {
             Ray3D ray = new Ray3D(Inn.Pos, Out.Pos - Inn.Pos);

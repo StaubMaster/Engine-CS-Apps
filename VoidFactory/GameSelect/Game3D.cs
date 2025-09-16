@@ -12,6 +12,8 @@ using Engine3D.OutPut;
 using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics.Display;
+using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Display2D.UserInterface;
 
 using VoidFactory.Production;
 
@@ -41,13 +43,59 @@ namespace VoidFactory.GameSelect
 
         protected bool Running;
 
+
+
         public PolyHedra[] PolyHedras;
+        public void PolyHedras_ConCat(PolyHedra[] arr)
+        {
+            PolyHedra[] data = new PolyHedra[PolyHedras.Length + arr.Length];
+
+            int i;
+            for (i = 0; i < PolyHedras.Length; i++)
+            {
+                data[i] = PolyHedras[i];
+            }
+
+            for (int j = 0; j < arr.Length; j++)
+            {
+                data[i] = arr[j];
+                i++;
+            }
+
+            PolyHedras = data;
+        }
+        public void PolyHedras_ConCat(Engine3D.Entity.BodyStatic[] arr)
+        {
+            PolyHedra[] data = new PolyHedra[PolyHedras.Length + arr.Length];
+
+            int i;
+            for (i = 0; i < PolyHedras.Length; i++)
+            {
+                data[i] = PolyHedras[i];
+            }
+
+            for (int j = 0; j < arr.Length; j++)
+            {
+                data[i] = arr[j].ToPolyHedra();
+                i++;
+            }
+
+            PolyHedras = data;
+        }
+
+        public PolyHedraInstance_3D_Array PH_3D;
+        public UIBody_Array PH_UI;
+
+
+
 
         protected Game3D(Action externDelete)
         {
             ExternDelete = externDelete;
             CommandFunction = null;
             Running = false;
+
+            PolyHedras = new PolyHedra[0];
         }
 
         protected abstract void Frame();

@@ -34,7 +34,7 @@ namespace VoidFactory.Inventory
         private EntryContainerDynamic<UIBody_Data>.Entry Inst;
         public UI_Meta(UIGridPosition pos, UIGridSize size, IO_Port.MetaBodyIndex idx) : base(pos, size)
         {
-            Inst = Inventory_Interface.Meta_Bodys[(int)idx].Alloc(1);
+            Inst = Inventory_Interface.game.PH_UI[(int)idx].Alloc(1);
             Inst[0] = new UIBody_Data(pos, size, 0.2f, new Angle3D(0, -0.5f, 0));
         }
 
@@ -55,7 +55,7 @@ namespace VoidFactory.Inventory
         private EntryContainerDynamic<UIBody_Data>.Entry Inst;
         public UI_Building(UIGridPosition pos, UIGridSize size, BLD_Base.Template_Base template) : base(pos, size)
         {
-            Inst = Inventory_Interface.BLD_Bodys[template.Idx].Alloc(1);
+            Inst = Inventory_Interface.game.PH_UI[template.Idx].Alloc(1);
             Inst[0] = new UIBody_Data(pos, size, 0.1f, new Angle3D(0, -0.5f, 0));
         }
 
@@ -76,7 +76,7 @@ namespace VoidFactory.Inventory
         private EntryContainerDynamic<UIBody_Data>.Entry Inst;
         public UI_Thing(UIGridPosition pos, UIGridSize size, DATA_Thing thing) : base(pos, size)
         {
-            Inst = Inventory_Interface.DATA_Thing_Bodys[thing.Idx].Alloc(1);
+            Inst = Inventory_Interface.game.PH_UI[thing.Idx].Alloc(1);
             Inst[0] = new UIBody_Data(pos, size, 0.4f, new Angle3D(0, -0.5f, 0));
         }
 
@@ -110,11 +110,11 @@ namespace VoidFactory.Inventory
                 DATA_Buffer buf = recipy.RInn[idx];
                 if (buf.Thing != null)
                 {
-                    Inn[idx] = Inventory_Interface.DATA_Thing_Bodys[buf.Thing.Idx].Alloc((int)buf.Num);
+                    Inn[idx] = Inventory_Interface.game.PH_UI[buf.Thing.Idx].Alloc((int)buf.Num);
                 }
                 else
                 {
-                    Inn[idx] = Inventory_Interface.Meta_Bodys[(int)IO_Port.MetaBodyIndex.Error].Alloc((int)buf.Num);
+                    Inn[idx] = Inventory_Interface.game.PH_UI[(int)IO_Port.MetaBodyIndex.Error].Alloc((int)buf.Num);
                 }
                 for (uint off = 0; off < buf.Num; off++)
                 {
@@ -147,11 +147,11 @@ namespace VoidFactory.Inventory
                 DATA_Buffer buf = recipy.ROut[idx];
                 if (buf.Thing != null)
                 {
-                    Out[idx] = Inventory_Interface.DATA_Thing_Bodys[buf.Thing.Idx].Alloc((int)buf.Num);
+                    Out[idx] = Inventory_Interface.game.PH_UI[buf.Thing.Idx].Alloc((int)buf.Num);
                 }
                 else
                 {
-                    Out[idx] = Inventory_Interface.Meta_Bodys[(int)IO_Port.MetaBodyIndex.Error].Alloc((int)buf.Num);
+                    Out[idx] = Inventory_Interface.game.PH_UI[(int)IO_Port.MetaBodyIndex.Error].Alloc((int)buf.Num);
                 }
                 for (uint off = 0; off < buf.Num; off++)
                 {

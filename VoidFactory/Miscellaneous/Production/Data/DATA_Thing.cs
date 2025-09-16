@@ -7,7 +7,7 @@ namespace VoidFactory.Production.Data
 {
     partial class DATA_Thing
     {
-        public static PHEI_Array Bodys;
+        //public static PHEI_Array Bodys;
 
 
 
@@ -48,13 +48,7 @@ namespace VoidFactory.Production.Data
 
         public void Draw()
         {
-            Bodys[Idx].DrawMain();
-        }
-        public void Draw(IconProgram program, float x, float y, float scale = 1.0f)
-        {
-            program.UniPos(x, y);
-            program.UniScale(IconScales[Idx] * scale);
-            Bodys[Idx].DrawMain();
+            game.PH_3D[Idx].DrawMain();
         }
         public override string ToString()
         {

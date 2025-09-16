@@ -25,10 +25,11 @@ namespace VoidFactory.Inventory
         public static UIGridSize gSize;
 
 
+        public static GameSelect.Game3D game;
 
-        public static UIBody_Array Meta_Bodys;
-        public static UIBody_Array BLD_Bodys;
-        public static UIBody_Array DATA_Thing_Bodys;
+        //public static UIBody_Array Meta_Bodys;
+        //public static UIBody_Array BLD_Bodys;
+        //public static UIBody_Array DATA_Thing_Bodys;
 
         public static EntryContainerDynamic<UIBody_Data>.Entry MetaHovering;
         public static EntryContainerDynamic<UIBody_Data>.Entry MetaSelected;
@@ -45,8 +46,8 @@ namespace VoidFactory.Inventory
             gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
             gSize = new UIGridSize(new Point2D(100.0f, 100.0f), 25.0f);
 
-            MetaHovering = Meta_Bodys[3].Alloc(1);
-            MetaSelected = Meta_Bodys[4].Alloc(1);
+            MetaHovering = game.PH_UI[(int)Production.Transfer.IO_Port.MetaBodyIndex.Hex].Alloc(1);
+            MetaSelected = game.PH_UI[(int)Production.Transfer.IO_Port.MetaBodyIndex.Oct].Alloc(1);
             MetaHovering[0] = new UIBody_Data(gPos, gSize, 0.3f, new Angle3D(0, -0.5f, 0));
             MetaSelected[0] = new UIBody_Data(gPos, gSize, 0.3f, new Angle3D(0, -0.5f, 0));
             Select_None();
@@ -80,14 +81,14 @@ namespace VoidFactory.Inventory
                 MetaSelected[0] = instData;
             }
 
-            Meta_Bodys.Update();
-            Meta_Bodys.Draw();
+            game.PH_UI.Update();
+            game.PH_UI.Draw();
 
-            BLD_Bodys.Update();
-            BLD_Bodys.Draw();
+            //BLD_Bodys.Update();
+            //BLD_Bodys.Draw();
 
-            DATA_Thing_Bodys.Update();
-            DATA_Thing_Bodys.Draw();
+            //DATA_Thing_Bodys.Update();
+            //DATA_Thing_Bodys.Draw();
         }
         public static void Draw_UI_Info(TextBuffer text)
         {
@@ -95,25 +96,25 @@ namespace VoidFactory.Inventory
             int sum;
 
             sum = 0;
-            for (int i = 0; i < Meta_Bodys.Length; i++)
+            for (int i = 0; i < game.PH_UI.Length; i++)
             {
-                sum += Meta_Bodys[i].Count;
+                sum += game.PH_UI[i].Count;
             }
-            str += "Meta: " + sum + "\n";
+            str += "UI: " + sum + "\n";
 
-            sum = 0;
+            /*sum = 0;
             for (int i = 0; i < BLD_Bodys.Length; i++)
             {
                 sum += BLD_Bodys[i].Count;
             }
-            str += "Building: " + sum + "\n";
+            str += "Building: " + sum + "\n";*/
 
-            sum = 0;
+            /*sum = 0;
             for (int i = 0; i < DATA_Thing_Bodys.Length; i++)
             {
                 sum += DATA_Thing_Bodys[i].Count;
             }
-            str += "Thing: " + sum + "\n";
+            str += "Thing: " + sum + "\n";*/
 
             text.InsertTR((0, -3), text.Default_TextSize, 0x000000, str);
         }

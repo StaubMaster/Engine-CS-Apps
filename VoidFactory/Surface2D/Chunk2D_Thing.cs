@@ -49,7 +49,7 @@ namespace VoidFactory.Surface2D
             {
                 if (InstEntry == null)
                 {
-                    InstEntry = Bodys[Idx].Alloc(1);
+                    InstEntry = game.PH_3D[Idx].Alloc(1);
                     InstEntry[0] = new PolyHedraInstance_3D_Data(Trans);
                 }
             }
@@ -88,16 +88,7 @@ namespace VoidFactory.Surface2D
         }
         public partial class SURF_Object
         {
-            public static PHEI_Array Bodys;
-            public static string BodysCountInfo()
-            {
-                string str = "";
-                for (int i = 0; i < Bodys.Length; i++)
-                {
-                    str += Bodys[i].Info() + ":[" + i + "]Inst\n";
-                }
-                return str;
-            }
+            //public static PHEI_Array Bodys;
 
 
 
@@ -206,8 +197,8 @@ namespace VoidFactory.Surface2D
                                 temp = new Template();
                                 q++;
 
-                                temp.Idx1 = (uint)(ListBody.Count + 0);
-                                temp.Idx2 = (uint)(ListBody.Count + 1);
+                                temp.Idx1 = (uint)(ListBody.Count + 0 + game.PolyHedras.Length);
+                                temp.Idx2 = (uint)(ListBody.Count + 1 + game.PolyHedras.Length);
                                 temp.Thing1 = DATA_Thing.FindID(things, querys[q].Found[0][0]); q++;
                                 temp.Thing2 = DATA_Thing.FindID(things, querys[q].Found[0][0]); q++;
 

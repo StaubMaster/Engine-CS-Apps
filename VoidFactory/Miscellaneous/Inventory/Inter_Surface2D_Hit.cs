@@ -5,6 +5,7 @@ using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics.Display;
 using Engine3D.Miscellaneous.EntryContainer;
 using Engine3D.Graphics.Display2D.UserInterface;
+using Engine3D.Graphics.Display3D;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -40,12 +41,14 @@ namespace VoidFactory.Inventory
         private Chunk2D.SURF_Object.Template Template;
         private Transformation3D Trans;
 
+        
+
         public Inter_Surf2D_Object(Chunk2D.SURF_Object.Template template)
         {
             Template = template;
 
             //Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
-            Icon_Scale = (float)(0.2 / (Chunk2D.SURF_Object.Bodys[Template.Idx2].BoxFit().MaxSideLen()));
+            Icon_Scale = (float)(0.2 / (Chunk2D.game.PH_3D[Template.Idx2].BoxFit().MaxSideLen()));
         }
 
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
@@ -53,14 +56,27 @@ namespace VoidFactory.Inventory
 
         }
 
+        public override void Draw_Alloc()
+        {
+            base.Draw_Alloc();
+        }
+        public override void Draw_Dispose()
+        {
+            base.Draw_Dispose();
+        }
+
         public override void Update()
         {
             base.Update();
 
             if (Hit.IsValid())
+            {
                 Trans = new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Center, Angle3D.Default());
+            }
             else
+            {
                 Trans = Transformation3D.Default();
+            }
         }
         public override void Draw()
         {
@@ -141,11 +157,11 @@ namespace VoidFactory.Inventory
                 BodyUni_Shader.Use();
                 BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //IO_Port.BodyAxis.DrawMain();
-                IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
+                IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
                 if (Hit.ToLayerIndex().IsValid())
                 {
-                    Inventory_Storage.Draw(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing);
+                    //Inventory_Storage.Draw(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing);
                     InstTile = Inventory_Storage.Alloc_Thing(Chunk2D.LayerGen[Hit.ToLayerIndex().idx].Thing, 1);
                 }
 
@@ -162,7 +178,7 @@ namespace VoidFactory.Inventory
                 Chunk2D.SURF_Object thing = Chunks.FindThing(Hit);
                 if (thing != null)
                 {
-                    Inventory_Storage.Draw(thing.Content, 1);
+                    //Inventory_Storage.Draw(thing.Content, 1);
                 }
             }
 
@@ -261,7 +277,7 @@ namespace VoidFactory.Inventory
                 BodyUni_Shader.Use();
                 BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //IO_Port.BodyAxis.DrawMain();
-                IO_Port.Bodys[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
+                IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
                 AxisBox3D box = Chunks.TileBox(Hit);
                 if (box != null)
@@ -299,13 +315,14 @@ namespace VoidFactory.Inventory
         private int angle;
 
         private Entry_Array Cost_Insts;
+        private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry InstEntry;
 
         public Inter_Surf2D_Building(BLD_Base.Template_Base template)
         {
             Template = template;
 
             //Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
-            Icon_Scale = (float)(0.2 / (BLD_Base.Bodys[Template.Idx].BoxFit().MaxSideLen()));
+            Icon_Scale = (float)(0.2 / (BLD_Base.game.PH_3D[Template.Idx].BoxFit().MaxSideLen()));
         }
 
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
@@ -321,6 +338,9 @@ namespace VoidFactory.Inventory
             }
 
             Cost_Insts = Inventory_Storage.Alloc_Cost_Inn(Template.Cost);
+
+            InstEntry = BLD_Base.game.PH_3D[Template.Idx].Alloc(1);
+            InstEntry[0] = new PolyHedraInstance_3D_Data(Transformation3D.Default());
         }
         public override void Draw_Dispose()
         {
@@ -329,16 +349,29 @@ namespace VoidFactory.Inventory
                 Cost_Insts.Dispose();
                 Cost_Insts = null;
             }
+
+            InstEntry.Dispose();
+            InstEntry = null;
         }
 
         public override void Update()
         {
             base.Update();
 
+            PolyHedraInstance_3D_Data data = InstEntry[0];
+
             if (Hit.IsValid())
+            {
                 Trans = new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Center, new Angle3D((angle / 4.0) * Angle3D.Deg360, 0, 0));
+                data.Trans = Trans;
+            }
             else
+            {
                 Trans = Transformation3D.Default();
+                data.Trans = Transformation3D.Null();
+            }
+
+            InstEntry[0] = data;
         }
         public override void Draw()
         {
@@ -366,7 +399,7 @@ namespace VoidFactory.Inventory
             //    "Template");
             Text_Type("Template");
 
-            Inventory_Storage.DrawInn(Template.Cost);
+            //Inventory_Storage.DrawInn(Template.Cost);
         }
         public override void Draw_Inv_Icon(float x, float y)
         {

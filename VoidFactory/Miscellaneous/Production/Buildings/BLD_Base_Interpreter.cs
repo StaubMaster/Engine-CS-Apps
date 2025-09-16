@@ -11,6 +11,8 @@ namespace VoidFactory.Production.Buildings
 {
     abstract partial class BLD_Base
     {
+        public static GameSelect.Game3D game;
+
         public static class Interpreter
         {
             private static List<Template_Base> ListTemplate;
@@ -67,7 +69,7 @@ namespace VoidFactory.Production.Buildings
                             }; q++;
                             temp.Category = querys[q].Found[0][0]; q++;
 
-                            temp.Idx = (uint)ListTemplate.Count;
+                            temp.Idx = (uint)(ListTemplate.Count + game.PolyHedras.Length);
                             temp.Name = querys[q].Found[0][0]; q++;
                             //cost = DATA_Cost.FromString(querys[q].Found, things); q++;
                             temp.Cost = new DATA_Cost(); q++;
