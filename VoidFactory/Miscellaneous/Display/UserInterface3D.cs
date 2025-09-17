@@ -1,10 +1,13 @@
 ﻿using System;
 
 using Engine3D.Abstract3D;
+using Engine3D.Abstract2D;
 using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.OutPut.Uniform.Generic.Float;
 using Engine3D.Graphics;
+using Engine3D.Graphics.Display2D.UserInterface;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using VoidFactory.Miscellaneous.Display;
 
@@ -21,6 +24,18 @@ namespace VoidFactory.Editor
         YX_PM = Y_P | X_M,
         YX_MP = Y_M | X_P,
         YX_PP = Y_P | X_P,
+    }
+    static class AnchorHelp
+    {
+        public static Point2D ToPoint2D(this UI_Anchor anchor)
+        {
+            Point2D a = new Point2D(0, 0);
+            if ((anchor & UI_Anchor.Y_M) != 0) { a.X = -1.0f; }
+            if ((anchor & UI_Anchor.Y_P) != 0) { a.X = +1.0f; }
+            if ((anchor & UI_Anchor.X_M) != 0) { a.Y = -1.0f; }
+            if ((anchor & UI_Anchor.X_P) != 0) { a.Y = +1.0f; }
+            return a;
+        }
     }
 
     struct UI_Rectangle
@@ -118,20 +133,19 @@ namespace VoidFactory.Editor
     struct UI_Indicator
     {
         UI_Rectangle Rectangle;
-        CUniformUIRectangle RectangleUni;
 
         public bool isHover;
 
         PolyHedra Body;
-        public BodyElemBuffer Buffer;
+
         AxisBox3D Box;
         Point3D Center;
 
+        EntryContainerBase<UIBody_Data>.Entry InstData;
+
         float Scale;
-        CUniformFloat1 ScaleUni;
 
         Angle3D Wnk;
-        CUniformTransformation TransUni;
 
         Transformation3D Trans;
 
@@ -146,28 +160,31 @@ namespace VoidFactory.Editor
         }
         EAnimationType AnimationType;
 
-        public UI_Indicator(float y, float x, float w, float h, UI_Anchor anchor, PolyHedra body, float scale, EAnimationType animationType)
+        public UI_Indicator(float y, float x, float w, float h, UI_Anchor anchor, PolyHedra body, EntryContainerBase<UIBody_Data>.Entry inst_data , float scale, EAnimationType animationType)
         {
             Rectangle = UI_Rectangle.YX_WH(y, x, w, h, anchor);
-            RectangleUni = new CUniformUIRectangle(w, h, y, x, Rectangle.AnchorNormal_Y, Rectangle.AnchorNormal_X);
 
             isHover = false;
 
             Body = body;
-            Buffer = body.ToBuffer();
             Box = body.CalcBox();
             Center = body.CalcAverage();
 
+            InstData = inst_data;
+
             Scale = scale;
-            ScaleUni = new CUniformFloat1(1);
 
             AnimationType = animationType;
             if (animationType == EAnimationType.Disk) { Wnk = new Angle3D(0, Math.Tau / 4, 0); }
             else if (animationType == EAnimationType.Item) { Wnk = new Angle3D(0, -Math.Tau / 8, 0); }
             else if (animationType == EAnimationType.Diag) { Wnk = new Angle3D(-Math.Tau * (3.5 / 8), -Math.Tau * (0.5 / 8), 0); }
             else { Wnk = new Angle3D(0, 0, 0); }
-            TransUni = new CUniformTransformation();
             Trans = Transformation3D.Default();
+
+            InstData[0] = new UIBody_Data(
+                new UIGridPosition(anchor.ToPoint2D(), new Point2D(y, x), new Point2D(0, 0)),
+                new UIGridSize(new Point2D(w, h), 0.0f),
+                1.0f / scale, Wnk);
         }
 
         public void UpdateSize(float w, float h)
@@ -179,35 +196,7 @@ namespace VoidFactory.Editor
             isHover = Rectangle.Intersekt(mouse_y, mouse_x);
         }
 
-        public void Draw(CShaderUserInterfaceBody shader)
-        {
-            if (AnimationType == EAnimationType.Spin) { Wnk.D += 0.05; }
-            if (AnimationType == EAnimationType.Disk) { if (isHover) { Wnk.A += 0.02; } else { Wnk.A = 0; } }
-            if (AnimationType == EAnimationType.Diag) { if (isHover) { Wnk.A += 0.02; } else { Wnk.A = -Math.Tau * (3.5 / 8); } }
-            if (AnimationType == EAnimationType.Item) { Wnk.A += 0.02; }
-
-            TransUni.Rot = Wnk;
-            ScaleUni.Value(Scale);
-
-            shader.bodyTrans.Value(TransUni);
-            shader.bodyScale.Value(ScaleUni);
-            shader.UIRectangle.Value(RectangleUni);
-
-            Buffer.Draw();
-        }
-        public void Draw(CShaderUserInterfaceBody shader, Angle3D wnk)
-        {
-            TransUni.Rot = wnk;
-            ScaleUni.Value(Scale);
-
-            shader.bodyTrans.Value(TransUni);
-            shader.bodyScale.Value(ScaleUni);
-            shader.UIRectangle.Value(RectangleUni);
-
-            Buffer.Draw();
-        }
-
-        public void Draw(UserInterfaceBodyShader shader)
+        public void ChangeTrans()
         {
             if (AnimationType == EAnimationType.Spin) { Wnk.D += 0.05; }
             if (AnimationType == EAnimationType.Disk) { if (isHover) { Wnk.A += 0.02; } else { Wnk.A = 0; } }
@@ -216,21 +205,19 @@ namespace VoidFactory.Editor
 
             Trans.Rot = Wnk;
 
-            shader.BodyTrans.Value(Trans);
-            shader.BodyScale.Set(new float[] { Scale });
-            shader.UIRectangle.Value(Rectangle.W, Rectangle.H, Rectangle.Y, Rectangle.X, Rectangle.AnchorNormal_Y, Rectangle.AnchorNormal_X);
-
-            Buffer.Draw();
+            UIBody_Data data;
+            data = InstData[0];
+            data.Trans = Trans;
+            InstData[0] = data;
         }
-        public void Draw(UserInterfaceBodyShader shader, Angle3D wnk)
+        public void ChangeTrans(Angle3D wnk)
         {
             Trans.Rot = wnk;
 
-            shader.BodyTrans.Value(Trans);
-            shader.BodyScale.Set(new float[] { Scale });
-            shader.UIRectangle.Value(Rectangle.W, Rectangle.H, Rectangle.Y, Rectangle.X, Rectangle.AnchorNormal_Y, Rectangle.AnchorNormal_X);
-
-            Buffer.Draw();
+            UIBody_Data data;
+            data = InstData[0];
+            data.Trans = Trans;
+            InstData[0] = data;
         }
     }
 }

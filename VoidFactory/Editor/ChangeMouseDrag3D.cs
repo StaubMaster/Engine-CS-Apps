@@ -472,62 +472,34 @@ namespace VoidFactory.Editor
             return str;
         }
 
-        public void DrawUI(CShaderUserInterfaceBody shader, Transformation3D Trans, UI_Indicator[] main, UI_Indicator[] snap)
+
+        public void DrawUI(Transformation3D Trans, UI_Indicator[] main, UI_Indicator[] snap)
         {
             if (Indicator_Trans != null)
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    main[i].Draw(shader, (Indicator_Trans[i].Rot.InvertPls() + Trans.Rot));
+                    main[i].ChangeTrans((Indicator_Trans[i].Rot.InvertPls() + Trans.Rot));
                 }
             }
             else
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    main[i].Draw(shader, (Trans.Rot));
+                    main[i].ChangeTrans((Trans.Rot));
                 }
             }
 
-            snap[0].Draw(shader);
+            snap[0].ChangeTrans();
             if (Move_Snap)
             {
-                snap[1].Draw(shader);
+                snap[1].ChangeTrans();
             }
 
-            snap[2].Draw(shader);
+            snap[2].ChangeTrans();
             if (Spin_Snap)
             {
-                snap[3].Draw(shader);
-            }
-        }
-        public void DrawUI(UserInterfaceBodyShader shader, Transformation3D Trans, UI_Indicator[] main, UI_Indicator[] snap)
-        {
-            if (Indicator_Trans != null)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    main[i].Draw(shader, (Indicator_Trans[i].Rot.InvertPls() + Trans.Rot));
-                }
-            }
-            else
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    main[i].Draw(shader, (Trans.Rot));
-                }
-            }
-
-            snap[0].Draw(shader);
-            if (Move_Snap)
-            {
-                snap[1].Draw(shader);
-            }
-
-            snap[2].Draw(shader);
-            if (Spin_Snap)
-            {
-                snap[3].Draw(shader);
+                snap[3].ChangeTrans();
             }
         }
     }

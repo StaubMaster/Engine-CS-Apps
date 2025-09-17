@@ -9,6 +9,7 @@ using Engine3D.Graphics.Display;
 using Engine3D.BodyParse;
 using Engine3D.Miscellaneous;
 using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Manager;
 using Engine3D.DataStructs;
 
@@ -77,9 +78,10 @@ namespace VoidFactory.Editor
         private DisplayArea MainWindow;
         private DisplayCamera MainCamera;
 
-        private PolyHedra_Shader_Manager PH_Man;
+        private PolyHedra_Shader_Manager PH_3D_Man;
+        private UserInterfaceManager PH_UI_Man;
 
-        private UserInterfaceBodyShader UserInterface_Shader;
+        private UIBody_Array UI_Array;
 
         private TextShader Text_Shader;
         private TextBuffer Text_Buffer;
@@ -241,7 +243,7 @@ namespace VoidFactory.Editor
         }
         private void Aux_Change_Color_All()
         {
-            PH_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
+            PH_3D_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
 
             for (int i = 0; i < Scene.PHs_Trans.Count; i++)
             {
@@ -439,6 +441,8 @@ namespace VoidFactory.Editor
             if (UI_Indicator_Test.isHover) { Hovering_UI_Indicator = true; }
             if (UI_Indicator_ObjectAdd.isHover) { Hovering_UI_Indicator = true; }
             if (UI_Indicator_ObjectSub.isHover) { Hovering_UI_Indicator = true; }
+
+            UI_Array.Update();
         }
 
 
@@ -453,23 +457,24 @@ namespace VoidFactory.Editor
             }*/
 
             MainWindow.ClearBufferDepth();
-            PH_Man.InstShader.Use();
+            PH_3D_Man.InstShader.Use();
             Edit_Change_Mouse.Draw();
         }
         private void Draw_UI()
         {
-            MainWindow.ClearBufferDepth();
+            UI_Indicator_FanS.ChangeTrans();
+            UI_Indicator_FanR.ChangeTrans();
+            UI_Indicator_Disk.ChangeTrans();
+            UI_Indicator_Fold.ChangeTrans();
+            UI_Indicator_Test.ChangeTrans();
+            UI_Indicator_ObjectAdd.ChangeTrans();
+            UI_Indicator_ObjectSub.ChangeTrans();
+            Edit_Change_Mouse.DrawUI(MainCamera.Trans, UI_Indicator_MouseDragMain, UI_Indicator_MouseDragSnap);
 
-            UserInterface_Shader.Use();
-            UserInterface_Shader.ScreenRatio.Value(MainWindow.Size_Float2());
-            UI_Indicator_FanS.Draw(UserInterface_Shader);
-            UI_Indicator_FanR.Draw(UserInterface_Shader);
-            UI_Indicator_Disk.Draw(UserInterface_Shader);
-            UI_Indicator_Fold.Draw(UserInterface_Shader);
-            UI_Indicator_Test.Draw(UserInterface_Shader);
-            UI_Indicator_ObjectAdd.Draw(UserInterface_Shader);
-            UI_Indicator_ObjectSub.Draw(UserInterface_Shader);
-            Edit_Change_Mouse.DrawUI(UserInterface_Shader, MainCamera.Trans, UI_Indicator_MouseDragMain, UI_Indicator_MouseDragSnap);
+            MainWindow.ClearBufferDepth();
+            PH_UI_Man.ScreenRatio.ChangeData(MainWindow.SizeRatio());
+            PH_UI_Man.UIBodyShader.Use();
+            UI_Array.Draw();
         }
 
 
@@ -520,13 +525,13 @@ namespace VoidFactory.Editor
                 Aux_Change_Color_All();
                 Scene.Update();
 
-                PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(winSize.Item1, winSize.Item2));
-                PH_Man.View.ChangeData(MainCamera.Trans);
+                PH_3D_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(winSize.Item1, winSize.Item2));
+                PH_3D_Man.View.ChangeData(MainCamera.Trans);
 
-                PH_Man.InstShader.Use();
+                PH_3D_Man.InstShader.Use();
                 Scene.Draw();
 
-                PH_Man.InstWireShader.Use();
+                PH_3D_Man.InstWireShader.Use();
                 Scene.Draw();
             }
             Draw_Mouse_Change();
@@ -606,15 +611,17 @@ namespace VoidFactory.Editor
             System.IO.File.WriteAllText(FilePath, Scene.ToYMT());
         }
 
+        
+
         public void Init_Graphics()
         {
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.Depth.ChangeData(new DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
+            PH_3D_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_3D_Man.Depth.ChangeData(new DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
 
-            UserInterface_Shader = new UserInterfaceBodyShader(shaderDir);
-            UserInterface_Shader.Use();
+            PH_UI_Man = new UserInterfaceManager(shaderDir);
+            PH_UI_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
 
             ShaderDisplayState = EnumFunctions.EShaderDisplayState.SelectHoverMono;
 
@@ -649,30 +656,54 @@ namespace VoidFactory.Editor
             string dirSpin = dir + "Meta/SpinRing/";
             string dirPicto = dir + "Meta/Picto/";
 
-            UI_Indicator_FanS = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "ComputerFanStator.ymt"), 0.6f, UI_Indicator.EAnimationType.None);
-            UI_Indicator_FanR = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "ComputerFanRotor.ymt"), 0.6f, UI_Indicator.EAnimationType.Spin);
-            UI_Indicator_Disk = new UI_Indicator(+150, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "OpticalDisk.ymt"), 1.0f, UI_Indicator.EAnimationType.Disk);
-            UI_Indicator_Fold = new UI_Indicator(+250, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "RingFolder.ymt"), 1.6f, UI_Indicator.EAnimationType.Diag);
-            UI_Indicator_Test = new UI_Indicator(+350, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "Test.ymt"), 1.0f, UI_Indicator.EAnimationType.Disk);
-            UI_Indicator_ObjectAdd = new UI_Indicator(+450, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirMeta + "Inn.txt"), 1.2f, UI_Indicator.EAnimationType.Disk);
-            UI_Indicator_ObjectSub = new UI_Indicator(+550, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirMeta + "Out.txt"), 1.2f, UI_Indicator.EAnimationType.Disk);
+            PolyHedra[] ph = new PolyHedra[]
+            {
+                PolyHedra.FromTextFile(dirPicto + "ComputerFanStator.ymt"),
+                PolyHedra.FromTextFile(dirPicto + "ComputerFanRotor.ymt"),
+                PolyHedra.FromTextFile(dirPicto + "OpticalDisk.ymt"),
+                PolyHedra.FromTextFile(dirPicto + "RingFolder.ymt"),
+                PolyHedra.FromTextFile(dirPicto + "Test.ymt"),
+                PolyHedra.FromTextFile(dirMeta + "Inn.txt"),
+                PolyHedra.FromTextFile(dirMeta + "Out.txt"),
+
+                PolyHedra.FromTextFile(dirMove + "AxisY.txt"),
+                PolyHedra.FromTextFile(dirMove + "AxisX.txt"),
+                PolyHedra.FromTextFile(dirMove + "AxisC.txt"),
+                PolyHedra.FromTextFile(dirSpin + "RingY.txt"),
+                PolyHedra.FromTextFile(dirSpin + "RingX.txt"),
+                PolyHedra.FromTextFile(dirSpin + "RingC.txt"),
+
+                PolyHedra.FromTextFile(dirMove + "MoveSnap0.txt"),
+                PolyHedra.FromTextFile(dirMove + "MoveSnap1.txt"),
+                PolyHedra.FromTextFile(dirSpin + "SpinSnap0.txt"),
+                PolyHedra.FromTextFile(dirSpin + "SpinSnap1.txt"),
+            };
+            UI_Array = new UIBody_Array(ph);
+
+            UI_Indicator_FanS = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, ph[0], UI_Array[0].Alloc(1), 0.6f, UI_Indicator.EAnimationType.None);
+            UI_Indicator_FanR = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, ph[1], UI_Array[1].Alloc(1), 0.6f, UI_Indicator.EAnimationType.Spin);
+            UI_Indicator_Disk = new UI_Indicator(+150, -50, 100, 100, UI_Anchor.YX_MP, ph[2], UI_Array[2].Alloc(1), 1.0f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_Fold = new UI_Indicator(+250, -50, 100, 100, UI_Anchor.YX_MP, ph[3], UI_Array[3].Alloc(1), 1.6f, UI_Indicator.EAnimationType.Diag);
+            UI_Indicator_Test = new UI_Indicator(+350, -50, 100, 100, UI_Anchor.YX_MP, ph[4], UI_Array[4].Alloc(1), 1.0f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_ObjectAdd = new UI_Indicator(+450, -50, 100, 100, UI_Anchor.YX_MP, ph[5], UI_Array[5].Alloc(1), 1.2f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_ObjectSub = new UI_Indicator(+550, -50, 100, 100, UI_Anchor.YX_MP, ph[6], UI_Array[6].Alloc(1), 1.2f, UI_Indicator.EAnimationType.Disk);
 
             UI_Indicator_MouseDragMain = new UI_Indicator[6]
             {
-                new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "AxisY.txt"), 1.0f, UI_Indicator.EAnimationType.View),
-                new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "AxisX.txt"), 1.0f, UI_Indicator.EAnimationType.View),
-                new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "AxisC.txt"), 1.0f, UI_Indicator.EAnimationType.View),
-                new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirSpin + "RingY.txt"), 1.0f, UI_Indicator.EAnimationType.View),
-                new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirSpin + "RingX.txt"), 1.0f, UI_Indicator.EAnimationType.View),
-                new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirSpin + "RingC.txt"), 1.0f, UI_Indicator.EAnimationType.View),
+                new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, ph[07], UI_Array[07].Alloc(1), 1.0f, UI_Indicator.EAnimationType.View),
+                new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, ph[08], UI_Array[08].Alloc(1), 1.0f, UI_Indicator.EAnimationType.View),
+                new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, ph[09], UI_Array[09].Alloc(1), 1.0f, UI_Indicator.EAnimationType.View),
+                new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, ph[10], UI_Array[10].Alloc(1), 1.0f, UI_Indicator.EAnimationType.View),
+                new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, ph[11], UI_Array[11].Alloc(1), 1.0f, UI_Indicator.EAnimationType.View),
+                new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, ph[12], UI_Array[12].Alloc(1), 1.0f, UI_Indicator.EAnimationType.View),
             };
 
             UI_Indicator_MouseDragSnap = new UI_Indicator[]
             {
-                new UI_Indicator(-050, -150, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "MoveSnap0.txt"), 1.0f, UI_Indicator.EAnimationType.None),
-                new UI_Indicator(-050, -150, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "MoveSnap1.txt"), 1.0f, UI_Indicator.EAnimationType.None),
-                new UI_Indicator(-150, -150, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirSpin + "SpinSnap0.txt"), 1.0f, UI_Indicator.EAnimationType.None),
-                new UI_Indicator(-150, -150, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirSpin + "SpinSnap1.txt"), 1.0f, UI_Indicator.EAnimationType.None),
+                new UI_Indicator(-050, -150, 100, 100, UI_Anchor.YX_PP, ph[13], UI_Array[13].Alloc(1), 1.0f, UI_Indicator.EAnimationType.None),
+                new UI_Indicator(-050, -150, 100, 100, UI_Anchor.YX_PP, ph[14], UI_Array[14].Alloc(1), 1.0f, UI_Indicator.EAnimationType.None),
+                new UI_Indicator(-150, -150, 100, 100, UI_Anchor.YX_PP, ph[15], UI_Array[15].Alloc(1), 1.0f, UI_Indicator.EAnimationType.None),
+                new UI_Indicator(-150, -150, 100, 100, UI_Anchor.YX_PP, ph[16], UI_Array[16].Alloc(1), 1.0f, UI_Indicator.EAnimationType.None),
             };
 
             ConsoleLog.NewLine();
