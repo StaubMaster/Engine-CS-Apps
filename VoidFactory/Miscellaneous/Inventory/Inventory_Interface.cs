@@ -122,7 +122,7 @@ namespace VoidFactory.Inventory
         public static void Hover_None()
         {
             UIBody_Data instData = MetaHovering[0];
-            instData.Pos.Offset = Point2D.Null();
+            instData.Pos.Offset = Point2D.NaN();
             MetaHovering[0] = instData;
 
             Hovering_Idx = -1;
@@ -138,7 +138,7 @@ namespace VoidFactory.Inventory
         public static void Select_None()
         {
             UIBody_Data instData = MetaSelected[0];
-            instData.Pos.Offset = Point2D.Null();
+            instData.Pos.Offset = Point2D.NaN();
             MetaSelected[0] = instData;
 
             Selected_Idx = -1;

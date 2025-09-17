@@ -664,7 +664,7 @@ namespace VoidFactory.Surface2D
                 h[l] = Cross_TileLayer(ray, tileIdx, Layers[l].Tiles[tileIdx.idx]);
 
             Point3D cross = ray.Scale(Ray3D.FindMin(h, out int layer));
-            if (cross.Is())
+            if (!cross.IsNaN())
             {
                 hit.Tile_Hit.Valid = true;
                 hit.Tile_Hit.Cross = Intern_Extern_Scaled(cross);

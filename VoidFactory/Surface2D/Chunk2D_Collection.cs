@@ -158,11 +158,11 @@ namespace VoidFactory.Surface2D
                 return hit;
             }
 
-            public AxisBox3D? TileBox(SurfaceHit hit)
+            public AxisBox3D TileBox(SurfaceHit hit)
             {
                 if (hit.IsValid())
                     return Chunks[hit.Chunk_Idx.idx].TileBox(hit.ToTileIndex(), hit.ToLayerIndex());
-                return null;
+                return AxisBox3D.NaN();
             }
 
             public void Inc(SurfaceHit hit)

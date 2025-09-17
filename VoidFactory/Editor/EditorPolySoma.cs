@@ -380,7 +380,7 @@ namespace VoidFactory.Editor
                     }
                     else
                     {
-                        Edit_Change_Mouse.Trans_Calc(Transformation3D.Null());
+                        Edit_Change_Mouse.Trans_Calc(Transformation3D.NaN());
                     }
                     Edit_Change_Mouse.Change_Reset();
                 }
@@ -393,7 +393,7 @@ namespace VoidFactory.Editor
             }
             if (MainWindow.CheckKey(MouseButton.Left).IsReleased())
             {
-                if (Edit_Change_Mouse.Trans_Changed.Is())
+                if (!Edit_Change_Mouse.Trans_Changed.IsNaN())
                 {
                     Edit_Change_Mouse.Trans_Calc(Edit_Change_Mouse.Trans_Changed);
 
@@ -515,7 +515,7 @@ namespace VoidFactory.Editor
                     Scene.Edit_Remove_Body(Edit_Index_Selected);
                     Edit_Index_Hovering = -1;
                     Edit_Index_Selected = -1;
-                    Edit_Change_Mouse.Trans_Calc(Transformation3D.Null());
+                    Edit_Change_Mouse.Trans_Calc(Transformation3D.NaN());
                     Edit_Change_Mouse.Change_Reset();
                 }
             }
@@ -589,7 +589,7 @@ namespace VoidFactory.Editor
 
             Edit_Index_Hovering = -1;
             Edit_Index_Selected = -1;
-            Edit_Change_Mouse.Trans_Calc(Transformation3D.Null());
+            Edit_Change_Mouse.Trans_Calc(Transformation3D.NaN());
             Edit_Change_Mouse.Change_Reset();
 
             ConsoleLog.LogLoad("Scene " + FilePath + " ...");

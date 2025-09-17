@@ -52,7 +52,7 @@ namespace VoidFactory.Astronomical
             MainCamera.Depth = new Engine3D.DataStructs.DepthData(1.0f, 1600.0f);
 
             ViewHoverCenter = null;
-            ViewHover = Transformation3D.Null();
+            ViewHover = Transformation3D.NaN();
         }
         private void InitShaders()
         {
@@ -101,7 +101,7 @@ namespace VoidFactory.Astronomical
 
         private void Update_View()
         {
-            if (ViewHover.Is())
+            if (!ViewHover.IsNaN())
             {
                 Transformation3D center = ViewHoverCenter.Orbit.Trans;
                 Transformation3D temp = Transformation3D.Default();
@@ -180,7 +180,7 @@ namespace VoidFactory.Astronomical
 
             if (MainWindow.CheckKey(Keys.T).IsPressed())
             {
-                if (!ViewHover.Is())
+                if (ViewHover.IsNaN())
                 {
                     if (interAstro.Is)
                     {
@@ -189,7 +189,7 @@ namespace VoidFactory.Astronomical
                 }
                 else
                 {
-                    ViewHover = Transformation3D.Null();
+                    ViewHover = Transformation3D.NaN();
                 }
             }
 

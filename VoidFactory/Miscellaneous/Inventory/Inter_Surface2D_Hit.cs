@@ -165,7 +165,7 @@ namespace VoidFactory.Inventory
                 }
 
                 AxisBox3D box = Chunks.TileBox(Hit);
-                if (box != null)
+                if (!box.IsNaN())
                 {
                     //BoundBox.BoxRenderData[] boxR = new BoundBox.BoxRenderData[1];
                     //boxR[0] = new BoundBox.BoxRenderData(box, 0xFFFFFF);
@@ -279,7 +279,7 @@ namespace VoidFactory.Inventory
                 IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
                 AxisBox3D box = Chunks.TileBox(Hit);
-                if (box != null)
+                if (!box.IsNaN())
                 {
                     //BoundBox.BoxRenderData[] boxR = new BoundBox.BoxRenderData[1];
                     //boxR[0] = new BoundBox.BoxRenderData(box, 0x000000);
@@ -367,7 +367,7 @@ namespace VoidFactory.Inventory
             else
             {
                 Trans = Transformation3D.Default();
-                data.Trans = Transformation3D.Null();
+                data.Trans = Transformation3D.NaN();
             }
 
             InstEntry[0] = data;
