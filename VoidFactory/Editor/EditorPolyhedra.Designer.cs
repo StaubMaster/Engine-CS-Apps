@@ -476,6 +476,7 @@ namespace VoidFactory.Editor
             // 
             // b_view_reset
             // 
+            this.b_view_reset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.b_view_reset.Location = new System.Drawing.Point(622, 395);
             this.b_view_reset.Name = "b_view_reset";
             this.b_view_reset.Size = new System.Drawing.Size(102, 23);

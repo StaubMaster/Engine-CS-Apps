@@ -10,6 +10,10 @@ using Engine3D.OutPut;
 using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
+using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Manager;
+using Engine3D.DataStructs;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using OpenTK.Graphics.OpenGL4;
 
@@ -35,41 +39,39 @@ namespace VoidFactory.Editor
 
         DisplayCamera MainCamera;
 
-        BodyElemUniShader BodyUniFull_Shader;
-        BodyElemUniWireShader BodyUniWire_Shader;
+        PolyHedra_Shader_Manager PH_Man;
 
         private void Display_Update()
         {
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.View.Value(MainCamera.Trans);
+            PolyHedraInstance_3D_Data data;
+            data = Content.InstData[0];
 
             if (cB_Display_color.Checked)
             {
-                BodyUniFull_Shader.OtherColorInter.T0(1.0f);
+                data.AltColorLInter = LInterData.LIT0();
             }
             else
             {
-                BodyUniFull_Shader.OtherColorInter.T1(1.0f);
+                data.AltColorLInter = LInterData.LIT1();
             }
 
             if (cB_Display_light.Checked)
             {
-                BodyUniFull_Shader.LightRange.Value(0.1f, 1.0f);
+                PH_Man.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
             }
             else
             {
-                BodyUniFull_Shader.LightRange.Value(1.0f, 1.0f);
+                PH_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
             }
+
+            Content.InstData[0] = data;
 
             if (cB_Display_Light_Follow.Checked)
             {
-                BodyUniFull_Shader.LightSolar.Value(new Point3D(0, 0, -1) - MainCamera.Trans.Rot);
+                PH_Man.LightSolar.ChangeData(new Point3D(0, 0, -1) - MainCamera.Trans.Rot);
             }
 
-
-
-            BodyUniWire_Shader.Use();
-            BodyUniWire_Shader.View.Value(MainCamera.Trans);
+            PH_Man.View.ChangeData(MainCamera.Trans);
         }
         private void Display_Draw()
         {
@@ -78,11 +80,13 @@ namespace VoidFactory.Editor
 
             Display_Update();
 
-            GL.ClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+            //GL.ClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+            GL.ClearColor(1f, 0f, 1f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
-            BodyUniFull_Shader.Use();
+            //BodyUniFull_Shader.Use();
+            PH_Man.InstShader.Use();
             Content.Draw();
 
             glC_Display.SwapBuffers();
@@ -281,7 +285,8 @@ namespace VoidFactory.Editor
             private readonly RichTextBox InfoError;
 
             private PolyHedra Body;
-            private BodyElemBuffer Buffer;
+            private PolyHedraInstance_3D_BufferData BufferData;
+            public EntryContainerBase<PolyHedraInstance_3D_Data>.Entry InstData;
 
             public DisplayContent(Label info_count, Label info_size, RichTextBox info_error)
             {
@@ -290,7 +295,8 @@ namespace VoidFactory.Editor
                 InfoError = info_error;
 
                 Body = null;
-                Buffer = null;
+                BufferData = null;
+                InstData = null;
             }
 
             public void Update(string[] content)
@@ -299,12 +305,15 @@ namespace VoidFactory.Editor
                 if (poly != null)
                 {
                     Body = poly;
-                    Buffer = poly.ToBuffer();
+                    BufferData = new PolyHedraInstance_3D_BufferData(poly);
+                    InstData = BufferData.Alloc(1);
+                    InstData[0] = new PolyHedraInstance_3D_Data(Transformation3D.Default(), new ColorUData(0xFFFFFF), LInterData.LIT0());
                 }
                 else
                 {
                     Body = null;
-                    Buffer = null;
+                    BufferData = null;
+                    InstData = null;
                 }
                 InfoError.Text = TBodyFile.DebugError;
 
@@ -348,9 +357,11 @@ namespace VoidFactory.Editor
 
             public void Draw()
             {
-                if (Buffer != null)
+                if (BufferData != null)
                 {
-                    Buffer.Draw();
+                    //BufferData.DrawMain();
+                    BufferData.UpdateInst();
+                    BufferData.DrawInst();
                 }
             }
         }
@@ -560,21 +571,13 @@ namespace VoidFactory.Editor
 
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            BodyUniFull_Shader = new BodyElemUniShader(shaderDir);
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.ScreenRatio.Value(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height);
-            BodyUniFull_Shader.Depth.Value(MainCamera.Depth.Near, MainCamera.Depth.Far);
-            BodyUniFull_Shader.LightSolar.Value(!(new Point3D(1, 1, 1)));
-            BodyUniFull_Shader.LightRange.Value(0.1f, 1.0f);
-            BodyUniFull_Shader.OtherColor.Value(0xFF0000);
-            BodyUniFull_Shader.OtherColorInter.T0(1.0f);
-
-            BodyUniWire_Shader = new BodyElemUniWireShader(shaderDir);
-            BodyUniWire_Shader.Use();
-            BodyUniWire_Shader.ScreenRatio.Value(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height);
-            BodyUniWire_Shader.Depth.Value(MainCamera.Depth.Near, MainCamera.Depth.Far);
-            BodyUniWire_Shader.OtherColor.Value(0x000000);
-            BodyUniWire_Shader.OtherColorInter.T1(1.0f);
+            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_Man.Depth.ChangeData(new DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
+            PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height));
+            PH_Man.LightSolar.ChangeData(!(new Point3D(1, 1, 1)));
+            PH_Man.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
+            PH_Man.OtherColor.ChangeData(new ColorUData(0xFF0000));
+            PH_Man.OtherColorInter.ChangeData(LInterData.LIT0());
 
             TextCursor = new RTB_Cursor(rTB_Content, label_Content_data_Cursor, label_Content_data_AOR);
             Drag = new DragRotation(glC_Display, MainCamera);
@@ -591,10 +594,7 @@ namespace VoidFactory.Editor
             if (!IsFormLoaded) { return; }
             GL.Viewport(glC_Display.ClientSize);
             //Display_ScreenRatios.Calc(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height);
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.ScreenRatio.Value(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height);
-            BodyUniWire_Shader.Use();
-            BodyUniWire_Shader.ScreenRatio.Value(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height);
+            PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height));
 
             Display_Draw();
         }
