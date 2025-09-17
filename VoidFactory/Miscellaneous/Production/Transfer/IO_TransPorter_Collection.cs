@@ -61,11 +61,11 @@ namespace VoidFactory.Production.Transfer
                     }
                 }
             }
-            public void Draw(BodyElemUniShader programMain)
+            public void Draw()
             {
                 for (int i = 0; i < TransPorter.Count; i++)
                 {
-                    TransPorter[i].Draw(programMain);
+                    TransPorter[i].Draw();
                 }
 
                 Program.Use();

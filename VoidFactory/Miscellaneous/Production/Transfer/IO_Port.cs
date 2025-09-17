@@ -202,13 +202,13 @@ namespace VoidFactory.Production.Transfer
 
                 return str;
             }
-            public void Draw_Hover(BodyElemUniShader program)
+            public void Draw_Hover()
             {
                 if (!Valid) { return; }
 
-                program.Use();
-                program.Trans.Value(new Transformation3D(Pos));
-                program.LightRange.Value(1.0f, 1.0f);
+                //program.Use();
+                //program.Trans.Value(new Transformation3D(Pos));
+                //program.LightRange.Value(1.0f, 1.0f);
 
                 if (!InnOut)
                 {
@@ -223,15 +223,15 @@ namespace VoidFactory.Production.Transfer
                     game.PH_3D[(int)MetaBodyIndex.OutHex].DrawMain();
                 }
 
-                program.LightRange.Value(0.1f, 1.0f);
+                //program.LightRange.Value(0.1f, 1.0f);
             }
-            public void Draw_Select(BodyElemUniShader program)
+            public void Draw_Select()
             {
                 if (!Valid) { return; }
 
-                program.Use();
-                program.Trans.Value(new Transformation3D(Pos));
-                program.LightRange.Value(1.0f, 1.0f);
+                //program.Use();
+                //program.Trans.Value(new Transformation3D(Pos));
+                //program.LightRange.Value(1.0f, 1.0f);
 
                 if (!InnOut)
                 {
@@ -246,7 +246,7 @@ namespace VoidFactory.Production.Transfer
                     game.PH_3D[(int)MetaBodyIndex.OutOct].DrawMain();
                 }
 
-                program.LightRange.Value(0.1f, 1.0f);
+                //program.LightRange.Value(0.1f, 1.0f);
             }
 
             public static bool Inn_Out(ref Select_Port Inn, ref Select_Port Out)

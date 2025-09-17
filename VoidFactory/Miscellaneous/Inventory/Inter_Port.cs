@@ -30,7 +30,7 @@ namespace VoidFactory.Inventory
         {
             //Hover.Draw_Hover(Graphic.Trans_Direct);
             //Hover.Draw_Hover(MainContext.Shader_Default);
-            Hover.Draw_Hover(BodyUni_Shader);
+            Hover.Draw_Hover();
 
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.HoriL, 0, -9, 0xFFFFFF,
             //    "Hover Port:\n" + Hover);
@@ -56,7 +56,7 @@ namespace VoidFactory.Inventory
 
             //Select.Draw_Select(Graphic.Trans_Direct);
             //Select.Draw_Select(MainContext.Shader_Default);
-            Select.Draw_Select(BodyUni_Shader);
+            Select.Draw_Select();
 
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.HoriL, 0, -3, 0xFFFFFF,
             //    "Select Port:\n" + Hover);

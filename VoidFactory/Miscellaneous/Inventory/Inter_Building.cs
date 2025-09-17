@@ -33,7 +33,7 @@ namespace VoidFactory.Inventory
             if (Hover.Valid)
             {
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hover.Pos));
-                BodyUni_Shader.Trans.Value(new Engine3D.Abstract3D.Transformation3D(Hover.Pos));
+                //BodyUni_Shader.Trans.Value(new Engine3D.Abstract3D.Transformation3D(Hover.Pos));
                 //IO_Port.BodyOct.DrawMain();
                 IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
             }

@@ -154,8 +154,8 @@ namespace VoidFactory.Inventory
             if (Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Valid)
             {
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
-                BodyUni_Shader.Use();
-                BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
+                //BodyUni_Shader.Use();
+                //BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //IO_Port.BodyAxis.DrawMain();
                 IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 
@@ -274,8 +274,8 @@ namespace VoidFactory.Inventory
             if (Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Valid)
             {
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
-                BodyUni_Shader.Use();
-                BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
+                //BodyUni_Shader.Use();
+                //BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //IO_Port.BodyAxis.DrawMain();
                 IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
 

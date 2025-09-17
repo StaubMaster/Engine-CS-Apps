@@ -19,7 +19,6 @@ namespace VoidFactory.Inventory
         public static bool Draw_Gray;
         public static int Draw_Gray_Exclude_Idx;
 
-        public static BodyElemUniShader BodyUni_Shader;
         public static TextBuffer Text_Buffer;
         public static AxisBoxBuffer Box_Buffer;
 
