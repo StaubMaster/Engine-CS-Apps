@@ -10,6 +10,7 @@ using Engine3D.BodyParse;
 using Engine3D.Miscellaneous;
 using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Manager;
+using Engine3D.DataStructs;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
@@ -75,9 +76,6 @@ namespace VoidFactory.Editor
 
         private DisplayArea MainWindow;
         private DisplayCamera MainCamera;
-
-        private BodyElemUniShader BodyUniFull_Shader;
-        private BodyElemUniWireShader BodyUniWire_Shader;
 
         private PolyHedra_Shader_Manager PH_Man;
 
@@ -179,39 +177,145 @@ namespace VoidFactory.Editor
         }
 
 
-        PolySoma Scene;
-        ArrayList<bool> BodyIsSelected;
+
         string FilePath;
+        PolySoma Scene;
+
+
+
+        struct AuxData
+        {
+            public bool Selected;
+            public bool Hovering;
+
+            public static AuxData Default()
+            {
+                AuxData data = new AuxData();
+                data.Selected = false;
+                data.Hovering = false;
+                return data;
+            }
+
+            public ColorUData Color()
+            {
+                ColorUData col = new ColorUData();
+
+                if (!Selected)
+                {
+                    if (!Hovering) { col.RGB = 0xFFFFFF; }
+                    else { col.RGB = 0x007FFF; }
+                }
+                else
+                {
+                    if (!Hovering) { col.RGB = 0x7FFF7F; }
+                    else { col.RGB = 0xFF7F00; }
+                }
+
+                return col;
+            }
+            public void ToggleSelectHover()
+            {
+                if (Hovering)
+                {
+                    Selected = !Selected;
+                }
+            }
+        }
+        List<AuxData> Aux;
+        private void Aux_Default_All()
+        {
+            for (int i = 0; i < Aux.Count; i++)
+            {
+                Aux[i] = AuxData.Default();
+            }
+        }
+        private void Aux_Change_Color(int idx)
+        {
+            PolyHedraInstance_3D_Data data;
+            data = Scene.PHs_Trans[idx][0];
+
+            data.AltColorLInter = LInterData.LIT1();
+            data.AltColor = Aux[idx].Color();
+
+            Scene.PHs_Trans[idx][0] = data;
+        }
+        private void Aux_Change_Color_All()
+        {
+            PH_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
+
+            for (int i = 0; i < Scene.PHs_Trans.Count; i++)
+            {
+                Aux_Change_Color(i);
+            }
+        }
+
+        private void Aux_UnSelect_All()
+        {
+            AuxData aux_data;
+            for (int i = 0; i < Aux.Count; i++)
+            {
+                aux_data = Aux[i];
+                aux_data.Selected = false;
+                Aux[i] = aux_data;
+            }
+        }
+        private void Aux_Hover(int idx, bool val)
+        {
+            AuxData aux_data;
+            aux_data = Aux[idx];
+            aux_data.Hovering = val;
+            Aux[idx] = aux_data;
+        }
+        private void Aux_Toggle_Hover()
+        {
+            AuxData aux_data;
+            for (int i = 0; i < Aux.Count; i++)
+            {
+                aux_data = Aux[i];
+                aux_data.ToggleSelectHover();
+                Aux[i] = aux_data;
+            }
+        }
 
 
 
         ChangeMouseDrag3D Edit_Change_Mouse;
 
-        UI_Indicator Indicator_FanS;
-        UI_Indicator Indicator_FanR;
-        UI_Indicator Indicator_Disk;
-        UI_Indicator Indicator_Fold;
-        UI_Indicator Indicator_Test;
-        UI_Indicator Indicator_ObjectAdd;
-        UI_Indicator Indicator_ObjectSub;
+        UI_Indicator UI_Indicator_FanS;
+        UI_Indicator UI_Indicator_FanR;
+        UI_Indicator UI_Indicator_Disk;
+        UI_Indicator UI_Indicator_Fold;
+        UI_Indicator UI_Indicator_Test;
+        UI_Indicator UI_Indicator_ObjectAdd;
+        UI_Indicator UI_Indicator_ObjectSub;
 
-        UI_Indicator[] Indicator_MouseDragMain;
-        UI_Indicator[] Indicator_MouseDragSnap;
-        bool Hovering_Indicator;
+        UI_Indicator[] UI_Indicator_MouseDragMain;
+        UI_Indicator[] UI_Indicator_MouseDragSnap;
+        bool Hovering_UI_Indicator;
 
 
 
         private void Mouse_Hover_Find()
         {
+            AuxData aux_data;
+
+            if (Edit_Index_Hovering != -1)
+            {
+                aux_data = Aux[Edit_Index_Hovering];
+                aux_data.Hovering = false;
+                Aux[Edit_Index_Hovering] = aux_data;
+            }
+
             Edit_Index_Hovering = -1;
-            if (Hovering_Indicator) { return; }
+
+            if (Hovering_UI_Indicator) { return; }
 
             //Intersekt.RayInterval inter = Scene.Intersekt(MainCamera.Ray, out Edit_Index_Hovering);
 
             double HoverDistance = double.PositiveInfinity;
-            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
+            for (int i = 0; i < Scene.PHs_Trans.Count; i++)
             {
-                Intersekt.RayInterval inter = Scene.AllBodysOld[i].Intersekt(MainCamera.Ray);
+                Intersekt.RayInterval inter = Scene.PHs_Trans[i].Intersekt(MainCamera.Ray, 0);
                 if (inter.Is)
                 {
                     if (inter.Interval < HoverDistance)
@@ -221,53 +325,12 @@ namespace VoidFactory.Editor
                     }
                 }
             }
-        }
 
-
-
-
-
-        private void Draw_Default()
-        {
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.OtherColorInter.T0(1.0f);
-            BodyUniFull_Shader.LightRange.Value(0.1f, 1.0f);
-
-            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
+            if (Edit_Index_Hovering != -1)
             {
-                Scene.AllBodysOld[i].Draw(BodyUniFull_Shader);
-            }
-        }
-        private void Draw_Wire()
-        {
-            BodyUniWire_Shader.Use();
-            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
-            {
-                Scene.AllBodysOld[i].Draw(BodyUniWire_Shader);
-            }
-        }
-        private void Draw_SelectHover_Mono()
-        {
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.OtherColorInter.T1(1.0f);
-            BodyUniFull_Shader.LightRange.Value(1.0f, 1.0f);
-
-            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
-            {
-                BodyUniFull_Shader.OtherColor.Value(ColorSelectHover(i == Edit_Index_Hovering, i == Edit_Index_Selected));
-                Scene.AllBodysOld[i].Draw(BodyUniFull_Shader);
-            }
-        }
-        private void Draw_SelectHover_Mult()
-        {
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.OtherColorInter.T1(1.0f);
-            BodyUniFull_Shader.LightRange.Value(1.0f, 1.0f);
-
-            for (int i = 0; i < Scene.AllBodysOld.Count; i++)
-            {
-                BodyUniFull_Shader.OtherColor.Value(ColorSelectHover(i == Edit_Index_Hovering, BodyIsSelected[i]));
-                Scene.AllBodysOld[i].Draw(BodyUniFull_Shader);
+                aux_data = Aux[Edit_Index_Hovering];
+                aux_data.Hovering = true;
+                Aux[Edit_Index_Hovering] = aux_data;
             }
         }
 
@@ -277,9 +340,6 @@ namespace VoidFactory.Editor
         {
             TMovement.FlatX(ref MainCamera.Trans, MainWindow.MoveByKeys(0.1f, 10), MainWindow.SpinByMouse());
             MainCamera.Update(MainWindow.MouseRay());
-
-            BodyUniFull_Shader.View.Value(MainCamera.Trans);
-            BodyUniWire_Shader.View.Value(MainCamera.Trans);
         }
         private void Update_Keys()
         {
@@ -287,7 +347,10 @@ namespace VoidFactory.Editor
             if (MainWindow.CheckKey(Keys.F2).IsPressed()) { Edit_Change_Mouse.SnapToggleMove(); }
             if (MainWindow.CheckKey(Keys.F3).IsPressed()) { Edit_Change_Mouse.CycleSpin(); }
             if (MainWindow.CheckKey(Keys.F4).IsPressed()) { Edit_Change_Mouse.SnapToggleSpin(); }
-            if (MainWindow.CheckKey(Keys.F5).IsPressed()) { ShaderDisplayState = ShaderDisplayState.Next(); }
+            if (MainWindow.CheckKey(Keys.F5).IsPressed())
+            {
+                ShaderDisplayState = ShaderDisplayState.Next();
+            }
         }
         private void Update_Mouse_Change()
         {
@@ -296,7 +359,7 @@ namespace VoidFactory.Editor
                 Mouse_Hover_Find();
             }
 
-            if (MainWindow.CheckKey(MouseButton.Left).IsPressed() && !Hovering_Indicator)
+            if (MainWindow.CheckKey(MouseButton.Left).IsPressed() && !Hovering_UI_Indicator)
             {
                 if (Edit_Change_Mouse.IsHovering)
                 {
@@ -304,10 +367,14 @@ namespace VoidFactory.Editor
                 }
                 else
                 {
+                    Aux_UnSelect_All();
+                    Aux_Toggle_Hover();
+
                     Edit_Index_Selected = Edit_Index_Hovering;
                     if (Edit_Index_Selected != -1)
                     {
-                        Edit_Change_Mouse.Trans_Calc(Scene.AllBodysOld[Edit_Index_Selected].Trans);
+                        //Edit_Change_Mouse.Trans_Calc(Scene.AllBodysOld[Edit_Index_Selected].Trans);
+                        Edit_Change_Mouse.Trans_Calc(Scene.PHs_Trans[Edit_Index_Selected][0].Trans);
                     }
                     else
                     {
@@ -324,17 +391,22 @@ namespace VoidFactory.Editor
             }
             if (MainWindow.CheckKey(MouseButton.Left).IsReleased())
             {
-                /*if (Edit_Change_Mouse.Trans_Changed != null)
+                if (Edit_Change_Mouse.Trans_Changed.Is())
                 {
-                    //Edit_Change_Mouse.Trans_Calc(Edit_Change_Mouse.Trans_Changed);
+                    Edit_Change_Mouse.Trans_Calc(Edit_Change_Mouse.Trans_Changed);
 
-                    DisplayBody temp = Scene.AllBodys[Edit_Index_Selected];
-                    temp.Trans = Edit_Change_Mouse.Trans_Changed;
-                    Scene.AllBodys[Edit_Index_Selected] = temp;
+                    //DisplayBody temp = Scene.AllBodysOld[Edit_Index_Selected];
+                    //temp.Trans = Edit_Change_Mouse.Trans_Changed;
+                    //Scene.AllBodysOld[Edit_Index_Selected] = temp;
 
-                    Edit_Change_Mouse.Trans_Calc(Scene.AllBodys[Edit_Index_Selected].Trans);
-                    Edit_Change_Mouse.Change_Reset();
-                }*/
+                    PolyHedraInstance_3D_Data data;
+                    data = Scene.PHs_Trans[Edit_Index_Selected][0];
+                    data.Trans = Edit_Change_Mouse.Trans_Changed;
+                    Scene.PHs_Trans[Edit_Index_Selected][0] = data;
+ 
+                    //Edit_Change_Mouse.Trans_Calc(Scene.AllBodysOld[Edit_Index_Selected].Trans);
+                }
+                Edit_Change_Mouse.Change_Reset();
             }
 
             if (Edit_Index_Selected != -1)
@@ -348,59 +420,41 @@ namespace VoidFactory.Editor
         private void Update_UI()
         {
             (float, float) winSize = MainWindow.Size_Float2();
-            Indicator_Disk.UpdateSize(winSize.Item1, winSize.Item2);
-            Indicator_Fold.UpdateSize(winSize.Item1, winSize.Item2);
-            Indicator_Test.UpdateSize(winSize.Item1, winSize.Item2);
-            Indicator_ObjectAdd.UpdateSize(winSize.Item1, winSize.Item2);
-            Indicator_ObjectSub.UpdateSize(winSize.Item1, winSize.Item2);
+            UI_Indicator_Disk.UpdateSize(winSize.Item1, winSize.Item2);
+            UI_Indicator_Fold.UpdateSize(winSize.Item1, winSize.Item2);
+            UI_Indicator_Test.UpdateSize(winSize.Item1, winSize.Item2);
+            UI_Indicator_ObjectAdd.UpdateSize(winSize.Item1, winSize.Item2);
+            UI_Indicator_ObjectSub.UpdateSize(winSize.Item1, winSize.Item2);
 
             (float, float) MousePixel = MainWindow.MousePixel();
-            Indicator_Disk.UpdateHover(MousePixel.Item1, MousePixel.Item2);
-            Indicator_Fold.UpdateHover(MousePixel.Item1, MousePixel.Item2);
-            Indicator_Test.UpdateHover(MousePixel.Item1, MousePixel.Item2);
-            Indicator_ObjectAdd.UpdateHover(MousePixel.Item1, MousePixel.Item2);
-            Indicator_ObjectSub.UpdateHover(MousePixel.Item1, MousePixel.Item2);
+            UI_Indicator_Disk.UpdateHover(MousePixel.Item1, MousePixel.Item2);
+            UI_Indicator_Fold.UpdateHover(MousePixel.Item1, MousePixel.Item2);
+            UI_Indicator_Test.UpdateHover(MousePixel.Item1, MousePixel.Item2);
+            UI_Indicator_ObjectAdd.UpdateHover(MousePixel.Item1, MousePixel.Item2);
+            UI_Indicator_ObjectSub.UpdateHover(MousePixel.Item1, MousePixel.Item2);
 
-            Hovering_Indicator = false;
-            if (Indicator_Disk.isHover) { Hovering_Indicator = true; }
-            if (Indicator_Fold.isHover) { Hovering_Indicator = true; }
-            if (Indicator_Test.isHover) { Hovering_Indicator = true; }
-            if (Indicator_ObjectAdd.isHover) { Hovering_Indicator = true; }
-            if (Indicator_ObjectSub.isHover) { Hovering_Indicator = true; }
+            Hovering_UI_Indicator = false;
+            if (UI_Indicator_Disk.isHover) { Hovering_UI_Indicator = true; }
+            if (UI_Indicator_Fold.isHover) { Hovering_UI_Indicator = true; }
+            if (UI_Indicator_Test.isHover) { Hovering_UI_Indicator = true; }
+            if (UI_Indicator_ObjectAdd.isHover) { Hovering_UI_Indicator = true; }
+            if (UI_Indicator_ObjectSub.isHover) { Hovering_UI_Indicator = true; }
         }
 
 
 
-        private void Draw_Scene()
-        {
-            if (ShaderDisplayState == EnumFunctions.EShaderDisplayState.Default)
-            {
-                Draw_Default();
-            }
-            else if (ShaderDisplayState == EnumFunctions.EShaderDisplayState.SelectHoverMono)
-            {
-                Draw_Wire();
-                Draw_SelectHover_Mono();
-            }
-            else if (ShaderDisplayState == EnumFunctions.EShaderDisplayState.SelectHoverMult)
-            {
-                Draw_Wire();
-                Draw_SelectHover_Mult();
-            }
-        }
         private void Draw_Mouse_Change()
         {
-            /*if (Edit_Change_Mouse.Trans_Changed != null && Edit_Index_Selected != -1)
+            /*if (Edit_Index_Selected != -1)
             {
                 BodyUniWire_Shader.Use();
                 BodyUniWire_Shader.Trans.Value(Edit_Change_Mouse.Trans_Changed);
-                Scene.AllBodys[Edit_Index_Selected].Draw(BodyUniWire_Shader);
+                Scene.AllBodysOld[Edit_Index_Selected].Draw(BodyUniWire_Shader);
             }*/
 
             MainWindow.ClearBufferDepth();
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.OtherColorInter.T0(1.0f);
-            Edit_Change_Mouse.Indicator_Draw(BodyUniFull_Shader);
+            PH_Man.InstShader.Use();
+            Edit_Change_Mouse.Draw();
         }
         private void Draw_UI()
         {
@@ -408,14 +462,14 @@ namespace VoidFactory.Editor
 
             UserInterface_Shader.Use();
             UserInterface_Shader.ScreenRatio.Value(MainWindow.Size_Float2());
-            Indicator_FanS.Draw(UserInterface_Shader);
-            Indicator_FanR.Draw(UserInterface_Shader);
-            Indicator_Disk.Draw(UserInterface_Shader);
-            Indicator_Fold.Draw(UserInterface_Shader);
-            Indicator_Test.Draw(UserInterface_Shader);
-            Indicator_ObjectAdd.Draw(UserInterface_Shader);
-            Indicator_ObjectSub.Draw(UserInterface_Shader);
-            Edit_Change_Mouse.DrawUI(UserInterface_Shader, MainCamera.Trans, Indicator_MouseDragMain, Indicator_MouseDragSnap);
+            UI_Indicator_FanS.Draw(UserInterface_Shader);
+            UI_Indicator_FanR.Draw(UserInterface_Shader);
+            UI_Indicator_Disk.Draw(UserInterface_Shader);
+            UI_Indicator_Fold.Draw(UserInterface_Shader);
+            UI_Indicator_Test.Draw(UserInterface_Shader);
+            UI_Indicator_ObjectAdd.Draw(UserInterface_Shader);
+            UI_Indicator_ObjectSub.Draw(UserInterface_Shader);
+            Edit_Change_Mouse.DrawUI(UserInterface_Shader, MainCamera.Trans, UI_Indicator_MouseDragMain, UI_Indicator_MouseDragSnap);
         }
 
 
@@ -425,8 +479,7 @@ namespace VoidFactory.Editor
 
         private void Frame_Func()
         {
-            BodyUniFull_Shader.ScreenRatio.Value(MainWindow.Size_Float2());
-            BodyUniWire_Shader.ScreenRatio.Value(MainWindow.Size_Float2());
+            (float, float) winSize = MainWindow.Size_Float2();
 
             Update_View();
             Update_Keys();
@@ -435,24 +488,24 @@ namespace VoidFactory.Editor
 
             if (MainWindow.CheckKey(MouseButton.Left).IsPressed())
             {
-                if (Indicator_Disk.isHover)
+                if (UI_Indicator_Disk.isHover)
                 {
                     Scene_Save();
                 }
-                if (Indicator_Fold.isHover)
+                if (UI_Indicator_Fold.isHover)
                 {
                     Scene_Load();
                 }
-                if (Indicator_Test.isHover)
+                if (UI_Indicator_Test.isHover)
                 {
                     ConsoleLog.Log("Reset FilePath");
                     FilePath = null;
                 }
-                if (Indicator_ObjectAdd.isHover)
+                if (UI_Indicator_ObjectAdd.isHover)
                 {
                     Scene.Edit_Insert_PolyAbs(Func_Load());
                 }
-                if (Indicator_ObjectSub.isHover)
+                if (UI_Indicator_ObjectSub.isHover)
                 {
                     Scene.Edit_Remove_Body(Edit_Index_Selected);
                     Edit_Index_Hovering = -1;
@@ -462,7 +515,20 @@ namespace VoidFactory.Editor
                 }
             }
 
-            Draw_Scene();
+            //Draw_Scene();
+            {
+                Aux_Change_Color_All();
+                Scene.Update();
+
+                PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(winSize.Item1, winSize.Item2));
+                PH_Man.View.ChangeData(MainCamera.Trans);
+
+                PH_Man.InstShader.Use();
+                Scene.Draw();
+
+                PH_Man.InstWireShader.Use();
+                Scene.Draw();
+            }
             Draw_Mouse_Change();
 
             //MainWindow.ClearBufferDepth();
@@ -477,7 +543,7 @@ namespace VoidFactory.Editor
 
             {
                 string str = "";
-                str += "Display State: " + ShaderDisplayState.ToString();
+                /*str += "Display State: " + ShaderDisplayState.ToString();
                 if (ShaderDisplayState == EnumFunctions.EShaderDisplayState.SelectHoverMono)
                 {
                     str += "\nSelected Index: " + Edit_Index_Selected;
@@ -496,14 +562,15 @@ namespace VoidFactory.Editor
 
                         str += "\nCorn:Face: " + body.Body.PHedra.CornerCount() + ":" + body.Body.PHedra.FaceCount();
                     }
-                }
-                Text_Buffer.InsertTL((0, -4), Text_Buffer.Default_TextSize, 0x000000, str);
+                }*/
+                str += Edit_Change_Mouse.ToInfo();
+                Text_Buffer.InsertTL((0, -5), Text_Buffer.Default_TextSize, 0x000000, str);
             }
 
-            (float, float) winSize = MainWindow.Size_Float2();
             MainWindow.ClearBufferDepth();
 
             Text_Shader.Use();
+            Text_Shader.ScreenRatio.Value(MainWindow.Size_Float2());
             Text_Buffer.Bind_Strings();
             Text_Buffer.Draw();
         }
@@ -523,7 +590,10 @@ namespace VoidFactory.Editor
             ConsoleLog.LogLoad("Scene " + FilePath + " ...");
             Scene = PolySoma.Parse.LoadFile(FilePath);
             Scene.Edit_Begin();
-            BodyIsSelected = new ArrayList<bool>(Scene.AllBodysOld.Count);
+            Aux = new List<AuxData>();
+            for (int i = 0; i < Scene.PHs_Trans.Count; i++) { Aux.Add(AuxData.Default()); }
+
+            Aux_Change_Color_All();
         }
         public void Scene_Save()
         {
@@ -536,25 +606,12 @@ namespace VoidFactory.Editor
             System.IO.File.WriteAllText(FilePath, Scene.ToYMT());
         }
 
-        public void Init_Shader()
+        public void Init_Graphics()
         {
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            BodyUniFull_Shader = new BodyElemUniShader(shaderDir);
-            BodyUniFull_Shader.Use();
-            BodyUniFull_Shader.Depth.Value(MainCamera.Depth.Near, MainCamera.Depth.Far);
-            BodyUniFull_Shader.LightSolar.Value(!(new Point3D(1, 1, 1)));
-            BodyUniFull_Shader.LightRange.Value(0.1f, 1.0f);
-            BodyUniFull_Shader.OtherColor.Value(0xFF0000);
-            BodyUniFull_Shader.OtherColorInter.T0(1.0f);
-
-            BodyUniWire_Shader = new BodyElemUniWireShader(shaderDir);
-            BodyUniWire_Shader.Use();
-            BodyUniWire_Shader.Depth.Value(MainCamera.Depth.Near, MainCamera.Depth.Far);
-            BodyUniWire_Shader.OtherColor.Value(0x000000);
-            BodyUniWire_Shader.OtherColorInter.T1(1.0f);
-
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_Man.Depth.ChangeData(new DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
 
             UserInterface_Shader = new UserInterfaceBodyShader(shaderDir);
             UserInterface_Shader.Use();
@@ -592,15 +649,15 @@ namespace VoidFactory.Editor
             string dirSpin = dir + "Meta/SpinRing/";
             string dirPicto = dir + "Meta/Picto/";
 
-            Indicator_FanS = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "ComputerFanStator.ymt"), 0.6f, UI_Indicator.EAnimationType.None);
-            Indicator_FanR = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "ComputerFanRotor.ymt"), 0.6f, UI_Indicator.EAnimationType.Spin);
-            Indicator_Disk = new UI_Indicator(+150, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "OpticalDisk.ymt"), 1.0f, UI_Indicator.EAnimationType.Disk);
-            Indicator_Fold = new UI_Indicator(+250, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "RingFolder.ymt"), 1.6f, UI_Indicator.EAnimationType.Diag);
-            Indicator_Test = new UI_Indicator(+350, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "Test.ymt"), 1.0f, UI_Indicator.EAnimationType.Disk);
-            Indicator_ObjectAdd = new UI_Indicator(+450, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirMeta + "Inn.txt"), 1.2f, UI_Indicator.EAnimationType.Disk);
-            Indicator_ObjectSub = new UI_Indicator(+550, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirMeta + "Out.txt"), 1.2f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_FanS = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "ComputerFanStator.ymt"), 0.6f, UI_Indicator.EAnimationType.None);
+            UI_Indicator_FanR = new UI_Indicator(+050, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "ComputerFanRotor.ymt"), 0.6f, UI_Indicator.EAnimationType.Spin);
+            UI_Indicator_Disk = new UI_Indicator(+150, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "OpticalDisk.ymt"), 1.0f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_Fold = new UI_Indicator(+250, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "RingFolder.ymt"), 1.6f, UI_Indicator.EAnimationType.Diag);
+            UI_Indicator_Test = new UI_Indicator(+350, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirPicto + "Test.ymt"), 1.0f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_ObjectAdd = new UI_Indicator(+450, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirMeta + "Inn.txt"), 1.2f, UI_Indicator.EAnimationType.Disk);
+            UI_Indicator_ObjectSub = new UI_Indicator(+550, -50, 100, 100, UI_Anchor.YX_MP, TBodyFile.LoadTextFile(dirMeta + "Out.txt"), 1.2f, UI_Indicator.EAnimationType.Disk);
 
-            Indicator_MouseDragMain = new UI_Indicator[6]
+            UI_Indicator_MouseDragMain = new UI_Indicator[6]
             {
                 new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "AxisY.txt"), 1.0f, UI_Indicator.EAnimationType.View),
                 new UI_Indicator(-050, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "AxisX.txt"), 1.0f, UI_Indicator.EAnimationType.View),
@@ -610,7 +667,7 @@ namespace VoidFactory.Editor
                 new UI_Indicator(-150, -50, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirSpin + "RingC.txt"), 1.0f, UI_Indicator.EAnimationType.View),
             };
 
-            Indicator_MouseDragSnap = new UI_Indicator[]
+            UI_Indicator_MouseDragSnap = new UI_Indicator[]
             {
                 new UI_Indicator(-050, -150, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "MoveSnap0.txt"), 1.0f, UI_Indicator.EAnimationType.None),
                 new UI_Indicator(-050, -150, 100, 100, UI_Anchor.YX_PP, TBodyFile.LoadTextFile(dirMove + "MoveSnap1.txt"), 1.0f, UI_Indicator.EAnimationType.None),
@@ -620,7 +677,7 @@ namespace VoidFactory.Editor
 
             ConsoleLog.NewLine();
 
-            Hovering_Indicator = false;
+            Hovering_UI_Indicator = false;
         }
 
         public EditorPolySoma(Func<string> load, Func<string> save)
@@ -646,9 +703,11 @@ namespace VoidFactory.Editor
             FilePath = null;
             Scene = new PolySoma();
             Scene.Edit_Begin();
+            Aux = new List<AuxData>();
+            Aux_Default_All();
 
             string dir = "E:/Zeug/YMT/";
-            Init_Shader();
+            Init_Graphics();
             Init_Mouse_Edit(dir);
             Init_UI(dir);
             //Init_Scene(dir + "RealLifePersonal/Scene.txt");

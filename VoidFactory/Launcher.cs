@@ -201,7 +201,7 @@ namespace VoidFactory
         }
         private void b_Space_Click(object sender, EventArgs e)
         {
-            Astronomical.GameSpace game = new Astronomical.GameSpace();
+            Astronomical.SpaceTest game = new Astronomical.SpaceTest();
         }
         private void b_Editor_Soma_Click(object sender, EventArgs e)
         {

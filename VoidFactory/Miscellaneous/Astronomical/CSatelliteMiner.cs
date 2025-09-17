@@ -10,26 +10,28 @@ using Engine3D.Graphics;
 using Engine3D.GraphicsOld;
 using Engine3D.Noise;
 using Engine3D.Entity;
+using Engine3D.Graphics.Display3D;
 
 namespace VoidFactory.Astronomical
 {
     class CSatelliteMiner
     {
-        public PolyHedra Body;
-        public BodyElemBuffer Buffer;
+        public PolyHedraInstance_3D_Array.Entry InstData;
+
         public CSatelliteNatural Source;
         public AOrbit Orbit;
 
         public uint Rock;
 
-        public CSatelliteMiner(PolyHedra body, CSatelliteNatural source, AOrbit orbit)
+        public CSatelliteMiner(PolyHedraInstance_3D_Array.Entry inst_data, CSatelliteNatural source, AOrbit orbit)
         {
-            Body = body;
-            Buffer = body.ToBuffer();
+            InstData = inst_data;
 
             Source = source;
             Orbit = orbit;
             Rock = 0;
+
+            InstData[0] = new PolyHedraInstance_3D_Data(Orbit.Trans);
         }
 
         public void Update()
@@ -41,6 +43,11 @@ namespace VoidFactory.Astronomical
                 Source.Rock--;
                 Rock++;
             }
+
+            PolyHedraInstance_3D_Data data;
+            data = InstData[0];
+            data.Trans = Orbit.Trans;
+            InstData[0] = data;
         }
     }
 }

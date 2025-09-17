@@ -10,12 +10,14 @@ using Engine3D.OutPut.Uniform;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
+using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Manager;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace VoidFactory.Astronomical
 {
-    class GameSpace
+    class SpaceTest
     {
         private DisplayArea MainWindow;
         private DisplayCamera MainCamera;
@@ -24,11 +26,9 @@ namespace VoidFactory.Astronomical
         private Transformation3D ViewHover;
 
 
-        private PolyHedra TestPoly;
-        private BodyElemBuffer TestBuffer;
 
-        private BodyElemUniShader Shader_Default;
-
+        private PolyHedra_Shader_Manager PH_Man;
+        private PolyHedraInstance_3D_Array PH_Arr;
 
         private bool UpdateSatellites;
         private List<CSatelliteNatural> Astro;
@@ -36,7 +36,7 @@ namespace VoidFactory.Astronomical
 
 
 
-        public GameSpace()
+        public SpaceTest()
         {
             MainWindow = new DisplayArea(1000, 1000, CloseFunc, FrameFunc);
             MainWindow.ChangeColor(0, 0, 0);
@@ -44,9 +44,6 @@ namespace VoidFactory.Astronomical
             InitView();
             InitShaders();
             InitSatellites();
-
-            TestPoly = PolyHedra.Generate.SphereCube(12, 10.0f);
-            TestBuffer = TestPoly.ToBuffer();
 
             MainWindow.Run();
             MainWindow.Term();
@@ -65,22 +62,26 @@ namespace VoidFactory.Astronomical
         {
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            Shader_Default = new BodyElemUniShader(shaderDir);
-            Shader_Default.Depth.Value(MainCamera.Depth.Near, MainCamera.Depth.Far);
+            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_Man.Depth.ChangeData(new Engine3D.DataStructs.DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
         }
         private void InitSatellites()
         {
             UpdateSatellites = true;
 
-            PolyHedra sphere1 = PolyHedra.Generate.SphereCube(12, 200.0f);
-            PolyHedra sphere2 = PolyHedra.Generate.SphereCube(12, 16.0f);
-            PolyHedra sphere3 = PolyHedra.Generate.SphereCube(12, 4.0f);
+            PolyHedra[] ph = new PolyHedra[]
+            {
+                PolyHedra.Generate.SphereCube(12, 200.0f),
+                PolyHedra.Generate.SphereCube(12, 16.0f),
+                PolyHedra.Generate.SphereCube(12, 4.0f),
+                PolyHedra.Generate.Cube(),
+            };
+            PH_Arr = new PolyHedraInstance_3D_Array(ph);
 
             Astro = new List<CSatelliteNatural>();
-
-            Astro.Add(new CSatelliteNatural(sphere1, new COrbitHover(null, new SAngledRotation(0.0009, 0, 0), Point3D.Default()), 200));
-            Astro.Add(new CSatelliteNatural(sphere2, new COrbitNormal(Astro[0].Orbit, new SAngledRotation(0.001, 0.0, 0.0), 1000, new SAngledRotation(0.0001, 0.2, 0)), 16));
-            Astro.Add(new CSatelliteNatural(sphere3, new COrbitNormal(Astro[1].Orbit, new SAngledRotation(0.008, 0.0, 0.0), 100, new SAngledRotation(0.008, 0, 0)), 4));
+            Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(0, 1) , new COrbitHover(null, new SAngledRotation(0.0009, 0, 0), Point3D.Default()), 200));
+            Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(1, 1), new COrbitNormal(Astro[0].Orbit, new SAngledRotation(0.001, 0.0, 0.0), 1000, new SAngledRotation(0.0001, 0.2, 0)), 16));
+            Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(2, 1), new COrbitNormal(Astro[1].Orbit, new SAngledRotation(0.008, 0.0, 0.0), 100, new SAngledRotation(0.008, 0, 0)), 4));
 
             Miner = new List<CSatelliteMiner>();
         }
@@ -89,7 +90,7 @@ namespace VoidFactory.Astronomical
         {
             Intersekt.RayInterval func(Ray3D ray, CSatelliteNatural body)
             {
-                return body.Body.Intersekt(ray, body.Orbit.Trans);
+                return body.InstData.Intersekt(ray, 0);
             }
             return Intersekt.Ray_Multiple(MainCamera.Ray, Astro, func);
         }
@@ -97,7 +98,7 @@ namespace VoidFactory.Astronomical
         {
             Intersekt.RayInterval func(Ray3D ray, CSatelliteMiner body)
             {
-                return body.Body.Intersekt(ray, body.Orbit.Trans);
+                return body.InstData.Intersekt(ray, 0);
             }
             return Intersekt.Ray_Multiple(MainCamera.Ray, Miner, func);
         }
@@ -139,9 +140,6 @@ namespace VoidFactory.Astronomical
                 TMovement.Unrestricted(ref MainCamera.Trans, MainWindow.MoveByKeys(0.1f, 100), MainWindow.SpinByMouse());
             }
             MainCamera.Update(MainWindow.MouseRay());
-
-            Shader_Default.ScreenRatio.Value(MainWindow.Size_Float2());
-            Shader_Default.View.Value(MainCamera.Trans);
         }
         private void InitViewHover(CSatelliteNatural nat)
         {
@@ -176,7 +174,7 @@ namespace VoidFactory.Astronomical
                     CSatelliteNatural nat = Astro[interAstro.Index];
                     Point3D rel = nat.Orbit.Trans.TBack(interAstro.Pos);
                     rel = rel * (float)((nat.Radius) / rel.Len);
-                    Miner.Add(new CSatelliteMiner(PolyHedra.Generate.Cube(), nat, new COrbitHover(nat.Orbit, new SAngledRotation(0.01, 0, 0), rel)));
+                    Miner.Add(new CSatelliteMiner(PH_Arr.Alloc(3, 1), nat, new COrbitHover(nat.Orbit, new SAngledRotation(0.01, 0, 0), rel)));
                 }
                 if (interMiner.Is && interMiner.Interval < interAstro.Interval)
                 {
@@ -186,7 +184,7 @@ namespace VoidFactory.Astronomical
 
             if (MainWindow.CheckKey(Keys.T).IsPressed())
             {
-                if (ViewHover.Is())
+                if (!ViewHover.Is())
                 {
                     if (interAstro.Is)
                     {
@@ -199,25 +197,43 @@ namespace VoidFactory.Astronomical
                 }
             }
 
+            if (MainWindow.CheckKey(Keys.G).IsPressed())
+            {
+                string str = "";
+                for (int i = 0; i < PH_Arr.Length; i++)
+                {
+                    str += "[" + i.ToString("00") + "]" + PH_Arr[i].Count + "\n";
+                }
+                ConsoleLog.Log(str);
+            }
+
 
 
             //  Draw
-            Shader_Default.Use();
+            PH_Man.View.ChangeData(MainCamera.Trans);
+            PH_Man.ViewPortSizeRatio.ChangeData(MainWindow.SizeRatio());
+            PH_Man.InstShader.Use();
+            PH_Arr.Update();
+            PH_Arr.Draw();
 
-            for (int i = 0; i < Astro.Count; i++)
-            {
-                Shader_Default.Trans.Value(Astro[i].Orbit.Trans);
-                Astro[i].Buffer.Draw();
-            }
 
-            for (int i = 0; i < Miner.Count; i++)
-            {
-                Shader_Default.Trans.Value(Miner[i].Orbit.Trans);
-                Miner[i].Buffer.Draw();
-            }
 
-            Shader_Default.Trans.Value(Transformation3D.Default());
-            TestBuffer.Draw();
+            //Shader_Default.Use();
+            //
+            //for (int i = 0; i < Astro.Count; i++)
+            //{
+            //    Shader_Default.Trans.Value(Astro[i].Orbit.Trans);
+            //    Astro[i].Buffer.Draw();
+            //}
+            //
+            //for (int i = 0; i < Miner.Count; i++)
+            //{
+            //    Shader_Default.Trans.Value(Miner[i].Orbit.Trans);
+            //    Miner[i].Buffer.Draw();
+            //}
+            //
+            //Shader_Default.Trans.Value(Transformation3D.Default());
+            //TestBuffer.Draw();
         }
 
         private void CloseFunc()

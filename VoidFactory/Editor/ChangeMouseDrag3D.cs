@@ -4,11 +4,26 @@ using Engine3D.Abstract3D;
 using Engine3D.OutPut.Shader;
 using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
+using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.Display2D.UserInterface;
+using Engine3D.Miscellaneous.EntryContainer;
 
 using VoidFactory.Miscellaneous.Display;
 
 namespace VoidFactory.Editor
 {
+    /* Split
+     *  All Move and all Spin should be their own thing ?
+     *  mayybe later
+     */
+    abstract class DragChange_Base
+    {
+
+    }
+    class DragChange_MoveX : DragChange_Base
+    {
+
+    }
     struct ChangeMouseDrag3D
     {
         private enum RotType
@@ -25,21 +40,23 @@ namespace VoidFactory.Editor
         private bool Move_Snap;
         private bool Spin_Snap;
 
-        private Point3D Pos;
-        private Point3D DirY;
-        private Point3D DirX;
-        private Point3D DirC;
+        private Point3D MoveOrigin;
+        private Point3D MoveAxisY;
+        private Point3D MoveAxisX;
+        private Point3D MoveAxisC;
 
-        private Angle3D Rot;
-        private Angle3D WnkA;
-        private Angle3D WnkS;
-        private Angle3D WnkD;
+        private Angle3D SpinOrigin;
+        private Angle3D SpinRingA;
+        private Angle3D SpinRingS;
+        private Angle3D SpinRingD;
 
         private bool IsNull;
 
-        private PolyHedra[] Indicator_Body;
-        private BodyElemBuffer[] Indicator_Buffer;
         private Transformation3D[] Indicator_Trans;
+
+        private PolyHedra[] Bodys;
+        private PolyHedraInstance_3D_Array Bodys_3D;
+        private EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[] Insts_3D;
 
         private int Hovering;
         private int Selected;
@@ -48,7 +65,7 @@ namespace VoidFactory.Editor
 
         public Transformation3D Trans_Changed;
 
-        public ChangeMouseDrag3D(PolyHedra[] indicator_bodys)
+        public ChangeMouseDrag3D(PolyHedra[] bodys)
         {
             ViewRay = new Ray3D();
 
@@ -57,25 +74,35 @@ namespace VoidFactory.Editor
             Move_Snap = false;
             Spin_Snap = false;
 
-            Pos = Point3D.Null();
-            DirY = Point3D.Null();
-            DirX = Point3D.Null();
-            DirC = Point3D.Null();
+            MoveOrigin = Point3D.Null();
+            MoveAxisY = Point3D.Null();
+            MoveAxisX = Point3D.Null();
+            MoveAxisC = Point3D.Null();
 
-            Rot = Angle3D.Null();
-            WnkA = Angle3D.Null();
-            WnkS = Angle3D.Null();
-            WnkD = Angle3D.Null();
+            SpinOrigin = Angle3D.Null();
+            SpinRingA = Angle3D.Null();
+            SpinRingS = Angle3D.Null();
+            SpinRingD = Angle3D.Null();
 
             IsNull = true;
 
-            Indicator_Body = indicator_bodys;
+            /*Indicator_Body = bodys;
             Indicator_Buffer = new BodyElemBuffer[Indicator_Body.Length];
             for (int i = 0; i < Indicator_Body.Length; i++)
             {
                 Indicator_Buffer[i] = Indicator_Body[i].ToBuffer();
-            }
+            }*/
             Indicator_Trans = null;
+
+            Bodys = bodys;
+            Bodys_3D = new PolyHedraInstance_3D_Array(Bodys);
+            Insts_3D = new EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[Bodys_3D.Length];
+            for (int i = 0; i < Bodys_3D.Length; i++)
+            {
+                PolyHedraInstance_3D_Data data = new PolyHedraInstance_3D_Data(new Transformation3D(Point3D.Null()));
+                Insts_3D[i] = Bodys_3D[i].Alloc(1);
+                Insts_3D[i][0] = data;
+            }
 
             Hovering = -1;
             Selected = -1;
@@ -86,29 +113,29 @@ namespace VoidFactory.Editor
         {
             if (trans.Is())
             {
-                Pos = trans.Pos;
-                DirY = new Point3D(1, 0, 0);
-                DirX = new Point3D(0, 1, 0);
-                DirC = new Point3D(0, 0, 1);
+                MoveOrigin = trans.Pos;
+                MoveAxisY = new Point3D(1, 0, 0);
+                MoveAxisX = new Point3D(0, 1, 0);
+                MoveAxisC = new Point3D(0, 0, 1);
 
-                Rot = trans.Rot;
-                WnkA = new Angle3D(Rot.A, 0, 0);
-                WnkS = new Angle3D(Rot.A, Rot.S, 0);
-                WnkD = new Angle3D(Rot.A, Rot.S, Rot.D);
+                SpinOrigin = trans.Rot;
+                SpinRingA = new Angle3D(SpinOrigin.A, 0, 0);
+                SpinRingS = new Angle3D(SpinOrigin.A, SpinOrigin.S, 0);
+                SpinRingD = new Angle3D(SpinOrigin.A, SpinOrigin.S, SpinOrigin.D);
 
                 IsNull = false;
             }
             else
             {
-                Pos = Point3D.Null();
-                DirY = Point3D.Null();
-                DirX = Point3D.Null();
-                DirC = Point3D.Null();
+                MoveOrigin = Point3D.Null();
+                MoveAxisY = Point3D.Null();
+                MoveAxisX = Point3D.Null();
+                MoveAxisC = Point3D.Null();
 
-                Rot = Angle3D.Null();
-                WnkA = Angle3D.Null();
-                WnkS = Angle3D.Null();
-                WnkD = Angle3D.Null();
+                SpinOrigin = Angle3D.Null();
+                SpinRingA = Angle3D.Null();
+                SpinRingS = Angle3D.Null();
+                SpinRingD = Angle3D.Null();
 
                 IsNull = true;
             }
@@ -123,14 +150,17 @@ namespace VoidFactory.Editor
 
             Hovering = -1;
             Selected = -1;
-            //Trans_Changed = null;
+            Trans_Changed = Transformation3D.Null();
 
             if (Indicator_Trans == null) { return; }
 
             double dist = double.PositiveInfinity;
-            for (int i = 0; i < 6; i++)
+
+            PolyHedraInstance_3D_Data data;
+            for (int i = 0; i < Insts_3D.Length; i++)
             {
-                Intersekt.RayInterval inter = Indicator_Body[i].Intersekt(ViewRay, Indicator_Trans[i]);
+                data = Insts_3D[i][0];
+                Intersekt.RayInterval inter = Bodys[i].Intersekt(ViewRay, data.Trans);
                 if (inter.Is)
                 {
                     if (inter.Interval < dist)
@@ -140,12 +170,26 @@ namespace VoidFactory.Editor
                     }
                 }
             }
+
+            for (int i = 0; i < Insts_3D.Length; i++)
+            {
+                data = Insts_3D[i][0];
+                if (Hovering == -1 || Hovering == i)
+                {
+                    data.GrayLInter = Engine3D.DataStructs.LInterData.LIT0();
+                }
+                else
+                {
+                    data.GrayLInter = Engine3D.DataStructs.LInterData.LIT1();
+                }
+                Insts_3D[i][0] = data;
+            }
         }
 
         public void Indicator_Trans_Calc()
         {
             Indicator_Trans = null;
-            //if (Trans_Changed == null) { return; }
+            if (!Trans_Changed.Is()) { return; }
             Indicator_Trans = new Transformation3D[6];
 
             if (Move_RotType == RotType.Non)
@@ -185,82 +229,36 @@ namespace VoidFactory.Editor
                 Indicator_Trans[4] = new Transformation3D(Trans_Changed.Pos, Trans_Changed.Rot);
                 Indicator_Trans[5] = new Transformation3D(Trans_Changed.Pos, Trans_Changed.Rot);
             }
-        }
-        public void Indicator_Draw(CShaderTransformation shaderNorm, CShaderTransformation shaderGray)
-        {
-            if (Indicator_Trans == null) { return; }
 
-            if (Hovering != -1)
+            PolyHedraInstance_3D_Data data;
+            for (int i = 0; i < Insts_3D.Length; i++)
             {
-                for (int i = 0; i < 6; i++)
-                {
-                    if (i == Hovering)
-                    {
-                        shaderNorm.Use();
-                        shaderNorm.Trans.Value(Indicator_Trans[i]);
-                        Indicator_Buffer[i].Draw();
-                    }
-                    else
-                    {
-                        shaderGray.Use();
-                        shaderGray.Trans.Value(Indicator_Trans[i]);
-                        Indicator_Buffer[i].Draw();
-                    }
-                }
+                data = Insts_3D[i][0];
+                data.Trans = TowardView(Indicator_Trans[i]);
+                Insts_3D[i][0] = data;
             }
-            else
+
+            for (int i = 0; i < Indicator_Trans.Length; i++)
             {
-                for (int i = 0; i < 6; i++)
-                {
-                    shaderNorm.Use();
-                    shaderNorm.Trans.Value(Indicator_Trans[i]);
-                    Indicator_Buffer[i].Draw();
-                }
+                Indicator_Trans[i] = TowardView(Indicator_Trans[i]);
             }
         }
-        public void Indicator_Draw(BodyElemUniShader shader)
+        public Transformation3D TowardView(Transformation3D trans)
         {
-            if (Indicator_Trans == null) { return; }
-
-            shader.Use();
-            if (Hovering != -1)
-            {
-                for (int i = 0; i < 6; i++)
-                {
-                    if (i == Hovering)
-                    {
-                        //shaderNorm.Use();
-                        //shaderNorm.Trans.Value(Indicator_Trans[i]);
-                        shader.GrayInter.T0(1.0f);
-                        shader.Trans.Value(Indicator_Trans[i]);
-                        Indicator_Buffer[i].Draw();
-                    }
-                    else
-                    {
-                        //shaderGray.Use();
-                        //shaderGray.Trans.Value(Indicator_Trans[i]);
-                        shader.GrayInter.T1(1.0f);
-                        shader.Trans.Value(Indicator_Trans[i]);
-                        Indicator_Buffer[i].Draw();
-                    }
-                }
-            }
-            else
-            {
-                shader.GrayInter.T0(1.0f);
-                for (int i = 0; i < 6; i++)
-                {
-                    //shaderNorm.Use();
-                    //shaderNorm.Trans.Value(Indicator_Trans[i]);
-                    shader.Trans.Value(Indicator_Trans[i]);
-                    Indicator_Buffer[i].Draw();
-                }
-            }
+            if (!trans.Is()) { return trans; }
+            Point3D diff = trans.Pos - ViewRay.Pos;
+            trans.Pos = ViewRay.Pos + ((!diff) * 10);
+            return trans;
+        }
+        public void Draw()
+        {
+            Bodys_3D.Update();
+            Bodys_3D.Draw();
         }
 
         private Transformation3D Snap(Transformation3D trans)
         {
-            if (trans.Is()) { return Transformation3D.Null(); }
+            if (!trans.Is()) { return Transformation3D.Null(); }
 
             if (Move_Snap)
             {
@@ -284,51 +282,51 @@ namespace VoidFactory.Editor
         private Transformation3D MoveY()
         {
             Ray3D ray = new Ray3D();
-            if (Move_RotType == RotType.Non) { ray = new Ray3D(Pos, DirY); }
-            if (Move_RotType == RotType.Abs) { ray = new Ray3D(Pos, DirY - WnkS); }
-            if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirY - Rot); }
+            if (Move_RotType == RotType.Non) { ray = new Ray3D(MoveOrigin, MoveAxisY); }
+            if (Move_RotType == RotType.Abs) { ray = new Ray3D(MoveOrigin, MoveAxisY - SpinRingS); }
+            if (Move_RotType == RotType.Rel) { ray = new Ray3D(MoveOrigin, MoveAxisY - SpinOrigin); }
 
             Intersekt.Ray_Ray(ViewRay, out Intersekt.RayInterval tv, ray, out Intersekt.RayInterval t);
             if (tv.Interval < 0) { return Transformation3D.Null(); }
 
-            return new Transformation3D(t.Pos, Rot);
+            return new Transformation3D(t.Pos, SpinOrigin);
         }
         private Transformation3D MoveX()
         {
             Ray3D ray = new Ray3D();
-            if (Move_RotType == RotType.Non) { ray = new Ray3D(Pos, DirX); }
-            if (Move_RotType == RotType.Abs) { ray = new Ray3D(Pos, DirX - WnkA); }
-            if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirX - Rot); }
+            if (Move_RotType == RotType.Non) { ray = new Ray3D(MoveOrigin, MoveAxisX); }
+            if (Move_RotType == RotType.Abs) { ray = new Ray3D(MoveOrigin, MoveAxisX - SpinRingA); }
+            if (Move_RotType == RotType.Rel) { ray = new Ray3D(MoveOrigin, MoveAxisX - SpinOrigin); }
 
             Intersekt.Ray_Ray(ViewRay, out Intersekt.RayInterval tv, ray, out Intersekt.RayInterval t);
             if (tv.Interval < 0) { return Transformation3D.Null(); }
 
-            return new Transformation3D(t.Pos, Rot);
+            return new Transformation3D(t.Pos, SpinOrigin);
         }
         private Transformation3D MoveC()
         {
             Ray3D ray = new Ray3D();
-            if (Move_RotType == RotType.Non) { ray = new Ray3D(Pos, DirC); }
-            if (Move_RotType == RotType.Abs) { ray = new Ray3D(Pos, DirC - WnkD); }
-            if (Move_RotType == RotType.Rel) { ray = new Ray3D(Pos, DirC - Rot); }
+            if (Move_RotType == RotType.Non) { ray = new Ray3D(MoveOrigin, MoveAxisC); }
+            if (Move_RotType == RotType.Abs) { ray = new Ray3D(MoveOrigin, MoveAxisC - SpinRingD); }
+            if (Move_RotType == RotType.Rel) { ray = new Ray3D(MoveOrigin, MoveAxisC - SpinOrigin); }
 
             Intersekt.Ray_Ray(ViewRay, out Intersekt.RayInterval tv, ray, out Intersekt.RayInterval t);
             if (tv.Interval < 0) { return Transformation3D.Null(); }
 
-            return new Transformation3D(t.Pos, Rot);
+            return new Transformation3D(t.Pos, SpinOrigin);
         }
 
         private Transformation3D SpinY()
         {
             Point3D dirX = Point3D.Default();
             Point3D dirC = Point3D.Default();
-            if (Spin_RotType == RotType.Abs) { dirX = DirX - WnkS; dirC = DirC - WnkS; }
-            if (Spin_RotType == RotType.Rel) { dirX = DirX - Rot; dirC = DirC - Rot; }
+            if (Spin_RotType == RotType.Abs) { dirX = MoveAxisX - SpinRingS; dirC = MoveAxisC - SpinRingS; }
+            if (Spin_RotType == RotType.Rel) { dirX = MoveAxisX - SpinOrigin; dirC = MoveAxisC - SpinOrigin; }
 
-            Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, Pos, dirX, dirC);
+            Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, MoveOrigin, dirX, dirC);
             if (t.Interval < 0) { return Transformation3D.Null(); }
 
-            Point3D rel = !(t.Pos - Pos);
+            Point3D rel = !(t.Pos - MoveOrigin);
             Point3D norm = !(dirX ^ dirC);
             double det = norm % (dirX ^ rel);
             double angleTau = -Math.Atan2(det, dirX % rel);
@@ -340,21 +338,21 @@ namespace VoidFactory.Editor
             //angleTau = angle360 * (Math.Tau / 360);
 
             Angle3D rot = new Angle3D(0, angleTau, 0);
-            if (Spin_RotType == RotType.Abs) { rot = Rot.Add(rot); }
-            if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
-            return new Transformation3D(Pos, rot);
+            if (Spin_RotType == RotType.Abs) { rot = SpinOrigin.Add(rot); }
+            if (Spin_RotType == RotType.Rel) { rot = SpinOrigin + rot; }
+            return new Transformation3D(MoveOrigin, rot);
         }
         private Transformation3D SpinX()
         {
             Point3D dirC = Point3D.Default();
             Point3D dirY = Point3D.Default();
-            if (Spin_RotType == RotType.Abs) { dirC = DirC - WnkA; dirY = DirY - WnkA; }
-            if (Spin_RotType == RotType.Rel) { dirC = DirC - Rot; dirY = DirY - Rot; }
+            if (Spin_RotType == RotType.Abs) { dirC = MoveAxisC - SpinRingA; dirY = MoveAxisY - SpinRingA; }
+            if (Spin_RotType == RotType.Rel) { dirC = MoveAxisC - SpinOrigin; dirY = MoveAxisY - SpinOrigin; }
 
-            Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, Pos, dirC, dirY);
+            Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, MoveOrigin, dirC, dirY);
             if (t.Interval < 0) { return Transformation3D.Null(); }
 
-            Point3D rel = !(t.Pos - Pos);
+            Point3D rel = !(t.Pos - MoveOrigin);
             Point3D norm = !(dirC ^ dirY);
             double det = norm % (dirC ^ rel);
             double angleTau = +Math.Atan2(det, dirC % rel);
@@ -366,21 +364,21 @@ namespace VoidFactory.Editor
             //angleTau = angle360 * (Math.Tau / 360);
 
             Angle3D rot = new Angle3D(angleTau, 0, 0);
-            if (Spin_RotType == RotType.Abs) { rot = Rot.Add(rot); }
-            if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
-            return new Transformation3D(Pos, rot);
+            if (Spin_RotType == RotType.Abs) { rot = SpinOrigin.Add(rot); }
+            if (Spin_RotType == RotType.Rel) { rot = SpinOrigin + rot; }
+            return new Transformation3D(MoveOrigin, rot);
         }
         private Transformation3D SpinC()
         {
             Point3D dirY = Point3D.Default();
             Point3D dirX = Point3D.Default();
-            if (Spin_RotType == RotType.Abs) { dirY = DirY - WnkD; dirX = DirX - WnkD; }
-            if (Spin_RotType == RotType.Rel) { dirY = DirY - Rot; dirX = DirX - Rot; }
+            if (Spin_RotType == RotType.Abs) { dirY = MoveAxisY - SpinRingD; dirX = MoveAxisX - SpinRingD; }
+            if (Spin_RotType == RotType.Rel) { dirY = MoveAxisY - SpinOrigin; dirX = MoveAxisX - SpinOrigin; }
 
-            Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, Pos, dirY, dirX);
+            Intersekt.RayInterval t = Intersekt.Ray_Plane(ViewRay, MoveOrigin, dirY, dirX);
             if (t.Interval < 0) { return Transformation3D.Null(); }
 
-            Point3D rel = !(t.Pos - Pos);
+            Point3D rel = !(t.Pos - MoveOrigin);
             Point3D norm = !(dirY ^ dirX);
             double det = norm % (dirY ^ rel);
             double angleTau = +Math.Atan2(det, dirY % rel);
@@ -392,9 +390,9 @@ namespace VoidFactory.Editor
             //angleTau = angle360 * (Math.Tau / 360);
 
             Angle3D rot = new Angle3D(0, 0, angleTau);
-            if (Spin_RotType == RotType.Abs) { rot = Rot.Add(rot); }
-            if (Spin_RotType == RotType.Rel) { rot = Rot + rot; }
-            return new Transformation3D(Pos, rot);
+            if (Spin_RotType == RotType.Abs) { rot = SpinOrigin.Add(rot); }
+            if (Spin_RotType == RotType.Rel) { rot = SpinOrigin + rot; }
+            return new Transformation3D(MoveOrigin, rot);
         }
 
         public void CycleMove()
@@ -428,29 +426,50 @@ namespace VoidFactory.Editor
             Hovering = -1;
             Selected = -1;
             Indicator_Trans = null;
-            //Trans_Changed = null;
+            Trans_Changed = Transformation3D.Null();
         }
         public void Changed_Trans_Calc()
         {
             switch (Selected)
             {
-                //case 0: Trans_Changed = Snap(MoveY()); return;
-                //case 1: Trans_Changed = Snap(MoveX()); return;
-                //case 2: Trans_Changed = Snap(MoveC()); return;
-                //
-                //case 3: Trans_Changed = Snap(SpinY()); return;
-                //case 4: Trans_Changed = Snap(SpinX()); return;
-                //case 5: Trans_Changed = Snap(SpinC()); return;
+                case 0: Trans_Changed = Snap(MoveY()); return;
+                case 1: Trans_Changed = Snap(MoveX()); return;
+                case 2: Trans_Changed = Snap(MoveC()); return;
+
+                case 3: Trans_Changed = Snap(SpinY()); return;
+                case 4: Trans_Changed = Snap(SpinX()); return;
+                case 5: Trans_Changed = Snap(SpinC()); return;
             }
 
             if (!IsNull)
             {
-                Trans_Changed = new Transformation3D(Pos, Rot);
+                Trans_Changed = new Transformation3D(MoveOrigin, SpinOrigin);
             }
             else
             {
-                //Trans_Changed = null;
+                Trans_Changed = Transformation3D.Null();
             }
+        }
+        public string ToInfo()
+        {
+            string str = "";
+
+            str += "\nViewRay Pos Y: " + ViewRay.Pos.Y;
+            str += "\nViewRay Pos X: " + ViewRay.Pos.X;
+            str += "\nViewRay Pos C: " + ViewRay.Pos.C;
+            str += "\nViewRay Dir Y: " + ViewRay.Dir.Y;
+            str += "\nViewRay Dir X: " + ViewRay.Dir.X;
+            str += "\nViewRay Dir C: " + ViewRay.Dir.C;
+
+            str += "\nHovering: " + Hovering;
+            str += "\nSelected: " + Selected;
+
+            str += "\nTransChanged  Is  : " + Trans_Changed.Is();
+            str += "\nTransChanged Pos Y: " + Trans_Changed.Pos.Y;
+            str += "\nTransChanged Pos X: " + Trans_Changed.Pos.X;
+            str += "\nTransChanged Pos C: " + Trans_Changed.Pos.C;
+
+            return str;
         }
 
         public void DrawUI(CShaderUserInterfaceBody shader, Transformation3D Trans, UI_Indicator[] main, UI_Indicator[] snap)
