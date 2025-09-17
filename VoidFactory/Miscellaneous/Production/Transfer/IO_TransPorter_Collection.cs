@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 using Engine3D.GraphicsOld;
-using Engine3D.OutPut.Shader;
 using Engine3D.Graphics;
 
 namespace VoidFactory.Production.Transfer

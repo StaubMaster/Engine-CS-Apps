@@ -5,8 +5,6 @@ using Engine3D;
 using Engine3D.Abstract3D;
 using Engine3D.Noise;
 using Engine3D.GraphicsOld;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 
 using VoidFactory.Production.Data;

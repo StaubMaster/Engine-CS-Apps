@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Engine3D.Abstract3D;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform;
 
 namespace VoidFactory.Astronomical
 {

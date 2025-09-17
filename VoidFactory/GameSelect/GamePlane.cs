@@ -6,13 +6,8 @@ using Engine3D;
 using Engine3D.Abstract3D;
 using Engine3D.Abstract2D;
 using Engine3D.GraphicsOld;
-using Engine3D.GraphicsOld.Forms;
 using Engine3D.Entity;
 
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform;
-using Engine3D.OutPut.Uniform.Generic.Float;
-using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Display2D.UserInterface;
@@ -62,7 +57,7 @@ namespace VoidFactory.GameSelect
         private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry[] TestBodys;
 
         private UserInterfaceManager UI_Man;
-        private UIBody_Buffer UIBodyBuffer;
+
         private Angle3D UI_Spin;
 
 
@@ -125,25 +120,6 @@ namespace VoidFactory.GameSelect
                 data.Trans.Rot = rot;
                 TestBodys[i][0] = data;
             }
-        }
-        private void UI_Test()
-        {
-            UIGridPosition gPos = new UIGridPosition(UIAnchor.MM(), new Point2D(0.0f, 0.0f), UICorner.MM());
-            UIGridSize gSize = new UIGridSize(new Point2D(50.0f, 50.0f), 25.0f);
-
-            UIBody_Data[] UIData = new UIBody_Data[]
-            {
-                new UIBody_Data(gPos.WithOffset(new Point2D( 0.0f,  0.0f)), gSize, 1.0f, new Angle3D(UI_Spin.A, 0, 0)),
-                new UIBody_Data(gPos.WithOffset(new Point2D(+1.0f,  0.0f)), gSize, 1.0f, UI_Spin),
-                new UIBody_Data(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(0.0f, 0, 0), UI_Spin)),
-                new UIBody_Data(gPos.WithOffset(new Point2D(+1.0f, -1.0f)), gSize, 1.0f, new Transformation3D(new Point3D(3.0f, 0, 0), UI_Spin)),
-            };
-
-            UI_Spin.A += 0.01f;
-
-            UIBodyBuffer.Bind_Inst(UIData, UIData.Length);
-            UI_Man.UIBodyShader.Use();
-            UIBodyBuffer.Draw_Inst();
         }
         private void InstDraw()
         {
@@ -596,12 +572,10 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
 
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.Depth.ChangeData(new DepthData(view.Depth.Near, view.Depth.Far));
+            PH_Man.Depth.ChangeData(view.Depth);
 
-            PolyHedra cube = PolyHedra.Generate.Cube();
+            //PolyHedra cube = PolyHedra.Generate.Cube();
             UI_Man = new UserInterfaceManager(shaderDir);
-            UIBodyBuffer = new UIBody_Buffer();
-            cube.ToBuffer(UIBodyBuffer);
             //UI_Man.Depth.ChangeData(new DepthData(-1000, +1000));
             UI_Spin = new Angle3D(0, -0.5f, 0);
 
@@ -640,8 +614,7 @@ namespace VoidFactory.GameSelect
 
             Solar = new Transformation3D(new Point3D(-2, +3, -1));
 
-            view.Depth.Near = 1.0f;
-            view.Depth.Far = 1000.0f;
+            view.Depth = new DepthData(1.0f, 1000.0f);
 
 
             IO_Port.game = this;

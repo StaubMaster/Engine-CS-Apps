@@ -618,7 +618,7 @@ namespace VoidFactory.Editor
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
             PH_3D_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_3D_Man.Depth.ChangeData(new DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
+            PH_3D_Man.Depth.ChangeData(MainCamera.Depth);
 
             PH_UI_Man = new UserInterfaceManager(shaderDir);
             PH_UI_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
@@ -729,7 +729,7 @@ namespace VoidFactory.Editor
 
             MainWindow = new DisplayArea(1000, 1000, null, Frame_Func);
             MainCamera = new DisplayCamera();
-            MainCamera.Depth.Far = 10000.0f;
+            MainCamera.Depth = new DepthData(0.1f, 10000.0f);
 
             FilePath = null;
             Scene = new PolySoma();

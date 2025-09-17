@@ -30,6 +30,7 @@
     <Compile Remove="GameSelect\GamePlaneAction.cs" />
     <Compile Remove="GameSelect\GameSceneEditor.cs" />
     <Compile Remove="GameSelect\GameSpace.cs" />
+    <Compile Remove="Surface2D\Chunk2D_Render.cs" />
     <Compile Remove="View.cs" />
   </ItemGroup>
 

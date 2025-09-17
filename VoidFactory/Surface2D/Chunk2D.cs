@@ -560,10 +560,10 @@ namespace VoidFactory.Surface2D
         }
 
 
-        public static void UniformConst(Chunk2DProgram program)
+        /*public static void UniformConst(Chunk2DProgram program)
         {
             program.UniTileSize(Tile_Size, Tiles_Per_Side);
-        }
+        }*/
         /*private void Draw(Chunk2DProgram program)
         {
             program.UniChunkIdx(Chunk_Idx_Y, 0, Chunk_Idx_C);

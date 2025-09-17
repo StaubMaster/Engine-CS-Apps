@@ -7,8 +7,6 @@ using Engine3D.Abstract3D;
 using Engine3D.BodyParse;
 
 using Engine3D.OutPut;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Manager;
@@ -566,13 +564,12 @@ namespace VoidFactory.Editor
                 Keys.ControlKey
                 );
             MainCamera = new DisplayCamera();
-            MainCamera.Depth.Near = 1f;
-            MainCamera.Depth.Far = 10000f;
+            MainCamera.Depth = new DepthData(1f, 10000f);
 
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.Depth.ChangeData(new DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
+            PH_Man.Depth.ChangeData(MainCamera.Depth);
             PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height));
             PH_Man.LightSolar.ChangeData(!(new Point3D(1, 1, 1)));
             PH_Man.LightRange.ChangeData(new RangeData(0.1f, 1.0f));

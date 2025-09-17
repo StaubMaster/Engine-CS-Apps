@@ -1,8 +1,6 @@
 ﻿using System;
 
 using Engine3D.Abstract3D;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Display2D.UserInterface;

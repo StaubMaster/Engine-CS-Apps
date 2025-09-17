@@ -2,9 +2,6 @@
 
 using Engine3D.Abstract3D;
 using Engine3D.Abstract2D;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform.Specific;
-using Engine3D.OutPut.Uniform.Generic.Float;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Miscellaneous.EntryContainer;

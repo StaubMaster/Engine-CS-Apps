@@ -5,9 +5,6 @@ using Engine3D;
 using Engine3D.Abstract3D;
 
 using Engine3D.OutPut;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform;
-using Engine3D.OutPut.Uniform.Specific;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Display3D;
@@ -52,8 +49,7 @@ namespace VoidFactory.Astronomical
         private void InitView()
         {
             MainCamera = new DisplayCamera();
-            MainCamera.Depth.Near = 0.1f;
-            MainCamera.Depth.Far = 1600.0f;
+            MainCamera.Depth = new Engine3D.DataStructs.DepthData(1.0f, 1600.0f);
 
             ViewHoverCenter = null;
             ViewHover = Transformation3D.Null();
@@ -63,7 +59,7 @@ namespace VoidFactory.Astronomical
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.Depth.ChangeData(new Engine3D.DataStructs.DepthData(MainCamera.Depth.Near, MainCamera.Depth.Far));
+            PH_Man.Depth.ChangeData(MainCamera.Depth);
         }
         private void InitSatellites()
         {

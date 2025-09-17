@@ -2,8 +2,6 @@
 
 using Engine3D.Abstract3D;
 using Engine3D.GraphicsOld;
-using Engine3D.OutPut.Shader;
-using Engine3D.OutPut.Uniform.Specific;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
