@@ -72,11 +72,9 @@ namespace VoidFactory.Production.Buildings
             if (!Inventory_Storage.CostCanRefund(MaterialCost))
                 return;
 
-            for (int i = 0; i < Inn.Length; i++)
-                Inn[i].Remove();
+            for (int i = 0; i < Inn.Length; i++) { Inn[i].Remove(); }
 
-            for (int o = 0; o < Out.Length; o++)
-                Out[o].Remove();
+            for (int o = 0; o < Out.Length; o++) { Out[o].Remove(); }
 
             if (InstEntry != null)
             {

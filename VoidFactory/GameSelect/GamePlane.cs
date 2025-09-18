@@ -49,7 +49,6 @@ namespace VoidFactory.GameSelect
         private TextShader Text_Shader;
         private TextBuffer Text_Buffer;
 
-        private AxisBoxShader Box_Shader;
         private AxisBoxBuffer Box_Buffer;
 
         private PolyHedra_Shader_Manager PH_Man;
@@ -110,14 +109,11 @@ namespace VoidFactory.GameSelect
 
         private void DebugAllBodysSpinUpdate()
         {
-            Angle3D rot = new Angle3D(Angle3D.Deg45, 0, 0);
-
             PolyHedraInstance_3D_Data data;
-
-            for (int i = 0; i < TestBodys[0].Length; i++)
+            for (int i = 0; i < TestBodys.Length; i++)
             {
                 data = TestBodys[i][0];
-                data.Trans.Rot = rot;
+                data.Trans.Rot.A += 0.01f;
                 TestBodys[i][0] = data;
             }
         }
@@ -149,7 +145,7 @@ namespace VoidFactory.GameSelect
 
         private void Update_Solar()
         {
-            Solar.Rot.A += 0.01f;
+            Solar.Rot.A -= 0.01f;
             Point3D solar = !(Solar.Pos + Solar.Rot);
 
             PH_Man.LightSolar.ChangeData(solar);
@@ -172,13 +168,11 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.View.Value(view.Trans);
             TransPorter.Program.UniView(new RenderTrans(view.Trans));
             PH_Man.View.ChangeData(view.Trans);
-            Box_Shader.View.Value(view.Trans);
         }
         private void Update_WinSize()
         {
             (float, float) winSize = win.Size_Float2();
             Chunk_Shader.ScreenRatio.Value(winSize);
-            Box_Shader.ScreenRatio.Value(winSize);
 
             SizeRatio winRatio = new SizeRatio(winSize.Item1, winSize.Item2);
             Inventory_Interface.SizeRatio = winRatio;
@@ -243,7 +237,8 @@ namespace VoidFactory.GameSelect
         }
         private void Frame_Box()
         {
-            Box_Shader.Use();
+            //Box_Shader.Use();
+            PH_Man.AxisBoxShader.Use();
             Box_Buffer.BindList();
             Box_Buffer.Draw();
         }
@@ -291,7 +286,6 @@ namespace VoidFactory.GameSelect
 
             GL.Clear(ClearBufferMask.DepthBufferBit);
             Frame_Inv();
-            //UI_Test();
 
             Frame_Text();
         }
@@ -556,14 +550,10 @@ namespace VoidFactory.GameSelect
             //Text_Buffer.Telematry = new Telematry.TelematryBuffer();
             Text_Buffer.Bind_Pallets();
 
-            Box_Shader = new AxisBoxShader(shaderDir);
             Box_Buffer = new AxisBoxBuffer();
             //Box_Buffer.Telematry = new Telematry.TelematryBuffer();
 
 
-
-            Box_Shader.Use();
-            Box_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
 
             Chunk_Shader = new Chunk2D_Shader(shaderDir);
             Chunk_Shader.Use();
@@ -572,6 +562,7 @@ namespace VoidFactory.GameSelect
             Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
 
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_Man.InitUniforms();
             PH_Man.Depth.ChangeData(view.Depth);
 
             //PolyHedra cube = PolyHedra.Generate.Cube();
@@ -585,7 +576,7 @@ namespace VoidFactory.GameSelect
                 float dist = 0.0f;
 
                 TestBodys = new EntryContainerBase<PolyHedraInstance_3D_Data>.Entry[this.PH_3D.Length];
-                for (int i = 0; i < this.PH_3D.Length; i++)
+                for (int i = 0; i < this.TestBodys.Length; i++)
                 {
                     AxisBox3D box = this.PolyHedras[i].CalcBox();
                     ConsoleLog.Log("Box[" + i + "]" + box.Min.Y + " : " + box.Max.Y + " | " + dist);

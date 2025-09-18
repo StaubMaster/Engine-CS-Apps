@@ -74,12 +74,13 @@ namespace VoidFactory.Production.Transfer
         }
         ~IO_Port()
         {
-            InstEntry.Dispose();
         }
         public void Remove()
         {
             DATA_Cost cost = new DATA_Cost(Buffer.Thing, Buffer.Num);
             Inventory_Storage.CostRefund(cost);
+
+            InstEntry.Dispose();
 
             if (TransPorter != null)
             {
