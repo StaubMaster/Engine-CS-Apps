@@ -1,12 +1,24 @@
 ﻿
 
 
-PolyHedra:
-	split into multiple files
+now gonna
+clean up Shaders
+reorganize namespaces
+figure out how to implement complex Uniforms
+	redo IData stuff to implement complex Uniforms
+	and maybe try to somehow force them to declate ToBuffer
+	maybe try to improve that so they demand a certain number of Bindings
+then start trying to port this stuff to C++
 
 
 
-File Parser:
+
+
+
+
+FileParser:
+	PolyHedra:
+		split into multiple files
 	Math:
 		make number parser
 		have default values ?
@@ -16,4 +28,8 @@ File Parser:
 	SectionCheck:
 		only check for Command headers
 		each Command check other stuff itself
+
+|
+
+
 

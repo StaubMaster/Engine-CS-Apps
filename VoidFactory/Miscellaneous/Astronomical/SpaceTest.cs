@@ -35,7 +35,7 @@ namespace VoidFactory.Astronomical
 
         public SpaceTest()
         {
-            MainWindow = new DisplayArea(1000, 1000, CloseFunc, FrameFunc);
+            MainWindow = new DisplayArea(640, 480, CloseFunc, FrameFunc);
             MainWindow.ChangeColor(0, 0, 0);
 
             InitView();
@@ -75,7 +75,7 @@ namespace VoidFactory.Astronomical
             PH_Arr = new PolyHedraInstance_3D_Array(ph);
 
             Astro = new List<CSatelliteNatural>();
-            Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(0, 1) , new COrbitHover(null, new SAngledRotation(0.0009, 0, 0), Point3D.Default()), 200));
+            Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(0, 1), new COrbitHover(null, new SAngledRotation(0.0009, 0, 0), Point3D.Default()), 200));
             Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(1, 1), new COrbitNormal(Astro[0].Orbit, new SAngledRotation(0.001, 0.0, 0.0), 1000, new SAngledRotation(0.0001, 0.2, 0)), 16));
             Astro.Add(new CSatelliteNatural(PH_Arr.Alloc(2, 1), new COrbitNormal(Astro[1].Orbit, new SAngledRotation(0.008, 0.0, 0.0), 100, new SAngledRotation(0.008, 0, 0)), 4));
 

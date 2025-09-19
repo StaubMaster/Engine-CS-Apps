@@ -551,9 +551,9 @@ namespace VoidFactory.GameSelect
 
             Chunk2D_Graphics.Chunk_Shader = new GenericShader(new ShaderCode[]
             {
-                ShaderCode.FromFile(shaderDir + "Surface/Chunk_Flat2.vert"),
-                ShaderCode.FromFile(shaderDir + "Surface/Chunk_Flat2.geom"),
-                ShaderCode.FromFile(shaderDir + "OAR/OAR.frag"),
+                ShaderCode.FromFile(shaderDir + "Chunk2D/Chunk2D.vert"),
+                ShaderCode.FromFile(shaderDir + "Chunk2D/Chunk2D.geom"),
+                ShaderCode.FromFile(shaderDir + "Chunk2D/Chunk2D.frag"),
             });
 
             Chunk2D_Graphics.UniChunk_TileSize = new GenericDataUniform<Chunk2D_Int>("tiles_size");
