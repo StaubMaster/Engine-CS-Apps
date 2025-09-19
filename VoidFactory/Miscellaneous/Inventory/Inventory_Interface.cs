@@ -1,6 +1,5 @@
 ﻿using Engine3D.Abstract3D;
 using Engine3D.Abstract2D;
-using Engine3D.GraphicsOld;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Display2D;

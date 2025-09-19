@@ -1,8 +1,6 @@
 ﻿using System;
 
 using Engine3D.Graphics.Shader;
-using Engine3D.Graphics.Shader.Uniform.Float;
-using Engine3D.Graphics.Shader.Uniform.Int;
 using Engine3D.Graphics.Shader.Uniform;
 
 using Engine3D.Miscellaneous;

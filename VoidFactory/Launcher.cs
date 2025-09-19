@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Threading;
 
 using Engine3D;
-using Engine3D.GraphicsOld;
 using Engine3D.BodyParse;
 using Engine3D.BitManip;
 using Engine3D.Graphics.Display;
@@ -23,8 +22,6 @@ namespace VoidFactory
         {
             InitializeComponent();
             ConsoleLogInit();
-
-            General.Init_Shader_Folder("E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders");
         }
 
         private void ConsoleLogInit()

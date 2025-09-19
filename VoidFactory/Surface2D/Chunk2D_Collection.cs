@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using Engine3D;
 using Engine3D.Abstract3D;
 using Engine3D.Noise;
-using Engine3D.GraphicsOld;
 using Engine3D.Graphics;
 
 using VoidFactory.Production.Data;
@@ -83,11 +82,11 @@ namespace VoidFactory.Surface2D
                 Chunks = null;
             }
 
-            public void Draw(Graphics.Chunk2D_Shader program)
+            public void Draw()
             {
                 for (int i = 0; i < Chunks.Length; i++)
                 {
-                    Chunks[i].Draw(program);
+                    Chunks[i].Draw();
                 }
             }
 

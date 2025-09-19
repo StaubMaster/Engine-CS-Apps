@@ -559,22 +559,9 @@ namespace VoidFactory.Surface2D
             }
         }
 
-
-        /*public static void UniformConst(Chunk2DProgram program)
+        private void Draw()
         {
-            program.UniTileSize(Tile_Size, Tiles_Per_Side);
-        }*/
-        /*private void Draw(Chunk2DProgram program)
-        {
-            program.UniChunkIdx(Chunk_Idx_Y, 0, Chunk_Idx_C);
-            for (int l = 0; l < Layers.Length; l++)
-            {
-                Layers[l].Buffer.Draw();
-            }
-        }*/
-        private void Draw(Graphics.Chunk2D_Shader program)
-        {
-            program.ChunkPos.Set(new int[] { Chunk_Idx_Y, 0, Chunk_Idx_C });
+            Graphics.Chunk2D_Graphics.UniChunk_Pos.ChangeData(new Graphics.Chunk2D_Pos(Chunk_Idx_Y, 0, Chunk_Idx_C));
             for (int l = 0; l < Layers.Length; l++)
             {
                 Layers[l].Buffer.Draw();

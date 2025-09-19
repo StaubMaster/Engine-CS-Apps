@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 
-using Engine3D.GraphicsOld;
 using Engine3D.Graphics;
 
 namespace VoidFactory.Production.Transfer
@@ -9,7 +8,8 @@ namespace VoidFactory.Production.Transfer
     {
         public class Collection
         {
-            public TransPorterProgram Program;
+            public static Engine3D.Graphics.Shader.GenericShader Shader;
+            //public TransPorterProgram Program;
             public TransPorterBuffer Buffer;
 
             private List<IO_TransPorter> TransPorter;
@@ -22,19 +22,17 @@ namespace VoidFactory.Production.Transfer
 
             public void Create()
             {
-                Program.Create();
+                //Program.Create();
 
                 Buffer = new TransPorterBuffer();
-                Buffer.Create();
 
                 TransPorter = new List<IO_TransPorter>();
                 Render = new List<RenderData>();
             }
             public void Delete()
             {
-                Program.Delete();
+                //Program.Delete();
 
-                Buffer.Delete();
                 Buffer = null;
 
                 TransPorter = null;
@@ -67,7 +65,8 @@ namespace VoidFactory.Production.Transfer
                     TransPorter[i].Draw();
                 }
 
-                Program.Use();
+                //Program.Use();
+                Shader.Use();
                 Buffer.Draw();
             }
 
@@ -76,6 +75,7 @@ namespace VoidFactory.Production.Transfer
                 if (porter != null)
                 {
                     TransPorter.Add(porter);
+                    Engine3D.ConsoleLog.Log("TransPorter: " + porter.Inn.Pos.ToString_Line() + " | " + porter.Out.Pos.ToString_Line());
                     Render.Add(new RenderData(porter.Inn.Pos, porter.Out.Pos));
                     Buffer.Data(Render.ToArray());
                 }

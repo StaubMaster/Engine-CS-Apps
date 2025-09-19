@@ -15,8 +15,6 @@ using Engine3D.DataStructs;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-using VoidFactory.Miscellaneous.Display;
-
 namespace VoidFactory.Editor
 {
     static class EnumFunctions
@@ -83,7 +81,6 @@ namespace VoidFactory.Editor
 
         private UIBody_Array UI_Array;
 
-        private TextShader Text_Shader;
         private TextBuffer Text_Buffer;
 
         private int Edit_Index_Hovering;
@@ -574,8 +571,6 @@ namespace VoidFactory.Editor
 
             MainWindow.ClearBufferDepth();
 
-            Text_Shader.Use();
-            Text_Shader.ScreenRatio.Value(MainWindow.Size_Float2());
             Text_Buffer.Bind_Strings();
             Text_Buffer.Draw();
         }
@@ -618,7 +613,6 @@ namespace VoidFactory.Editor
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
             PH_3D_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_3D_Man.InitUniforms();
             PH_3D_Man.Depth.ChangeData(MainCamera.Depth);
 
             PH_UI_Man = new UserInterfaceManager(shaderDir);
@@ -628,7 +622,6 @@ namespace VoidFactory.Editor
 
             Text_Buffer = new TextBuffer();
             Text_Buffer.Bind_Pallets();
-            Text_Shader = new TextShader(shaderDir);
         }
         public void Init_Mouse_Edit(string dir)
         {

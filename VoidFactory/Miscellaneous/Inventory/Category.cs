@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Engine3D.Abstract2D;
 using Engine3D.Abstract3D;
-using Engine3D.GraphicsOld;
 
 using VoidFactory.GameSelect;
 using VoidFactory.Production;

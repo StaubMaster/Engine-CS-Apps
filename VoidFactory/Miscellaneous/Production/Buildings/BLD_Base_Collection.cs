@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 
 using Engine3D.Abstract3D;
-using Engine3D.GraphicsOld;
 using Engine3D.Graphics;
 
 using VoidFactory.Production.Data;

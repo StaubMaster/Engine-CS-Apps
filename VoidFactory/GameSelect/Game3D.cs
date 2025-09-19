@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using Engine3D;
 using Engine3D.Abstract3D;
-using Engine3D.GraphicsOld;
 using Engine3D.OutPut;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Display3D;
@@ -82,7 +81,6 @@ namespace VoidFactory.GameSelect
 
         public PolyHedraInstance_3D_Array PH_3D;
         public UIBody_Array PH_UI;
-
 
 
 

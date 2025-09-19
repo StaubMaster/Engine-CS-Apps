@@ -6,8 +6,6 @@ using Engine3D.Graphics;
 using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Miscellaneous.EntryContainer;
 
-using VoidFactory.Miscellaneous.Display;
-
 namespace VoidFactory.Editor
 {
     enum UI_Anchor

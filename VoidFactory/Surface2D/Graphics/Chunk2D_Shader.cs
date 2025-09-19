@@ -1,86 +1,50 @@
-﻿using Engine3D.Graphics.Shader;
-using Engine3D.Graphics.Shader.Uniform.Float;
-using Engine3D.Graphics.Shader.Uniform.Int;
+﻿using Engine3D.DataStructs;
+using Engine3D.Graphics.Shader;
+using Engine3D.Graphics.Basic.Uniforms;
+
+using OpenTK.Graphics.OpenGL4;
 
 namespace VoidFactory.Surface2D.Graphics
 {
-    class Chunk2D_Shader : BaseShader
+    struct Chunk2D_Int : IData
     {
-        public readonly UniScreenRatio ScreenRatio;
+        public int Data;
 
-        public readonly UniTransformation View;
-
-
-        public readonly UniDepth Depth;
-        public readonly UniRange DepthFadeRange;
-        public readonly UniColor DepthFadeColor;
-
-        public readonly UniPoint LightSolar;
-        public readonly UniRange LightRange;
-
-        public readonly UniColor OtherColor;
-        public readonly UniInter OtherColorInter;
-
-        public readonly UniInter GrayInter;
-
-
-        public readonly UniInt1 TilesSize;
-        public readonly UniInt1 TilesPreSide;
-        public readonly UniInt3 ChunkPos;
-
-        public Chunk2D_Shader(string shaderDir) : base(new ShaderCode[]
+        public Chunk2D_Int(int data)
         {
-            ShaderCode.FromFile(shaderDir + "Surface/Chunk_Flat2.vert"),
-            ShaderCode.FromFile(shaderDir + "Surface/Chunk_Flat2.geom"),
-            ShaderCode.FromFile(shaderDir + "OAR/OAR.frag"),
-        })
-        {
-            ScreenRatio = new UniScreenRatio(this, "screenRatios");
-
-            View = new UniTransformation(this, "view");
-
-            Depth = new UniDepth(this, "depthFactor");
-            DepthFadeRange = new UniRange(this, "depthFadeRange");
-            DepthFadeColor = new UniColor(this, "depthFadeColor");
-
-            LightSolar = new UniPoint(this, "solar");
-            LightRange = new UniRange(this, "lightRange");
-
-            OtherColor = new UniColor(this, "colorOther");
-            OtherColorInter = new UniInter(this, "colorInterPol");
-
-            GrayInter = new UniInter(this, "GrayInter");
-
-
-            TilesSize = new UniInt1(this, "tiles_size", 1);
-            TilesPreSide = new UniInt1(this, "tiles_per_side", 1);
-
-            ChunkPos = new UniInt3(this, "chunk_pos", 1);
+            Data = data;
         }
 
-        protected override void UpdateUniforms()
+        public void ToUniform(params int[] locations)
         {
-            ScreenRatio.Update();
-
-            View.Update();
-
-            Depth.Update();
-            DepthFadeRange.Update();
-            DepthFadeColor.Update();
-
-            LightSolar.Update();
-            LightRange.Update();
-
-            OtherColor.Update();
-            OtherColorInter.Update();
-
-            GrayInter.Update();
-
-
-            TilesSize.Update();
-            TilesPreSide.Update();
-
-            ChunkPos.Update();
+            GL.Uniform1(locations[0], 1, new int[] { Data });
         }
+    }
+
+    struct Chunk2D_Pos : IData
+    {
+        public int Y;
+        public int X;
+        public int C;
+
+        public Chunk2D_Pos(int y, int x, int c)
+        {
+            Y = y;
+            X = x;
+            C = c;
+        }
+
+        public void ToUniform(params int[] locations)
+        {
+            GL.Uniform3(locations[0], 1, new int[] { Y, X, C });
+        }
+    }
+
+    static class Chunk2D_Graphics
+    {
+        public static GenericShader Chunk_Shader;
+        public static GenericDataUniform<Chunk2D_Int> UniChunk_TileSize;
+        public static GenericDataUniform<Chunk2D_Int> UniChunk_TilesPerSide;
+        public static GenericDataUniform<Chunk2D_Pos> UniChunk_Pos;
     }
 }

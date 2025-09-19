@@ -1,5 +1,4 @@
 ﻿
-using Engine3D.GraphicsOld;
 using Engine3D.Graphics;
 using Engine3D.Miscellaneous.EntryContainer;
 using Engine3D.Graphics.Display2D.UserInterface;

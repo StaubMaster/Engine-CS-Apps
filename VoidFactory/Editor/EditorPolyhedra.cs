@@ -569,7 +569,6 @@ namespace VoidFactory.Editor
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.InitUniforms();
             PH_Man.Depth.ChangeData(MainCamera.Depth);
             PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height));
             PH_Man.LightSolar.ChangeData(!(new Point3D(1, 1, 1)));

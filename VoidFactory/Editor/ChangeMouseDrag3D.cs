@@ -6,8 +6,6 @@ using Engine3D.Graphics.Display3D;
 using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Miscellaneous.EntryContainer;
 
-using VoidFactory.Miscellaneous.Display;
-
 namespace VoidFactory.Editor
 {
     /* Split

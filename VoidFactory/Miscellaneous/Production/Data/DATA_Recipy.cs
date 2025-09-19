@@ -1,6 +1,5 @@
 ﻿
 using Engine3D.Abstract3D;
-using Engine3D.GraphicsOld;
 
 using VoidFactory.Production.Transfer;
 

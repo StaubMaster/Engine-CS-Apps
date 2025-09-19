@@ -3,7 +3,7 @@
 using OpenTK.Graphics.OpenGL4;
 
 using Engine3D.Abstract3D;
-using Engine3D.GraphicsOld;
+using Engine3D.Graphics.Shader;
 
 namespace VoidFactory.Production.Transfer
 {
@@ -11,9 +11,7 @@ namespace VoidFactory.Production.Transfer
     {
         public struct RenderData
         {
-            public const int Size_Inn = 0;
-            public const int Size_Out = Size_Inn + sizeof(float) * 3;
-            public const int Size = Size_Out + sizeof(float) * 3;
+            public const int Size = sizeof(float) * 3 + sizeof(float) * 3;
 
             private float InnY;
             private float InnX;
@@ -25,18 +23,17 @@ namespace VoidFactory.Production.Transfer
 
             public RenderData(Point3D Inn, Point3D Out)
             {
-                InnY = (float)Inn.Y;
-                InnX = (float)Inn.X;
-                InnC = (float)Inn.C;
+                InnY = Inn.Y;
+                InnX = Inn.X;
+                InnC = Inn.C;
 
-                OutY = (float)Out.Y;
-                OutX = (float)Out.X;
-                OutC = (float)Out.C;
+                OutY = Out.Y;
+                OutX = Out.X;
+                OutC = Out.C;
             }
         }
     }
-
-    class TransPorterProgram : ViewRenderProgram
+    /*class TransPorterProgram : ViewRenderProgram
     {
         public TransPorterProgram(string name, string vert_file, string geom_file, string frag_file)
             : base(name, vert_file, geom_file, frag_file)
@@ -54,54 +51,51 @@ namespace VoidFactory.Production.Transfer
             if (Program == -1) { return; }
             base.Delete();
         }
-    }
-    class TransPorterBuffer : RenderBuffers
+    }*/
+    class TransPorterBuffer : BaseBuffer
     {
         private int Buffer_Data;
         private int Data_Count;
 
         public TransPorterBuffer() : base()
         {
-
-        }
-
-        public override void Create()
-        {
-            if (Buffer_Array != -1) { return; }
-            Create("TransPorter");
-
             Buffer_Data = GL.GenBuffer();
             Data_Count = 0;
         }
-        public override void Delete()
+        ~TransPorterBuffer()
         {
-            if (Buffer_Array == -1) { return; }
-            Delete("TransPorter");
-
+            Use();
             GL.DeleteBuffer(Buffer_Data);
         }
 
-
         public void Data(IO_TransPorter.RenderData[] data)
         {
-            GL.BindVertexArray(Buffer_Array);
+            Engine3D.ConsoleLog.Log("Bind TransPorter");
+
+            Use();
+
+            int stride = IO_TransPorter.RenderData.Size;
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, Buffer_Data);
-            GL.BufferData(BufferTarget.ArrayBuffer, data.Length * IO_TransPorter.RenderData.Size, data, BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, data.Length * stride, data, BufferUsageHint.DynamicDraw);
+
+            IntPtr offset = IntPtr.Zero;
 
             GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, IO_TransPorter.RenderData.Size, (IntPtr)IO_TransPorter.RenderData.Size_Inn);
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, offset);
+            offset += sizeof(float) * 3;
 
             GL.EnableVertexAttribArray(1);
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, IO_TransPorter.RenderData.Size, (IntPtr)IO_TransPorter.RenderData.Size_Out);
+            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, stride, offset);
+            offset += sizeof(float) * 3;
 
             Data_Count = data.Length;
+            Engine3D.ConsoleLog.Log("TransPorter Count: " + Data_Count);
         }
 
         public override void Draw()
         {
-            GL.BindVertexArray(Buffer_Array);
-
+            Use();
             GL.DrawArrays(PrimitiveType.Points, 0, Data_Count);
         }
     }

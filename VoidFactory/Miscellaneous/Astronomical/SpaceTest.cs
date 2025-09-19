@@ -59,7 +59,6 @@ namespace VoidFactory.Astronomical
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
             PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.InitUniforms();
             PH_Man.Depth.ChangeData(MainCamera.Depth);
         }
         private void InitSatellites()

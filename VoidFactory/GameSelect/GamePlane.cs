@@ -5,7 +5,6 @@ using System.IO;
 using Engine3D;
 using Engine3D.Abstract3D;
 using Engine3D.Abstract2D;
-using Engine3D.GraphicsOld;
 using Engine3D.Entity;
 
 using Engine3D.Graphics;
@@ -14,6 +13,9 @@ using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Graphics.Display;
 using Engine3D.Graphics.Telematry;
 using Engine3D.Graphics.Manager;
+using Engine3D.Graphics.Shader;
+using Engine3D.Graphics.Shader.Uniform;
+using Engine3D.Graphics.Basic.Uniforms;
 using Engine3D.DataStructs;
 
 using Engine3D.Miscellaneous.EntryContainer;
@@ -46,7 +48,6 @@ namespace VoidFactory.GameSelect
     {
         private Transformation3D Solar;
 
-        private TextShader Text_Shader;
         private TextBuffer Text_Buffer;
 
         private AxisBoxBuffer Box_Buffer;
@@ -61,7 +62,6 @@ namespace VoidFactory.GameSelect
 
 
         private Chunk2D.Collection Chunks;
-        private Chunk2D_Shader Chunk_Shader;
 
 
 
@@ -149,7 +149,6 @@ namespace VoidFactory.GameSelect
             Point3D solar = !(Solar.Pos + Solar.Rot);
 
             PH_Man.LightSolar.ChangeData(solar);
-            Chunk_Shader.LightSolar.Value(solar);
         }
         private void Update_View()
         {
@@ -165,14 +164,11 @@ namespace VoidFactory.GameSelect
                 Text_Buffer.InsertTL((0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF, str);
             }
 
-            Chunk_Shader.View.Value(view.Trans);
-            TransPorter.Program.UniView(new RenderTrans(view.Trans));
             PH_Man.View.ChangeData(view.Trans);
         }
         private void Update_WinSize()
         {
             (float, float) winSize = win.Size_Float2();
-            Chunk_Shader.ScreenRatio.Value(winSize);
 
             SizeRatio winRatio = new SizeRatio(winSize.Item1, winSize.Item2);
             Inventory_Interface.SizeRatio = winRatio;
@@ -223,30 +219,33 @@ namespace VoidFactory.GameSelect
         {
             Chunk2D_Buffer.SUpdate();
 
-            Chunk_Shader.Use();
+            //Chunk_Shader_Old.Use();
             if (!Interaction.Draw_Gray)
             {
-                Chunk_Shader.GrayInter.T0(1.0f);
+                //Chunk_Shader_Old.GrayInter.T0(1.0f);
+                PH_Man.GrayInter.ChangeData(LInterData.LIT0());
             }
             else
             {
-                Chunk_Shader.GrayInter.T1(1.0f);
+                //Chunk_Shader_Old.GrayInter.T1(1.0f);
+                PH_Man.GrayInter.ChangeData(LInterData.LIT1());
             }
-            Chunks.Draw(Chunk_Shader);
-            Chunk_Shader.GrayInter.T0(1.0f);
+
+            //Chunks.Draw(Chunk_Shader_Old);
+            //Chunk_Shader_Old.GrayInter.T0(1.0f);
+
+            Chunk2D_Graphics.Chunk_Shader.Use();
+            Chunks.Draw();
+            PH_Man.GrayInter.ChangeData(LInterData.LIT0());
         }
         private void Frame_Box()
         {
-            //Box_Shader.Use();
             PH_Man.AxisBoxShader.Use();
             Box_Buffer.BindList();
             Box_Buffer.Draw();
         }
         private void Frame_Text()
         {
-            Text_Shader.Use();
-            Text_Shader.ScreenRatio.Value(win.Size_Float2());
-
             //Text_Buffer.Bind_Strings();
             //Text_Buffer.Test_Characters();
             //Text_Buffer.Test_ASCII();
@@ -255,6 +254,7 @@ namespace VoidFactory.GameSelect
 
             Text_Buffer.Bind_Strings();
 
+            UI_Man.TextShader.Use();
             Text_Buffer.Draw();
         }
         protected override void Frame()
@@ -470,15 +470,10 @@ namespace VoidFactory.GameSelect
             Buildings.Create();
 
             TransPorter = new IO_TransPorter.Collection();
-            TransPorter.Program = new TransPorterProgram("TransPorter",
-                "TransPorter/TP.vert",
-                "TransPorter/TP.geom",
-                "Frag/Direct.frag");
             TransPorter.Create();
 
             //TransPorter.Program.UniProj(new RenderDepthFactors(view.DepthN, view.DepthF), view.Fov);
             //view.UniDepth(TransPorter.Program);
-            TransPorter.Program.UniDepth(new RenderDepthFactors(view.Depth.Near, view.Depth.Far));
         }
         private void Entities_Delete()
         {
@@ -545,7 +540,6 @@ namespace VoidFactory.GameSelect
 
             //MainContext = new DisplayContext(shaderDir);
 
-            Text_Shader = new TextShader(shaderDir);
             Text_Buffer = new TextBuffer();
             //Text_Buffer.Telematry = new Telematry.TelematryBuffer();
             Text_Buffer.Bind_Pallets();
@@ -555,15 +549,40 @@ namespace VoidFactory.GameSelect
 
 
 
-            Chunk_Shader = new Chunk2D_Shader(shaderDir);
-            Chunk_Shader.Use();
-            Chunk_Shader.TilesSize.Set(new int[] { Chunk2D.Tile_Size });
-            Chunk_Shader.TilesPreSide.Set(new int[] { Chunk2D.Tiles_Per_Side });
-            Chunk_Shader.Depth.Value(view.Depth.Near, view.Depth.Far);
+            Chunk2D_Graphics.Chunk_Shader = new GenericShader(new ShaderCode[]
+            {
+                ShaderCode.FromFile(shaderDir + "Surface/Chunk_Flat2.vert"),
+                ShaderCode.FromFile(shaderDir + "Surface/Chunk_Flat2.geom"),
+                ShaderCode.FromFile(shaderDir + "OAR/OAR.frag"),
+            });
 
-            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
-            PH_Man.InitUniforms();
+            Chunk2D_Graphics.UniChunk_TileSize = new GenericDataUniform<Chunk2D_Int>("tiles_size");
+            Chunk2D_Graphics.UniChunk_TilesPerSide = new GenericDataUniform<Chunk2D_Int>("tiles_per_side");
+            Chunk2D_Graphics.UniChunk_Pos = new GenericDataUniform<Chunk2D_Pos>("chunk_pos");
+
+            IO_TransPorter.Collection.Shader = new GenericShader(new ShaderCode[]
+            {
+                ShaderCode.FromFile(shaderDir + "TransPorter/TP.vert"),
+                ShaderCode.FromFile(shaderDir + "TransPorter/TP.geom"),
+                ShaderCode.FromFile(shaderDir + "TransPorter/TP.frag"),
+            });
+
+            PH_Man = new PolyHedra_Shader_Manager(
+                shaderDir,
+                new GenericShader[]{
+                    Chunk2D_Graphics.Chunk_Shader,
+                    IO_TransPorter.Collection.Shader,
+                },
+                new GenericUniformBase[]
+                {
+                    Chunk2D_Graphics.UniChunk_TileSize,
+                    Chunk2D_Graphics.UniChunk_TilesPerSide,
+                    Chunk2D_Graphics.UniChunk_Pos
+                }
+            );
             PH_Man.Depth.ChangeData(view.Depth);
+            Chunk2D_Graphics.UniChunk_TileSize.ChangeData(new Chunk2D_Int(Chunk2D.Tile_Size));
+            Chunk2D_Graphics.UniChunk_TilesPerSide.ChangeData(new Chunk2D_Int(Chunk2D.Tiles_Per_Side));
 
             //PolyHedra cube = PolyHedra.Generate.Cube();
             UI_Man = new UserInterfaceManager(shaderDir);
