@@ -2,9 +2,8 @@
 
 using Engine3D.Abstract3D;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display3D;
-using Engine3D.Graphics.Display2D.UserInterface;
 using Engine3D.Miscellaneous.EntryContainer;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 
 namespace VoidFactory.Editor
 {

@@ -1,7 +1,6 @@
 ﻿using System;
 
 using Engine3D.Graphics.Shader;
-using Engine3D.Graphics.Shader.Uniform;
 
 using Engine3D.Miscellaneous;
 using Engine3D.Miscellaneous.EntryContainer;

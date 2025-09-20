@@ -3,7 +3,7 @@
 using Engine3D.Abstract3D;
 using Engine3D.Entity;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 
 using Engine3D.Miscellaneous.EntryContainer;
 

@@ -1,7 +1,7 @@
 ﻿
 using Engine3D.Graphics;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 using Engine3D.Miscellaneous.EntryContainer;
-using Engine3D.Graphics.Display2D.UserInterface;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -33,7 +33,7 @@ namespace VoidFactory.Inventory
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hover.Pos));
                 //BodyUni_Shader.Trans.Value(new Engine3D.Abstract3D.Transformation3D(Hover.Pos));
                 //IO_Port.BodyOct.DrawMain();
-                IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
+                //IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Out].DrawMain();
             }
 
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.HoriL, 0, -9, 0xFFFFFF,
@@ -97,7 +97,7 @@ namespace VoidFactory.Inventory
         private DATA_Cost CostInn;
         private DATA_Cost CostOut;
 
-        private Entry_Array InstThings;
+        private UI_Entry_Array InstThings;
 
         public Inter_Recipy(DATA_Recipy recipy)
         {

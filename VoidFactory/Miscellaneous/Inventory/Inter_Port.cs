@@ -1,10 +1,10 @@
 ﻿
-using Engine3D.Graphics.Display;
-
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
 using VoidFactory.Production.Buildings;
 using Engine3D.Graphics;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
+using Engine3D.Miscellaneous.EntryContainer;
 
 namespace VoidFactory.Inventory
 {
@@ -43,10 +43,26 @@ namespace VoidFactory.Inventory
         public static IO_TransPorter.Collection TransPorter;
 
         private IO_Port.Select_Port Select;
+        private EntryContainerBase<PolyHedraInstance_3D_Data>.Entry HoverInst;
+        private EntryContainerBase<PolyHedraInstance_3D_Data>.Entry SelectInst;
 
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
         {
             InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.TransPorter);
+        }
+
+        public override void Draw_Dispose()
+        {
+            if (HoverInst != null)
+            {
+                HoverInst.Dispose();
+                HoverInst = null;
+            }
+            if (SelectInst != null)
+            {
+                SelectInst.Dispose();
+                SelectInst = null;
+            }
         }
 
         public override void Draw()
@@ -63,10 +79,46 @@ namespace VoidFactory.Inventory
                 (0, -4), Text_Buffer.Default_TextSize, 0xFFFFFF,
                 "Select Port:\n" + Select);
 
+            if (HoverInst != null)
+            {
+                HoverInst.Dispose();
+                HoverInst = null;
+            }
+            if (Hover.Valid)
+            {
+                if (Hover.InnOut)
+                {
+                    HoverInst = IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.OutHex].Alloc(1);
+                }
+                else
+                {
+                    HoverInst = IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.InnHex].Alloc(1);
+                }
+                HoverInst[0] = new PolyHedraInstance_3D_Data(new Engine3D.Abstract3D.Transformation3D(Hover.Pos));
+            }
+
+            if (SelectInst != null)
+            {
+                SelectInst.Dispose();
+                SelectInst = null;
+            }
+            if (Select.Valid)
+            {
+                if (Select.InnOut)
+                {
+                    SelectInst = IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.OutOct].Alloc(1);
+                }
+                else
+                {
+                    SelectInst = IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.InnOct].Alloc(1);
+                }
+                SelectInst[0] = new PolyHedraInstance_3D_Data(new Engine3D.Abstract3D.Transformation3D(Select.Pos));
+            }
+
             //Graphic.Icon_Prog.UniScale(0.04f);
             //Graphic.Icon_Prog.UniPos(+0.75f, -0.75f);
             //IO_Port.BodyTransPorter.DrawMain();
-            IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
+            //IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
             //MainContext.Text_Buff.Insert(TextBuffer.ScreenCorner.BR, 0, 0, 0xFFFFFF, "Connect");
             //MainContext.Text_Buff.InsertBR(
             //    (-0.5f, +0.5f + 1), 0xFFFFFF, 20f, 2f,
@@ -78,7 +130,7 @@ namespace VoidFactory.Inventory
             //Graphic.Icon_Prog.UniScale(0.01f);
             //Graphic.Icon_Prog.UniPos(x, y);
             //IO_Port.BodyTransPorter.DrawMain();
-            IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
+            //IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.TransPorter].DrawMain();
         }
 
         public override void Func1()
@@ -103,7 +155,7 @@ namespace VoidFactory.Inventory
     {
         private DATA_Thing Thing;
 
-        private Entry_Array StorageInst;
+        private UI_Entry_Array StorageInst;
 
         public Inter_Thing(DATA_Thing thing)
         {

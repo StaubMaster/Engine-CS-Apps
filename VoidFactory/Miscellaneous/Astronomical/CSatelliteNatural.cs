@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Engine3D;
 using Engine3D.Abstract3D;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display3D;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 
 namespace VoidFactory.Astronomical
 {

@@ -1,9 +1,7 @@
 ﻿using Engine3D.Abstract3D;
 using Engine3D.Abstract2D;
-using Engine3D.Graphics.Display;
-using Engine3D.Graphics.Display2D.UserInterface;
-using Engine3D.Graphics.Display2D;
 using Engine3D.Graphics;
+using Engine3D.Graphics.PolyHedraInstance.PH_UI;
 using Engine3D.Entity;
 using Engine3D.Miscellaneous.EntryContainer;
 using Engine3D.DataStructs;

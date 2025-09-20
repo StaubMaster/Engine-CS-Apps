@@ -3,14 +3,13 @@ using System.Collections.Generic;
 
 using Engine3D;
 using Engine3D.Abstract3D;
-using Engine3D.OutPut;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display;
 using Engine3D.BodyParse;
 using Engine3D.Miscellaneous;
-using Engine3D.Graphics.Display3D;
-using Engine3D.Graphics.Display2D.UserInterface;
-using Engine3D.Graphics.Manager;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
+using Engine3D.Graphics.PolyHedraInstance.PH_UI;
+using Engine3D.Graphics.Shader;
+using Engine3D.Graphics.Shader.Manager;
 using Engine3D.DataStructs;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;

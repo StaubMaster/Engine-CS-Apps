@@ -6,10 +6,9 @@ using System.IO;
 using Engine3D.Abstract3D;
 using Engine3D.BodyParse;
 
-using Engine3D.OutPut;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display3D;
-using Engine3D.Graphics.Manager;
+using Engine3D.Graphics.Shader.Manager;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 using Engine3D.DataStructs;
 using Engine3D.Miscellaneous.EntryContainer;
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 using Engine3D.Abstract2D;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display;
-using Engine3D.OutPut;
 
 using VoidFactory.GameSelect;
 using VoidFactory.Production.Transfer;
@@ -96,7 +94,7 @@ namespace VoidFactory.Inventory
             //Graphic.Icon_Prog.UniPos(x, y);
             //Graphic.Icon_Prog.UniRot(Graphic.Icon_Spin_flt);
             //IO_Port.BodyHex.DrawMain();
-            IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Hex].DrawMain();
+            //IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Hex].DrawMain();
         }
     }
 }

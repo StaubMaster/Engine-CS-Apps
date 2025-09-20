@@ -3,8 +3,7 @@
 using Engine3D.Abstract3D;
 using Engine3D.Entity;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display3D;
-using Engine3D.Graphics.Display;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 
 using Engine3D.Miscellaneous.EntryContainer;
 
@@ -212,13 +211,13 @@ namespace VoidFactory.Production.Transfer
                 {
                     //BodyInnHex.DrawMain();
                     //Bodys[(int)MetaBodyIndex.InnHex].DrawMain();
-                    game.PH_3D[(int)MetaBodyIndex.InnHex].DrawMain();
+                    //game.PH_3D[(int)MetaBodyIndex.InnHex].DrawMain();
                 }
                 else
                 {
                     //BodyOutHex.DrawMain();
                     //Bodys[(int)MetaBodyIndex.OutHex].DrawMain();
-                    game.PH_3D[(int)MetaBodyIndex.OutHex].DrawMain();
+                    //game.PH_3D[(int)MetaBodyIndex.OutHex].DrawMain();
                 }
 
                 //program.LightRange.Value(0.1f, 1.0f);
@@ -235,13 +234,13 @@ namespace VoidFactory.Production.Transfer
                 {
                     //BodyInnOct.DrawMain();
                     //Bodys[(int)MetaBodyIndex.InnOct].DrawMain();
-                    game.PH_3D[(int)MetaBodyIndex.InnOct].DrawMain();
+                    //game.PH_3D[(int)MetaBodyIndex.InnOct].DrawMain();
                 }
                 else
                 {
                     //BodyOutOct.DrawMain();
                     //Bodys[(int)MetaBodyIndex.OutOct].DrawMain();
-                    game.PH_3D[(int)MetaBodyIndex.OutOct].DrawMain();
+                    //game.PH_3D[(int)MetaBodyIndex.OutOct].DrawMain();
                 }
 
                 //program.LightRange.Value(0.1f, 1.0f);

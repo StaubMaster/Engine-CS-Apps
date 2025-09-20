@@ -1,6 +1,5 @@
 ﻿using Engine3D.DataStructs;
 using Engine3D.Graphics.Shader;
-using Engine3D.Graphics.Basic.Uniforms;
 
 using OpenTK.Graphics.OpenGL4;
 

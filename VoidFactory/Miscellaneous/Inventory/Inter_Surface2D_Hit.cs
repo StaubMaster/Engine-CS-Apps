@@ -1,9 +1,7 @@
 ﻿
 using Engine3D.Abstract3D;
-using Engine3D.Graphics.Display;
+using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 using Engine3D.Miscellaneous.EntryContainer;
-using Engine3D.Graphics.Display2D.UserInterface;
-using Engine3D.Graphics.Display3D;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -117,8 +115,9 @@ namespace VoidFactory.Inventory
     {
         private UI_3D_Base TileHoverContent;
 
-        private Entry_Array InstTile;
-        private Entry_Array InstOre;
+        private UI_Entry_Array InstTile;
+        private UI_Entry_Array InstOre;
+        private EntryContainerBase<PolyHedraInstance_3D_Data>.Entry HitInst;
 
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
         {
@@ -137,6 +136,12 @@ namespace VoidFactory.Inventory
                 InstOre.Dispose();
                 InstOre = null;
             }
+
+            if (HitInst != null)
+            {
+                HitInst.Dispose();
+                HitInst = null;
+            }
         }
 
         public override void Draw()
@@ -149,13 +154,20 @@ namespace VoidFactory.Inventory
                 InstTile = null;
             }
 
+            if (HitInst != null)
+            {
+                HitInst.Dispose();
+                HitInst = null;
+            }
+
             if (Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Valid)
             {
                 //Graphic.Trans_Direct.UniTrans(new RenderTrans(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //BodyUni_Shader.Use();
                 //BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //IO_Port.BodyAxis.DrawMain();
-                IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
+                HitInst = IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].Alloc(1);
+                HitInst[0] = new PolyHedraInstance_3D_Data(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
 
                 if (Hit.ToLayerIndex().IsValid())
                 {
@@ -260,14 +272,31 @@ namespace VoidFactory.Inventory
     }
     class Inter_Surf2D_Rad : Inter_Surface2D_Hit
     {
+        private EntryContainerBase<PolyHedraInstance_3D_Data>.Entry HitInst;
+
         public override void Draw_Icon_Alloc(UIGridPosition pos, UIGridSize size)
         {
             InstRef = new UI_Meta(pos, size, IO_Port.MetaBodyIndex.Axis);
         }
 
+        public override void Draw_Dispose()
+        {
+            if (HitInst != null)
+            {
+                HitInst.Dispose();
+                HitInst = null;
+            }
+        }
+
         public override void Draw()
         {
             base.Draw();
+
+            if (HitInst != null)
+            {
+                HitInst.Dispose();
+                HitInst = null;
+            }
 
             if (Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Valid)
             {
@@ -275,7 +304,8 @@ namespace VoidFactory.Inventory
                 //BodyUni_Shader.Use();
                 //BodyUni_Shader.Trans.Value(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
                 //IO_Port.BodyAxis.DrawMain();
-                IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].DrawMain();
+                HitInst = IO_Port.game.PH_3D[(int)IO_Port.MetaBodyIndex.Axis].Alloc(1);
+                HitInst[0] = new PolyHedraInstance_3D_Data(new Transformation3D(Hit.ChunkTile_Hit.TileLayer_Hit.Tile_Hit.Cross));
 
                 AxisBox3D box = Chunks.TileBox(Hit);
                 if (!box.IsNaN())
@@ -312,7 +342,7 @@ namespace VoidFactory.Inventory
         private Transformation3D Trans;
         private int angle;
 
-        private Entry_Array Cost_Insts;
+        private UI_Entry_Array Cost_Insts;
         private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry InstEntry;
 
         public Inter_Surf2D_Building(BLD_Base.Template_Base template)

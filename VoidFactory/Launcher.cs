@@ -7,7 +7,6 @@ using System.Threading;
 using Engine3D;
 using Engine3D.BodyParse;
 using Engine3D.BitManip;
-using Engine3D.Graphics.Display;
 
 using Engine3D.Miscellaneous.EntryContainer;
 

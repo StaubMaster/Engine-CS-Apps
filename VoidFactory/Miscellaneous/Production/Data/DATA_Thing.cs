@@ -1,7 +1,5 @@
 ﻿using Engine3D.Entity;
 
-using Engine3D.Graphics.Display3D;
-
 namespace VoidFactory.Production.Data
 {
     partial class DATA_Thing
@@ -47,7 +45,7 @@ namespace VoidFactory.Production.Data
 
         public void Draw()
         {
-            game.PH_3D[Idx].DrawMain();
+            //game.PH_3D[Idx].DrawMain();
         }
         public override string ToString()
         {

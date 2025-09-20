@@ -2,9 +2,8 @@
 using Engine3D.Abstract2D;
 using Engine3D.Abstract3D;
 using Engine3D.Graphics;
-using Engine3D.Graphics.Display;
+using Engine3D.Graphics.PolyHedraInstance.PH_UI;
 using Engine3D.Miscellaneous.EntryContainer;
-using Engine3D.Graphics.Display2D.UserInterface;
 
 using VoidFactory.Production.Data;
 using VoidFactory.Production.Transfer;
@@ -12,7 +11,7 @@ using VoidFactory.Surface2D;
 
 namespace VoidFactory.Inventory
 {
-    class Entry_Array
+    class UI_Entry_Array
     {
         private EntryContainerDynamic<UIBody_Data>.Entry[] Data;
 
@@ -29,7 +28,7 @@ namespace VoidFactory.Inventory
             set { Data[idx] = value; }
         }
 
-        public Entry_Array(int len)
+        public UI_Entry_Array(int len)
         {
             Data = new EntryContainerBase<UIBody_Data>.Entry[len];
         }
@@ -77,7 +76,7 @@ namespace VoidFactory.Inventory
         private static UIGridSize sSize;
         private static Angle3D spin;
 
-        private static Entry_Array InstData;
+        private static UI_Entry_Array InstData;
         private static int InstDataIndex;
 
         private static void Inst_Meta(IO_Port.MetaBodyIndex idx, Point2D offset)
@@ -151,11 +150,11 @@ namespace VoidFactory.Inventory
             spin = new Angle3D(0, -0.5f, 0);
         }
 
-        public static Entry_Array Alloc_Recipy(DATA_Recipy recipy)
+        public static UI_Entry_Array Alloc_Recipy(DATA_Recipy recipy)
         {
             Init_Consts();
 
-            InstData = new Entry_Array(recipy.RInn.Length + recipy.ROut.Length + 2);
+            InstData = new UI_Entry_Array(recipy.RInn.Length + recipy.ROut.Length + 2);
             InstDataIndex = 0;
 
             Inst_Meta(IO_Port.MetaBodyIndex.Inn, new Point2D(-0, -0));
@@ -164,61 +163,61 @@ namespace VoidFactory.Inventory
             Inst_Meta(IO_Port.MetaBodyIndex.Out, new Point2D(-1, -0));
             Inst_Buffers(recipy.ROut, new Point2D(-1, -1));
 
-            Entry_Array temp = InstData;
+            UI_Entry_Array temp = InstData;
             InstData = null;
             return temp;
         }
-        public static Entry_Array Alloc_Cost_Inn(DATA_Cost cost)
+        public static UI_Entry_Array Alloc_Cost_Inn(DATA_Cost cost)
         {
             Init_Consts();
 
-            InstData = new Entry_Array(cost.Sum.Length + 1);
+            InstData = new UI_Entry_Array(cost.Sum.Length + 1);
             InstDataIndex = 0;
 
             Inst_Meta(IO_Port.MetaBodyIndex.Inn, new Point2D(-0, -0));
             Inst_Buffers(cost.Sum, new Point2D(-0, -1));
 
-            Entry_Array temp = InstData;
+            UI_Entry_Array temp = InstData;
             InstData = null;
             return temp;
         }
-        public static Entry_Array Alloc_Cost_Out(DATA_Cost cost)
+        public static UI_Entry_Array Alloc_Cost_Out(DATA_Cost cost)
         {
             Init_Consts();
 
-            InstData = new Entry_Array(cost.Sum.Length + 1);
+            InstData = new UI_Entry_Array(cost.Sum.Length + 1);
             InstDataIndex = 0;
 
             Inst_Meta(IO_Port.MetaBodyIndex.Out, new Point2D(-1, -0));
             Inst_Buffers(cost.Sum, new Point2D(-1, -1));
 
-            Entry_Array temp = InstData;
+            UI_Entry_Array temp = InstData;
             InstData = null;
             return temp;
         }
-        public static Entry_Array Alloc_Thing(DATA_Thing thing, int off = 0)
+        public static UI_Entry_Array Alloc_Thing(DATA_Thing thing, int off = 0)
         {
             Init_Consts();
 
-            InstData = new Entry_Array(1);
+            InstData = new UI_Entry_Array(1);
             InstDataIndex = 0;
 
             Inst_Thing(thing, new Point2D(0, -off));
 
-            Entry_Array temp = InstData;
+            UI_Entry_Array temp = InstData;
             InstData = null;
             return temp;
         }
-        public static Entry_Array Alloc_Buffer(DATA_Buffer buffer, int off = 0)
+        public static UI_Entry_Array Alloc_Buffer(DATA_Buffer buffer, int off = 0)
         {
             Init_Consts();
 
-            InstData = new Entry_Array(1);
+            InstData = new UI_Entry_Array(1);
             InstDataIndex = 0;
 
             Inst_Buffer(buffer, new Point2D(0, -off));
 
-            Entry_Array temp = InstData;
+            UI_Entry_Array temp = InstData;
             InstData = null;
             return temp;
         }
