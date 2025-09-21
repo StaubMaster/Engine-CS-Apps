@@ -5,7 +5,7 @@ using Engine3D;
 using Engine3D.Abstract3D;
 
 using Engine3D.Graphics;
-using Engine3D.Graphics.Shader.Manager;
+using Engine3D.Graphics.Manager;
 using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -56,7 +56,7 @@ namespace VoidFactory.Astronomical
         {
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_Man = new PolyHedra_Shader_Manager(shaderDir, null, null);
             PH_Man.Depth.ChangeData(MainCamera.Depth);
         }
         private void InitSatellites()

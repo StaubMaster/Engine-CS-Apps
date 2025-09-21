@@ -10,7 +10,8 @@ using Engine3D.Entity;
 using Engine3D.Graphics;
 using Engine3D.Graphics.Telematry;
 using Engine3D.Graphics.Shader;
-using Engine3D.Graphics.Shader.Manager;
+using Engine3D.Graphics.Uniform;
+using Engine3D.Graphics.Manager;
 using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 using Engine3D.Graphics.PolyHedraInstance.PH_UI;
 using Engine3D.DataStructs;
@@ -53,7 +54,7 @@ namespace VoidFactory.GameSelect
 
         private EntryContainerDynamic<PolyHedraInstance_3D_Data>.Entry[] TestBodys;
 
-        private UserInterfaceManager UI_Man;
+        private UserInterface_Shader_Manager UI_Man;
 
         private Angle3D UI_Spin;
 
@@ -117,26 +118,7 @@ namespace VoidFactory.GameSelect
         private void InstDraw()
         {
             PH_Man.InstShader.Use();
-
             this.PH_3D.Update();
-
-            //IO_Port.Bodys.Update();
-            if (Interaction.Draw_Ports)
-            {
-                PH_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
-                //IO_Port.Bodys.Draw();
-                PH_Man.LightRange.ChangeData(new RangeData(0.1f, 1.0f));
-            }
-
-            //BLD_Base.Bodys.Update();
-            //BLD_Base.Bodys.Draw();
-
-            //DATA_Thing.Bodys.Update();
-            //DATA_Thing.Bodys.Draw();
-
-            //Chunk2D.SURF_Object.Bodys.Update();
-            //Chunk2D.SURF_Object.Bodys.Draw();
-
             this.PH_3D.Draw();
         }
 
@@ -161,6 +143,7 @@ namespace VoidFactory.GameSelect
                 Text_Buffer.InsertTL((0, 0), Text_Buffer.Default_TextSize, 0xFFFFFF, str);
             }
 
+            //PH_Man.View.ChangeData(view.Trans);
             PH_Man.View.ChangeData(view.Trans);
         }
         private void Update_WinSize()
@@ -169,6 +152,7 @@ namespace VoidFactory.GameSelect
 
             SizeRatio winRatio = new SizeRatio(winSize.Item1, winSize.Item2);
             Inventory_Interface.SizeRatio = winRatio;
+            //PH_Man.ViewPortSizeRatio.ChangeData(winRatio);
             PH_Man.ViewPortSizeRatio.ChangeData(winRatio);
             UI_Man.ScreenRatio.ChangeData(winRatio);
         }
@@ -231,7 +215,8 @@ namespace VoidFactory.GameSelect
             //Chunks.Draw(Chunk_Shader_Old);
             //Chunk_Shader_Old.GrayInter.T0(1.0f);
 
-            Chunk2D_Graphics.Chunk_Shader.Use();
+            //Chunk2D_Graphics.Chunk_Shader.Use();
+            Chunk2D_Graphics.Shader.Use();
             Chunks.Draw();
             PH_Man.GrayInter.ChangeData(LInterData.LIT0());
         }
@@ -546,43 +531,32 @@ namespace VoidFactory.GameSelect
 
 
 
-            Chunk2D_Graphics.Chunk_Shader = new GenericShader(new ShaderCode[]
-            {
-                ShaderCode.FromFile(shaderDir + "Chunk2D/Chunk2D.vert"),
-                ShaderCode.FromFile(shaderDir + "Chunk2D/Chunk2D.geom"),
-                ShaderCode.FromFile(shaderDir + "Chunk2D/Chunk2D.frag"),
-            });
+            Chunk2D_Graphics.Shader = new CChunk2DShader(shaderDir);
+            Chunk2D_Graphics.TileSize = new UniformBase<UniInt1, int>("tiles_size");
+            Chunk2D_Graphics.TilesPerSide = new UniformBase<UniInt1, int>("tiles_per_side");
+            Chunk2D_Graphics.ChunkPos = new UniformBase<UniInt3, (int, int, int)>("chunk_pos");
 
-            Chunk2D_Graphics.UniChunk_TileSize = new GenericDataUniform<Chunk2D_Int>("tiles_size");
-            Chunk2D_Graphics.UniChunk_TilesPerSide = new GenericDataUniform<Chunk2D_Int>("tiles_per_side");
-            Chunk2D_Graphics.UniChunk_Pos = new GenericDataUniform<Chunk2D_Pos>("chunk_pos");
-
-            IO_TransPorter.Collection.Shader = new GenericShader(new ShaderCode[]
-            {
-                ShaderCode.FromFile(shaderDir + "TransPorter/TP.vert"),
-                ShaderCode.FromFile(shaderDir + "TransPorter/TP.geom"),
-                ShaderCode.FromFile(shaderDir + "TransPorter/TP.frag"),
-            });
+            IO_TransPorter.Collection.Shader = new IO_TransPorter.TransPorterShader(shaderDir);
 
             PH_Man = new PolyHedra_Shader_Manager(
                 shaderDir,
-                new GenericShader[]{
-                    Chunk2D_Graphics.Chunk_Shader,
+                new BaseShader[]{
+                    Chunk2D_Graphics.Shader,
                     IO_TransPorter.Collection.Shader,
                 },
-                new GenericUniformBase[]
+                new UniformBase[]
                 {
-                    Chunk2D_Graphics.UniChunk_TileSize,
-                    Chunk2D_Graphics.UniChunk_TilesPerSide,
-                    Chunk2D_Graphics.UniChunk_Pos
+                    Chunk2D_Graphics.TileSize,
+                    Chunk2D_Graphics.TilesPerSide,
+                    Chunk2D_Graphics.ChunkPos,
                 }
             );
             PH_Man.Depth.ChangeData(view.Depth);
-            Chunk2D_Graphics.UniChunk_TileSize.ChangeData(new Chunk2D_Int(Chunk2D.Tile_Size));
-            Chunk2D_Graphics.UniChunk_TilesPerSide.ChangeData(new Chunk2D_Int(Chunk2D.Tiles_Per_Side));
+            Chunk2D_Graphics.TileSize.ChangeData(Chunk2D.Tile_Size);
+            Chunk2D_Graphics.TilesPerSide.ChangeData(Chunk2D.Tiles_Per_Side);
 
             //PolyHedra cube = PolyHedra.Generate.Cube();
-            UI_Man = new UserInterfaceManager(shaderDir);
+            UI_Man = new UserInterface_Shader_Manager(shaderDir);
             //UI_Man.Depth.ChangeData(new DepthData(-1000, +1000));
             UI_Spin = new Angle3D(0, -0.5f, 0);
 

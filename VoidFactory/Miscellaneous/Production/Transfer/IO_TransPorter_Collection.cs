@@ -1,14 +1,57 @@
 ﻿using System.Collections.Generic;
 
-using Engine3D.Graphics;
+using Engine3D.Graphics.Shader;
+using Engine3D.Graphics.Uniform;
 
 namespace VoidFactory.Production.Transfer
 {
     partial class IO_TransPorter
     {
+        public class TransPorterShader : BaseShader
+        {
+            public UniSizeRatio SizeRatio;
+
+            public UniTrans3D View;
+
+            public UniDepth Depth;
+            public UniRange DepthFadeRange;
+            public UniColorU DepthFadeColor;
+
+            public UniPoint3D LightSolar;
+            public UniRange LightRange;
+
+            public UniColorU OtherColor;
+            public UniLInter OtherColorInter;
+
+            public UniLInter GrayInter;
+
+            public TransPorterShader(string shaderDir) : base(new ShaderCode[]
+            {
+                ShaderCode.FromFile(shaderDir + "TransPorter/TP.vert"),
+                ShaderCode.FromFile(shaderDir + "TransPorter/TP.geom"),
+                ShaderCode.FromFile(shaderDir + "TransPorter/TP.frag"),
+            })
+            {
+                SizeRatio = new UniSizeRatio("screenRatios", this);
+
+                View = new UniTrans3D("view", this);
+
+                Depth = new UniDepth("depthFactor", this);
+                DepthFadeRange = new UniRange("depthFadeRange", this);
+                DepthFadeColor = new UniColorU("depthFadeColor", this);
+
+                LightSolar = new UniPoint3D("solar", this);
+                LightRange = new UniRange("lightRange", this);
+
+                OtherColor = new UniColorU("colorOther", this);
+                OtherColorInter = new UniLInter("colorInterPol", this);
+
+                GrayInter = new UniLInter("GrayInter", this);
+            }
+        }
         public class Collection
         {
-            public static Engine3D.Graphics.Shader.GenericShader Shader;
+            public static TransPorterShader Shader;
             //public TransPorterProgram Program;
             public TransPorterBuffer Buffer;
 

@@ -7,7 +7,7 @@ using Engine3D.Abstract3D;
 using Engine3D.BodyParse;
 
 using Engine3D.Graphics;
-using Engine3D.Graphics.Shader.Manager;
+using Engine3D.Graphics.Manager;
 using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 using Engine3D.DataStructs;
 using Engine3D.Miscellaneous.EntryContainer;
@@ -567,7 +567,7 @@ namespace VoidFactory.Editor
 
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            PH_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_Man = new PolyHedra_Shader_Manager(shaderDir, null, null);
             PH_Man.Depth.ChangeData(MainCamera.Depth);
             PH_Man.ViewPortSizeRatio.ChangeData(new SizeRatio(glC_Display.ClientSize.Width, glC_Display.ClientSize.Height));
             PH_Man.LightSolar.ChangeData(!(new Point3D(1, 1, 1)));

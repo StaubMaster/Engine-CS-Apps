@@ -9,7 +9,7 @@ using Engine3D.Miscellaneous;
 using Engine3D.Graphics.PolyHedraInstance.PH_3D;
 using Engine3D.Graphics.PolyHedraInstance.PH_UI;
 using Engine3D.Graphics.Shader;
-using Engine3D.Graphics.Shader.Manager;
+using Engine3D.Graphics.Manager;
 using Engine3D.DataStructs;
 
 using OpenTK.Windowing.GraphicsLibraryFramework;
@@ -76,7 +76,7 @@ namespace VoidFactory.Editor
         private DisplayCamera MainCamera;
 
         private PolyHedra_Shader_Manager PH_3D_Man;
-        private UserInterfaceManager PH_UI_Man;
+        private UserInterface_Shader_Manager PH_UI_Man;
 
         private UIBody_Array UI_Array;
 
@@ -527,7 +527,7 @@ namespace VoidFactory.Editor
                 PH_3D_Man.InstShader.Use();
                 Scene.Draw();
 
-                PH_3D_Man.InstWireShader.Use();
+                PH_3D_Man.WireShader.Use();
                 Scene.Draw();
             }
             Draw_Mouse_Change();
@@ -611,10 +611,10 @@ namespace VoidFactory.Editor
         {
             string shaderDir = "E:/Programmieren/VS_Code/OpenTK/Engine3D/Engine3D/Shaders/";
 
-            PH_3D_Man = new PolyHedra_Shader_Manager(shaderDir);
+            PH_3D_Man = new PolyHedra_Shader_Manager(shaderDir, null, null);
             PH_3D_Man.Depth.ChangeData(MainCamera.Depth);
 
-            PH_UI_Man = new UserInterfaceManager(shaderDir);
+            PH_UI_Man = new UserInterface_Shader_Manager(shaderDir);
             PH_UI_Man.LightRange.ChangeData(new RangeData(1.0f, 1.0f));
 
             ShaderDisplayState = EnumFunctions.EShaderDisplayState.SelectHoverMono;

@@ -561,7 +561,8 @@ namespace VoidFactory.Surface2D
 
         private void Draw()
         {
-            Graphics.Chunk2D_Graphics.UniChunk_Pos.ChangeData(new Graphics.Chunk2D_Pos(Chunk_Idx_Y, 0, Chunk_Idx_C));
+            //Graphics.Chunk2D_Graphics.UniChunk_Pos.ChangeData(new Graphics.Chunk2D_Pos(Chunk_Idx_Y, 0, Chunk_Idx_C));
+            Graphics.Chunk2D_Graphics.ChunkPos.ChangeData((Chunk_Idx_Y, 0, Chunk_Idx_C));
             for (int l = 0; l < Layers.Length; l++)
             {
                 Layers[l].Buffer.Draw();
